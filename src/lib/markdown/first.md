@@ -6,7 +6,8 @@ list: [1, 2, 3, 4, "boo"]
 ---
 
 <script>
-	let number = 45;
+  let number = 45;
+  import Counter from "$lib/counter.svelte";
 </script>
 
 # { title }
@@ -16,6 +17,8 @@ list: [1, 2, 3, 4, "boo"]
 Markdown is pretty good but sometimes you just need more.
 
 Sometimes you need a {number} like this:
+
+<Counter />
 
 <ul>
 {#each list as item}

@@ -4,7 +4,7 @@ export const load = async () => {
   let frontmatters: Frontmatter[] = [];
 
   const modules: Record<string, MarkdownFile> = import.meta.glob(
-    "/src/lib/markdown/*.md",
+    "$lib/markdown/*.md",
     { eager: true }
   );
   // import multiple modules from fs, not lazy loaded
