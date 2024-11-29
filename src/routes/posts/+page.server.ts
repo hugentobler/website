@@ -1,8 +1,7 @@
-import { json } from "@sveltejs/kit";
 import type { Post } from "$lib/types";
+import type { PageServerLoad } from "./$types";
 
-/** Retrieves and processes markdown posts, extracting metadata and slugs from files in /src/lib/posts/ */
-const getPosts = async () => {
+export const load: PageServerLoad = async () => {
   let posts: Post[] = [];
 
   const modules = import.meta.glob("/src/lib/posts/*.md", { eager: true });
@@ -20,13 +19,5 @@ const getPosts = async () => {
       posts.push(post);
     }
   }
-  return posts;
+  return { posts };
 };
-
-/** GET handler for /posts */
-const GET = async () => {
-  const posts = await getPosts();
-  return json(posts);
-};
-
-export { GET };
