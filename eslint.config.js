@@ -1,9 +1,9 @@
 // https://eslint.org/docs/latest/use/configure/
 
-import prettier from "eslint-config-prettier";
-import js from "@eslint/js";
-import svelte from "eslint-plugin-svelte";
 import globals from "globals";
+import js from "@eslint/js";
+import prettier from "eslint-config-prettier";
+import svelte from "eslint-plugin-svelte";
 import ts from "typescript-eslint";
 
 export default ts.config(
@@ -32,9 +32,19 @@ export default ts.config(
           trailingComma: "none",
           printWidth: 100,
           tabWidth: 2,
-          // handle svelte file parsing https://github.com/sveltejs/prettier-plugin-svelte
-          // auto sort tailwindcss classes https://github.com/tailwindlabs/prettier-plugin-tailwindcss
-          plugins: ["prettier-plugin-svelte", "prettier-plugin-tailwindcss"],
+          importOrder: [
+            "^@core/(.*)$",
+            "^@server/(.*)$",
+            "^@ui/(.*)$",
+            "^[./]",
+          ],
+          importOrderSeparation: true,
+          importOrderSortSpecifiers: true,
+          plugins: [
+            "prettier-plugin-svelte", // handle svelte file parsing https://github.com/sveltejs/prettier-plugin-svelte
+            "@trivago/prettier-plugin-sort-imports", // auto sort imports https://github.com/trivago/prettier-plugin-sort-imports
+            "prettier-plugin-tailwindcss", // auto sort tailwindcss classes https://github.com/tailwindlabs/prettier-plugin-tailwindcss
+          ],
           overrides: [
             {
               files: "*.svelte",
