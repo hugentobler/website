@@ -40,6 +40,7 @@ export default ts.config(
           ],
           importOrderSeparation: true,
           importOrderSortSpecifiers: true,
+          tailwindStylesheet: "./src/app.css", // for tailwindcss v4
           plugins: [
             "prettier-plugin-svelte", // handle svelte file parsing https://github.com/sveltejs/prettier-plugin-svelte
             "@trivago/prettier-plugin-sort-imports", // auto sort imports https://github.com/trivago/prettier-plugin-sort-imports
@@ -50,6 +51,12 @@ export default ts.config(
               files: "*.svelte",
               options: {
                 parser: "svelte",
+              },
+            },
+            {
+              files: "*.css",
+              options: {
+                parser: "css",
               },
             },
           ],
