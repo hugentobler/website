@@ -7,6 +7,6 @@ import tailwindcss from "@tailwindcss/vite";
 export default defineConfig({
   plugins: [
     sveltekit(),
-    tailwindcss(), // install tailwindcss v4
+    //tailwindcss(), // install tailwindcss v4
   ],
 });

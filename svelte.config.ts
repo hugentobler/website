@@ -8,12 +8,12 @@ import type { Config } from "@sveltejs/kit";
 export default {
   preprocess: [
     // Ref: https://svelte.dev/docs/svelte/svelte-compiler#preprocess
-    vitePreprocess(),
-    // TypeScript, PostCSS etc as needed by Tailwind in Svelte
-    // Ref: https://github.com/sveltejs/vite-plugin-svelte/blob/main/docs/preprocess.md
     mdsvex({ extensions: [".md"] }),
     // Markdown in Svelte
     // Ref: https://github.com/pngwn/MDsveX
+    vitePreprocess(),
+    // TypeScript, PostCSS etc as needed by Tailwind in Svelte
+    // Ref: https://github.com/sveltejs/vite-plugin-svelte/blob/main/docs/preprocess.md
   ],
 
   kit: {
@@ -33,6 +33,6 @@ export default {
       },
     }),
   },
-
   extensions: [".svelte", ".md"],
+  // File extensions that should be treated as Svelte files
 } satisfies Config;
