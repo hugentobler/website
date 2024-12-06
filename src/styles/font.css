@@ -80,3 +80,21 @@
 .font-mono.font-black {
   font-variation-settings: "wght" 150;
 }
+
+/**
+ * Univers font and fallback
+ */
+
+@font-face {
+  font-family: "Univers";
+  src: url("../fonts/uni-reg-bold.woff2") format("woff2");
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Univers";
+  src: url("../fonts/uni-ita-bold.woff2") format("woff2");
+  font-weight: bold;
+  font-style: italic;
+}
