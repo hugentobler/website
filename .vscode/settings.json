@@ -1,13 +1,14 @@
 {
-  "editor.tabSize": 2,
-  "editor.insertSpaces": true,
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
-  "editor.formatOnSave": true,
+  // editor
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit"
   },
-  "[svelte]": {
-    "editor.defaultFormatter": "svelte.svelte-vscode",
-    "editor.formatOnSave": true
-  }
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.insertSpaces": true,
+  "editor.formatOnSave": true,
+  "editor.tabSize": 2,
+  // eslint
+  "eslint.validate": ["javascript", "javascriptreact", "svelte"],
+  // prettier
+  "prettier.requireConfig": true
 }

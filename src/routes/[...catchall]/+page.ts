@@ -5,7 +5,7 @@ export const load = async ({ params }) => {
   const { catchall } = params;
 
   try {
-    const file: MarkdownFile = await import(`$lib/markdown/${catchall}.md`);
+    const file: MarkdownFile = await import(`./markdown/${catchall}.md`);
     // dynamic import .md file using catchall slug
 
     return {
