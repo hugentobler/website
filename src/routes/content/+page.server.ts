@@ -10,6 +10,7 @@ export const load = async () => {
   // import multiple modules from fs, not lazy loaded
   // ref: https://vite.dev/guide/features.html#glob-import
 
+  console.log(modules);
   for (const path in modules) {
     const file = modules[path];
     const slug = path.split("/").at(-1)?.replace(".md", "");
