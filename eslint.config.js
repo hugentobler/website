@@ -22,7 +22,7 @@ export default ts.config(
   // use svelteParser to lint .svelte files, and ts.parser to handle script blocks inside .svelte files
   // https://github.com/sveltejs/eslint-plugin-svelte#book-usage
   {
-    files: ['**/*.svelte', '**/*.md'],
+    files: ['**/*.svelte'],
     languageOptions: {
       parser: svelteParser,
       parserOptions: {

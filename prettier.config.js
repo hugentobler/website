@@ -54,6 +54,13 @@ export default {
       options: {
         parser: 'css'
       }
+    },
+    {
+      files: '*.md',
+      options: {
+        parser: 'markdown',
+        proseWrap: 'always'
+      }
     }
   ]
 };
