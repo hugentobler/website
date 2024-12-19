@@ -7,7 +7,8 @@ const isValidDate = (date: string): boolean => {
   return /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])(T\d{2}:\d{2}:\d{2}\.\d{3}Z)?$/.test(date);
 };
 
-// validate dates in frontmatter and handle error
+// runtime validation of dates in frontmatter and handle error
+// only needed if not all markdown content will be pre-rendered
 const validateDates = (slug: string, dates: (string | undefined)[]) => {
   for (const date of dates) {
     if (date && !isValidDate(date)) {

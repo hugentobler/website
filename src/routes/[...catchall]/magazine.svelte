@@ -2,7 +2,6 @@
   import type { MarkdownLayoutProps } from '$lib/types';
 
   let { children, title, updated } = $props() as MarkdownLayoutProps;
-  console.log('updated type:', typeof updated, 'value:', updated);
 </script>
 
 <article class="@container prose max-w-none">
