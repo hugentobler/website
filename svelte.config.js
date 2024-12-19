@@ -1,11 +1,12 @@
-// https://svelte.dev/docs/kit/configuration
-
-import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
-import type { Config } from '@sveltejs/kit';
-import { mdsvex } from 'mdsvex';
 import adapter from '@sveltejs/adapter-cloudflare';
+import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
+import { mdsvex } from 'mdsvex';
 
-export default {
+// NOTE: Using svelte.config.ts breaks mdsvex .md file handling.
+// TODO: See if mdsvex fix missing types export.
+
+/** @type {import('@sveltejs/kit').Config} */
+const config = {
   extensions: ['.svelte', '.md'],
   // File extensions that should be treated as Svelte files
 
@@ -14,7 +15,7 @@ export default {
     vitePreprocess(),
     // TypeScript, PostCSS etc as needed by Tailwind in Svelte
     // Ref: https://github.com/sveltejs/vite-plugin-svelte/blob/main/docs/preprocess.md
-    mdsvex({ extensions: ['.md', '.mdx'] })
+    mdsvex({ extensions: ['.md'] })
     // Markdown in Svelte
     // Ref: https://github.com/pngwn/MDsveX
   ],
@@ -36,4 +37,6 @@ export default {
       }
     })
   }
-} satisfies Config;
+};
+
+export default config;

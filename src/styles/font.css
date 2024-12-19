@@ -4,81 +4,81 @@
  * Berkeley Mono Variable font and fallback
  */
 @font-face {
-  font-family: "Berkeley Mono Variable";
+  font-family: 'Berkeley Mono Variable';
   font-style: normal;
   font-weight: 100 150;
   src:
-    url("../fonts/bm-variable.woff2") format("woff2-variations"),
-    url("../fonts/bm-variable.ttf") format("truetype");
+    url('../fonts/bm-variable.woff2') format('woff2-variations'),
+    url('../fonts/bm-variable.ttf') format('truetype');
 }
 
 @font-face {
-  font-family: "Berkeley Mono Variable";
+  font-family: 'Berkeley Mono Variable';
   font-style: italic;
   font-weight: 100 150;
   src:
-    url("../fonts/bm-variable-italic.woff2") format("woff2-variations"),
-    url("../fonts/bm-variable-italic.ttf") format("truetype");
+    url('../fonts/bm-variable-italic.woff2') format('woff2-variations'),
+    url('../fonts/bm-variable-italic.ttf') format('truetype');
 }
 
 @font-face {
-  font-family: "Berkeley Mono";
+  font-family: 'Berkeley Mono';
   font-style: normal;
   font-weight: 400;
   src:
-    url("../fonts/bm-regular.woff2") format("woff2"),
-    url("../fonts/bm-regular.ttf") format("truetype");
+    url('../fonts/bm-regular.woff2') format('woff2'),
+    url('../fonts/bm-regular.ttf') format('truetype');
 }
 
 @font-face {
-  font-family: "Berkeley Mono";
+  font-family: 'Berkeley Mono';
   font-style: italic;
   font-weight: 400;
   src:
-    url("../fonts/bm-regular-italic.woff2") format("woff2"),
-    url("../fonts/bm-regular-italic.ttf") format("truetype");
+    url('../fonts/bm-regular-italic.woff2') format('woff2'),
+    url('../fonts/bm-regular-italic.ttf') format('truetype');
 }
 
 @font-face {
-  font-family: "Berkeley Mono";
+  font-family: 'Berkeley Mono';
   font-style: normal;
   font-weight: 600;
   src:
-    url("../fonts/bm-bold.woff2") format("woff2"),
-    url("../fonts/bm-bold.ttf") format("truetype");
+    url('../fonts/bm-bold.woff2') format('woff2'),
+    url('../fonts/bm-bold.ttf') format('truetype');
 }
 
 @font-face {
-  font-family: "Berkeley Mono";
+  font-family: 'Berkeley Mono';
   font-style: italic;
   font-weight: 600;
   src:
-    url("../fonts/bm-bold-italic.woff2") format("woff2"),
-    url("../fonts/bm-bold-italic.ttf") format("truetype");
+    url('../fonts/bm-bold-italic.woff2') format('woff2'),
+    url('../fonts/bm-bold-italic.ttf') format('truetype');
 }
 
 .font-mono.font-thin {
-  font-variation-settings: "wght" 100;
+  font-variation-settings: 'wght' 100;
 }
 
 .font-mono.font-light {
-  font-variation-settings: "wght" 110;
+  font-variation-settings: 'wght' 110;
 }
 
 .font-mono.font-medium {
-  font-variation-settings: "wght" 120;
+  font-variation-settings: 'wght' 120;
 }
 
 .font-mono.font-semibold {
-  font-variation-settings: "wght" 130;
+  font-variation-settings: 'wght' 130;
 }
 
 .font-mono.font-bold {
-  font-variation-settings: "wght" 140;
+  font-variation-settings: 'wght' 140;
 }
 
 .font-mono.font-black {
-  font-variation-settings: "wght" 150;
+  font-variation-settings: 'wght' 150;
 }
 
 /**
@@ -86,89 +86,89 @@
  */
 
 @font-face {
-  font-family: "Univers";
+  font-family: 'Univers';
   font-stretch: normal;
   font-style: normal;
   font-weight: 400;
-  src: url("../fonts/uni-regular.woff2") format("woff2");
+  src: url('../fonts/uni-regular.woff2') format('woff2');
 }
 
 @font-face {
-  font-family: "Univers";
+  font-family: 'Univers';
   font-stretch: normal;
   font-style: normal;
   font-weight: 300;
-  src: url("../fonts/uni-light.woff2") format("woff2");
+  src: url('../fonts/uni-light.woff2') format('woff2');
 }
 
 @font-face {
-  font-family: "Univers";
+  font-family: 'Univers';
   font-stretch: normal;
   font-style: normal;
   font-weight: 600;
-  src: url("../fonts/uni-bold.woff2") format("woff2");
+  src: url('../fonts/uni-bold.woff2') format('woff2');
 }
 
 @font-face {
-  font-family: "Univers";
+  font-family: 'Univers';
   font-stretch: normal;
   font-style: italic;
   font-weight: 600;
-  src: url("../fonts/uni-bold-italic.woff2") format("woff2");
+  src: url('../fonts/uni-bold-italic.woff2') format('woff2');
 }
 
 @font-face {
-  font-family: "Univers";
+  font-family: 'Univers';
   font-stretch: expanded;
   font-style: normal;
   font-weight: 400;
-  src: url("../fonts/uni-extended-regular.woff2") format("woff2");
+  src: url('../fonts/uni-extended-regular.woff2') format('woff2');
 }
 
 @font-face {
-  font-family: "Univers";
+  font-family: 'Univers';
   font-stretch: condensed;
   font-style: normal;
   font-weight: 400;
-  src: url("../fonts/uni-condensed-regular.woff2") format("woff2");
+  src: url('../fonts/uni-condensed-regular.woff2') format('woff2');
 }
 
 @font-face {
-  font-family: "Univers";
+  font-family: 'Univers';
   font-stretch: condensed;
   font-style: normal;
   font-weight: 300;
-  src: url("../fonts/uni-condensed-light.woff2") format("woff2");
+  src: url('../fonts/uni-condensed-light.woff2') format('woff2');
 }
 
 @font-face {
-  font-family: "Univers";
+  font-family: 'Univers';
   font-stretch: condensed;
   font-style: normal;
   font-weight: 600;
-  src: url("../fonts/uni-condensed-bold.woff2") format("woff2");
+  src: url('../fonts/uni-condensed-bold.woff2') format('woff2');
 }
 
 @font-face {
-  font-family: "Univers";
+  font-family: 'Univers';
   font-stretch: ultra-condensed;
   font-style: normal;
   font-weight: 400;
-  src: url("../fonts/uni-ultra-condensed.woff2") format("woff2");
+  src: url('../fonts/uni-ultra-condensed.woff2') format('woff2');
 }
 
 @font-face {
-  font-family: "Univers";
+  font-family: 'Univers';
   font-stretch: ultra-condensed;
   font-style: normal;
   font-weight: 300;
-  src: url("../fonts/uni-ultra-condensed-light.woff2") format("woff2");
+  src: url('../fonts/uni-ultra-condensed-light.woff2') format('woff2');
 }
 
 @font-face {
-  font-family: "Univers";
+  font-family: 'Univers';
   font-stretch: ultra-condensed;
   font-style: normal;
   font-weight: 200;
-  src: url("../fonts/uni-ultra-condensed-thin.woff2") format("woff2");
+  src: url('../fonts/uni-ultra-condensed-thin.woff2') format('woff2');
 }

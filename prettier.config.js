@@ -33,12 +33,27 @@ export default {
   importOrderSortSpecifiers: true,
   // tailwindcss
   tailwindStylesheet: './src/app.css', // for tailwindcss v4
-  // parser
+  // default parser
   parser: 'typescript',
   // plugins
   plugins: [
     '@trivago/prettier-plugin-sort-imports', // https://github.com/trivago/prettier-plugin-sort-imports
     'prettier-plugin-svelte', // https://github.com/sveltejs/prettier-plugin-svelte
     'prettier-plugin-tailwindcss' // auto sort tailwindcss classes https://github.com/tailwindlabs/prettier-plugin-tailwindcss
+  ],
+  // overrides
+  overrides: [
+    {
+      files: '*.svelte',
+      options: {
+        parser: 'svelte'
+      }
+    },
+    {
+      files: '*.css',
+      options: {
+        parser: 'css'
+      }
+    }
   ]
 };

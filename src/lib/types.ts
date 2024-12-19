@@ -1,4 +1,4 @@
-import type { Component } from "svelte";
+import type { Component } from 'svelte';
 
 // declare ISO 8601 date string type
 type Year = `${number}${number}${number}${number}`;
@@ -21,5 +21,5 @@ export type Frontmatter = {
 // declare mdxvex module type, mdxvex docs mentioned declaring an ambient module, but couldn't get it to work in svelte 5
 export interface MarkdownFile {
   default: Component;
-  metadata: Omit<Frontmatter, "slug">;
+  metadata: Omit<Frontmatter, 'slug'>;
 }

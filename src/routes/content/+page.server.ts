@@ -1,24 +1,11 @@
-import type { Frontmatter, MarkdownFile } from '$lib/types';
+import { error } from '@sveltejs/kit';
+
+import { list } from '$lib/markdown';
 
 export const load = async () => {
-  const frontmatters: Frontmatter[] = [];
-
-  const modules: Record<string, MarkdownFile> = import.meta.glob('/markdown/*.md', { eager: true });
-  // import multiple modules from fs, not lazy loaded
-  // ref: https://vite.dev/guide/features.html#glob-import
-
-  console.log(modules);
-  for (const path in modules) {
-    const file = modules[path];
-    const slug = path.split('/').at(-1)?.replace('.md', '');
-
-    if (file && typeof file === 'object' && 'metadata' in file && slug) {
-      const metadata = file.metadata as Omit<Frontmatter, 'slug'>;
-      // mdxvex exports .md file frontmatter as metadata
-      const frontmatter = { ...metadata, slug } satisfies Frontmatter;
-      // append slug to frontmatter
-      frontmatters.push(frontmatter);
-    }
+  try {
+    return await list();
+  } catch {
+    throw error(404, 'Not found');
   }
-  return { frontmatters };
 };

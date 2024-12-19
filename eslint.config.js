@@ -1,12 +1,13 @@
-import globals from 'globals';
 import js from '@eslint/js';
-import ts from 'typescript-eslint';
 import svelte from 'eslint-plugin-svelte';
+import globals from 'globals';
 import * as svelteParser from 'svelte-eslint-parser';
+import ts from 'typescript-eslint';
 
 export default ts.config(
   js.configs.recommended,
-  ts.configs.recommended,
+  ...ts.configs.recommended,
+  ...svelte.configs['flat/recommended'],
   ...svelte.configs['flat/prettier'], // https://sveltejs.github.io/eslint-plugin-svelte/user-guide/#usage
   // default modifications
   {
@@ -21,7 +22,7 @@ export default ts.config(
   // use svelteParser to lint .svelte files, and ts.parser to handle script blocks inside .svelte files
   // https://github.com/sveltejs/eslint-plugin-svelte#book-usage
   {
-    files: ['**/*.svelte'],
+    files: ['**/*.svelte', '**/*.md'],
     languageOptions: {
       parser: svelteParser,
       parserOptions: {
