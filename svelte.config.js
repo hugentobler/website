@@ -15,7 +15,14 @@ const config = {
     vitePreprocess(),
     // TypeScript, PostCSS etc as needed by Tailwind in Svelte
     // Ref: https://github.com/sveltejs/vite-plugin-svelte/blob/main/docs/preprocess.md
-    mdsvex({ extensions: ['.md'] })
+    mdsvex({
+      extensions: ['.md'],
+      // Specify markdown layout in frontmatter
+      layout: {
+        magazine: './src/routes/[...catchall]/magazine.svelte',
+        _: './src/routes/[...catchall]/default.svelte' // default when no layout is specified
+      }
+    })
     // Markdown in Svelte
     // Ref: https://github.com/pngwn/MDsveX
   ],

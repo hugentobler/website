@@ -4,16 +4,7 @@
 
 <svelte:head>
   <title>{data.frontmatter.title}</title>
+  <meta name="description" content={data.frontmatter.description} />
 </svelte:head>
 
-<span>{data.frontmatter.description}</span>
-
-<div class="prose">
-  <data.content />
-</div>
-
-<style>
-  span {
-    color: green;
-  }
-</style>
+<data.content />

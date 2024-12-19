@@ -50,12 +50,6 @@ export default {
       }
     },
     {
-      files: '*.css',
-      options: {
-        parser: 'css'
-      }
-    },
-    {
       files: '*.md',
       options: {
         parser: 'markdown',

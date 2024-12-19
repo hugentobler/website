@@ -5,4 +5,4 @@
 
 {@render children()}
 
-<span>content footer</span>
+<span>I am the default layout</span>
