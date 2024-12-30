@@ -7,4 +7,6 @@
   <meta name="description" content={data.frontmatter.description} />
 </svelte:head>
 
-<data.content />
+<main class="@container h-[90svh] overflow-hidden px-4">
+  <data.content />
+</main>

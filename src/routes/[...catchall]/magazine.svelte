@@ -4,18 +4,7 @@
   let { children, title, updated } = $props() as MarkdownLayoutProps;
 </script>
 
-<article
-  class="
-  scroll-timeline-y md:scroll-timeline-x relative grid h-full w-full
-       grid-cols-11 gap-y-8 overflow-x-hidden
-       overflow-y-scroll scroll-smooth [orphans:1] md:block
-       md:gap-x-8 md:overflow-x-scroll md:overflow-y-hidden md:scroll-auto
-       md:py-8
-       md:[column-width:calc((99vw-6rem)/2)]
-       lg:[column-width:calc((99vw-8rem)/3)]
-       2xl:[column-width:calc(80rem/3)]
-"
->
+<article>
   <header>
     <h1>
       {title}
@@ -31,3 +20,34 @@
 
   <footer></footer>
 </article>
+
+<style lang="postcss">
+  @import 'tailwindcss/theme' theme(reference);
+
+  article {
+    /* Layout */
+    @apply h-full;
+
+    /* Typography */
+    @apply text-pretty;
+    orphans: 1;
+    widows: 2;
+
+    /* Columns */
+    @media (width >= theme(--breakpoint-md)) {
+      --visible-columns: 2;
+      column-gap: theme('spacing.8');
+      columns: calc(
+        (100cqw - (theme('spacing.8') * 2)) / var(--visible-columns)
+      ); /* Parent container class required */
+    }
+
+    @media (width >= theme(--breakpoint-lg)) {
+      --visible-columns: 3;
+    }
+
+    /* Scrollbars */
+    @apply overflow-x-hidden overflow-y-scroll md:overflow-x-scroll md:overflow-y-hidden;
+    @apply scroll-smooth md:scroll-auto;
+  }
+</style>
