@@ -14,7 +14,7 @@
 :root {
   --scrollbar-background: var(--color-orange-100);
   --scrollbar-thumb: var(--color-orange-900);
-  --scroll-timeline: --scroll-timeline;
+  /* --scroll-timeline: --scroll-timeline;  */
 }
 
 

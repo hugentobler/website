@@ -50,23 +50,34 @@
 
 <style lang="postcss">
   @import 'tailwindcss/theme' theme(reference);
+  @plugin "@tailwindcss/typography";
 
   article {
     /* Layout */
     @apply h-full;
 
     /* Typography */
-    @apply text-pretty;
+    @apply prose max-w-none text-pretty;
     orphans: 1;
     widows: 2;
+    :global(p) {
+      max-width: 64ch;
+    }
 
     /* Columns */
+    --spacer: theme('spacing.8');
+    padding: var(--spacer);
+
     @media (width >= theme(--breakpoint-lg)) {
       --visible-columns: 2;
-      column-gap: theme('spacing.8');
+      column-gap: var(--spacer);
       /* container query width relies on parent container class */
       columns: calc(
-        (100cqw - (theme('spacing.8') * (var(--visible-columns) - 1))) / var(--visible-columns)
+        min(
+          65ch,
+          (100cqw - var(--spacer) * 2 - (var(--spacer) * (var(--visible-columns) - 1))) /
+            var(--visible-columns)
+        )
       );
     }
 

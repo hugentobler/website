@@ -7,6 +7,10 @@
   <meta name="description" content={data.frontmatter.description} />
 </svelte:head>
 
-<main class="@container h-[90svh] overflow-hidden px-4">
+<!-- 
+  Each child page has the opportunity to define it's own layout in full
+  Main is a container query parent
+-->
+<main class="@container absolute inset-0 h-[100svh]">
   <data.content />
 </main>
