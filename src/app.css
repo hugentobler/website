@@ -9,3 +9,39 @@
   --font-mono: Berkeley Mono Variable, Berkeley Mono, monospace;
   --font-sans: Univers, sans-serif;
 }
+
+
+:root {
+  --scrollbar-background: var(--color-orange-100);
+  --scrollbar-thumb: var(--color-orange-900);
+  --scroll-timeline: --scroll-timeline;
+}
+
+
+/* Default scrollbar styling */
+* {
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-background);
+}
+
+/* Fallback scrollbar styling */
+@supports not (scrollbar-color: auto) {
+  ::-webkit-scrollbar {
+    -webkit-appearance: none;
+    height: 1rem;
+    width: 1rem;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+    border-radius: 0.6rem;
+    border: 0.2rem solid var(--scrollbar-background);
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: var(--scrollbar-background);
+  }
+  
+  ::-webkit-scrollbar-corner {
+    background: var(--scrollbar-background);
+  }
+}

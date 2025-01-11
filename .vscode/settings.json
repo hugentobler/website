@@ -11,5 +11,6 @@
   "eslint.validate": ["javascript", "javascriptreact", "svelte"],
   // prettier
   "prettier.requireConfig": true,
-  "prettier.documentSelectors": ["**/*.svelte"]
+  "prettier.documentSelectors": ["**/*.svelte"],
+  "css.validate": false
 }
