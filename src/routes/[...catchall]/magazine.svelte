@@ -33,6 +33,7 @@
 </script>
 
 <article bind:this={article} class="scroll-timeline-y md:scroll-timeline-x">
+  <div id="top"></div>
   <ScrollIndicator class="scroll-indicator top-0" direction="up" href="#top" />
   <header>
     <h1>
@@ -47,6 +48,7 @@
 
   <footer></footer>
   <ScrollIndicator class="scroll-indicator bottom-0" direction="down" href="#bottom" />
+  <div id="bottom"></div>
 </article>
 
 <style lang="postcss">

@@ -1,3 +1,6 @@
+<!-- Shuding's scroll indicator -->
+<!-- https://x.com/shuding_/status/1698176794124578923 -->
+
 <script lang="ts">
   let {
     direction,
@@ -19,7 +22,10 @@
   <a
     {href}
     aria-label={direction}
-    class="animate-reveal animate-scroll-timeline w-full bg-neutral-100/75 dark:bg-neutral-900/75"
+    class="w-full animate-fade bg-neutral-100/75 animate-scroll-timeline dark:bg-neutral-900/75 {direction ===
+    'down'
+      ? '[animation-direction:reverse] [animation-range:calc(100%-100svh)_100%]'
+      : '[animation-direction:normal] [animation-range:0%_100svh]'}"
   >
     <svg
       xmlns="http://www.w3.org/2000/svg"

@@ -6,15 +6,18 @@
 @plugin "@tailwindcss/forms";
 
 @theme {
+  /* Font family utilities */
   --font-mono: Berkeley Mono Variable, Berkeley Mono, monospace;
   --font-sans: Univers, sans-serif;
 
-  --animate-reveal: 1ms ease;
-  @keyframes reveal {
-    0% {
+  /* Animation utilities */
+  --animate-fade: fade 1ms ease;
+
+  @keyframes fade {
+    from {
       opacity: 0;
     }
-    2% {
+    to {
       opacity: 1;
     }
   }
@@ -22,8 +25,11 @@
 
 
 :root {
+  /* Scrollbar variables */
   --scrollbar-background: var(--color-orange-100);
   --scrollbar-thumb: var(--color-orange-900);
+
+  /* Scroll timeline variables */
   --scroll-timeline: --scroll-timeline; 
 }
 
@@ -56,16 +62,18 @@
   }
 }
 
+/* Scroll timeline utilities */
 @utility scroll-timeline-y {
-  scroll-timeline: --scroll-timeline y;
-  scroll-timeline: --scroll-timeline vertical;  
+  scroll-timeline: --scroll-timeline y; /* Chromium */
+  scroll-timeline: --scroll-timeline vertical; /* Firefox */
 }
 
 @utility scroll-timeline-x {
-  scroll-timeline: --scroll-timeline x;
-  scroll-timeline: --scroll-timeline horizontal;  
+  scroll-timeline: --scroll-timeline x; /* Chromium */
+  scroll-timeline: --scroll-timeline horizontal; /* Firefox */
 }
 
 @utility animate-scroll-timeline {
+  animation-duration: 1ms; /* Firefox */
   animation-timeline: --scroll-timeline;
 }
