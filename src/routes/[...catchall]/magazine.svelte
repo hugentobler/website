@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { MarkdownLayoutProps } from '$lib/types';
   import { onMount } from 'svelte';
+  import ScrollIndicator from '$lib/components/ScrollIndicator.svelte';
 
   let { children, title, updated } = $props() as MarkdownLayoutProps;
   let article: HTMLElement;
@@ -31,7 +32,8 @@
   });
 </script>
 
-<article bind:this={article}>
+<article bind:this={article} class="scroll-timeline-y md:scroll-timeline-x">
+  <ScrollIndicator class="scroll-indicator top-0" direction="up" href="#top" />
   <header>
     <h1>
       {title}
@@ -41,11 +43,10 @@
     </span>
   </header>
 
-  <div>
-    {@render children()}
-  </div>
+  {@render children()}
 
   <footer></footer>
+  <ScrollIndicator class="scroll-indicator bottom-0" direction="down" href="#bottom" />
 </article>
 
 <style lang="postcss">
@@ -54,7 +55,7 @@
 
   article {
     /* Layout */
-    @apply h-full;
+    @apply relative h-full;
 
     /* Typography */
     @apply prose max-w-none text-pretty;
@@ -65,8 +66,9 @@
     }
 
     /* Columns */
-    --spacer: theme('spacing.8');
-    padding: var(--spacer);
+    --spacer: theme('spacing.16');
+    columns: auto;
+    padding: 0 var(--spacer);
 
     @media (width >= theme(--breakpoint-lg)) {
       --visible-columns: 2;
@@ -92,5 +94,9 @@
     /* Scrollbars */
     @apply overflow-x-hidden overflow-y-scroll lg:overflow-x-scroll lg:overflow-y-hidden;
     @apply scroll-smooth lg:scroll-auto;
+  }
+
+  :global(.scroll-indicator) {
+    @apply sticky inset-x-16 z-30 flex h-4 justify-center lg:hidden;
   }
 </style>

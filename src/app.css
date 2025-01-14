@@ -8,13 +8,23 @@
 @theme {
   --font-mono: Berkeley Mono Variable, Berkeley Mono, monospace;
   --font-sans: Univers, sans-serif;
+
+  --animate-reveal: 1ms ease;
+  @keyframes reveal {
+    0% {
+      opacity: 0;
+    }
+    2% {
+      opacity: 1;
+    }
+  }
 }
 
 
 :root {
   --scrollbar-background: var(--color-orange-100);
   --scrollbar-thumb: var(--color-orange-900);
-  /* --scroll-timeline: --scroll-timeline;  */
+  --scroll-timeline: --scroll-timeline; 
 }
 
 
@@ -44,4 +54,18 @@
   ::-webkit-scrollbar-corner {
     background: var(--scrollbar-background);
   }
+}
+
+@utility scroll-timeline-y {
+  scroll-timeline: --scroll-timeline y;
+  scroll-timeline: --scroll-timeline vertical;  
+}
+
+@utility scroll-timeline-x {
+  scroll-timeline: --scroll-timeline x;
+  scroll-timeline: --scroll-timeline horizontal;  
+}
+
+@utility animate-scroll-timeline {
+  animation-timeline: --scroll-timeline;
 }
