@@ -1,7 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
 
-  import Nav from '$lib/components/Nav.svelte';
   import ScrollIndicator from '$lib/components/ScrollIndicator.svelte';
   import type { MarkdownLayoutProps } from '$lib/types';
 
@@ -33,18 +32,6 @@
     };
   });
 </script>
-
-<Nav>
-  {#snippet renderNav()}
-    <nav>
-      <ul>
-        <li>
-          <a href="/">Home</a>
-        </li>
-      </ul>
-    </nav>
-  {/snippet}
-</Nav>
 
 <article bind:this={article} class="scroll-timeline-y md:scroll-timeline-x">
   <div id="top"></div>
