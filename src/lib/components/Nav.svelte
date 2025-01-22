@@ -1,13 +1,11 @@
-<script module>
-  export { nav };
+<script lang="ts">
+  import type { Snippet } from 'svelte';
+
+  let { renderNav } = $props<{
+    renderNav: Snippet;
+  }>();
 </script>
 
-{#snippet nav()}
-  <nav>
-    <ul>
-      <li>
-        <a href="/">Hello</a>
-      </li>
-    </ul>
-  </nav>
-{/snippet}
+<nav class="bg-gray-800 p-4 text-white">
+  {@render renderNav()}
+</nav>
