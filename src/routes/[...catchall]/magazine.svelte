@@ -58,7 +58,10 @@
 
   article {
     /* Layout */
-    @apply relative h-full;
+    --top-spacer: theme('spacing.8');
+    position: relative;
+    height: calc(100svh - var(--top-spacer));
+    margin-top: var(--top-spacer);
 
     /* Typography */
     @apply prose max-w-none text-pretty;
@@ -71,7 +74,8 @@
     /* Columns */
     --spacer: theme('spacing.16');
     columns: auto;
-    padding: 0 var(--spacer);
+    padding-right: var(--spacer);
+    padding-left: var(--spacer);
 
     @media (width >= theme(--breakpoint-lg)) {
       --visible-columns: 2;

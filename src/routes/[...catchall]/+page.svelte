@@ -3,11 +3,11 @@
 
   import type { PageProps } from './$types';
 
-  // Receive data from load function via the data prop
+  // Receive data prop from load function
   let { data }: PageProps = $props();
-  // Get the layout name from the frontmatter
+  // Get the layout name from frontmatter
   let layout = data.frontmatter.layout;
-  // Get the correct navbar with fallback to default
+  // Get the correct navbar, fallsback to default
   let navbar = getNavbar(layout);
 </script>
 
@@ -19,7 +19,7 @@
 <!-- 
   Each child page may have it's own custom navbar
 -->
-<nav>
+<nav class="absolute inset-x-0 top-0 z-30 flex h-8 items-center bg-white px-3">
   {@render navbar()}
 </nav>
 
