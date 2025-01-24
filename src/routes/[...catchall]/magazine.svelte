@@ -58,10 +58,10 @@
 
   article {
     /* Layout */
-    --top-spacer: theme('spacing.8');
+    --y-spacer: theme('spacing.8');
     position: relative;
-    height: calc(100svh - var(--top-spacer));
-    margin-top: var(--top-spacer);
+    height: calc(100svh - var(--y-spacer));
+    margin-bottom: var(--y-spacer);
 
     /* Typography */
     @apply prose max-w-none text-pretty;
@@ -72,19 +72,19 @@
     }
 
     /* Columns */
-    --spacer: theme('spacing.16');
+    --x-spacer: theme('spacing.16');
     columns: auto;
-    padding-right: var(--spacer);
-    padding-left: var(--spacer);
+    padding-right: var(--x-spacer);
+    padding-left: var(--x-spacer);
 
     @media (width >= theme(--breakpoint-lg)) {
       --visible-columns: 2;
-      column-gap: var(--spacer);
+      column-gap: var(--x-spacer);
       /* container query width relies on parent container class */
       columns: calc(
         min(
           65ch,
-          (100cqw - var(--spacer) * 2 - (var(--spacer) * (var(--visible-columns) - 1))) /
+          (100cqw - var(--x-spacer) * 2 - (var(--x-spacer) * (var(--visible-columns) - 1))) /
             var(--visible-columns)
         )
       );
