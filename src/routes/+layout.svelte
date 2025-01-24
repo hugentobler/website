@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { watchTheme } from '$lib/theme.svelte';
+  import { setupTheme } from '$lib/theme.svelte';
 
   import { browser } from '$app/environment';
 
@@ -8,7 +8,7 @@
   let { children } = $props();
 
   if (browser) {
-    watchTheme();
+    setupTheme();
   }
 </script>
 
