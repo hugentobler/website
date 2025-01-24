@@ -1,18 +1,20 @@
+// Types
 type ThemeColor = 'light' | 'dark';
 type ThemePreference = 'system' | ThemeColor;
 
+// Local storage
 const localStorageKey = 'theme';
 
-// State to track both system preference and actual color
+// State
 let preference = $state<ThemePreference>('system');
 let activeColor = $state<ThemeColor>('light');
 
-// Validator function
+// Validate theme preference
 const isValidPreference = (theme: string): theme is ThemePreference => {
   return ['system', 'light', 'dark'].includes(theme);
 };
 
-// Update active color based on system preference
+// Update active color using system preference
 const updateSystemColor = () => {
   if (preference === 'system') {
     activeColor = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
@@ -20,7 +22,7 @@ const updateSystemColor = () => {
   }
 };
 
-// Set theme with validation
+// Theme setter
 const setTheme = (newPreference: ThemePreference) => {
   if (!isValidPreference(newPreference)) {
     console.error('Invalid theme: ', newPreference);
@@ -40,6 +42,7 @@ const setTheme = (newPreference: ThemePreference) => {
   document.documentElement.dataset.theme = activeColor;
 };
 
+// Setup theme in browser
 export const setupTheme = () => {
   // Set up system theme change listener
   window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', updateSystemColor);
@@ -55,6 +58,7 @@ export const setupTheme = () => {
   }
 };
 
+// Toggle theme
 export const toggleTheme = () => {
   if (preference === 'system') {
     // If currently using system, switch to opposite of active color
@@ -67,6 +71,7 @@ export const toggleTheme = () => {
   }
 };
 
+// Display next theme
 export const getNextTheme = (): ThemePreference | undefined => {
   if (preference === 'system') {
     // If currently using system, next will be opposite of active color

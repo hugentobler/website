@@ -20,7 +20,7 @@
   Each child page may have it's own custom navbar
 -->
 <nav
-  class="absolute inset-x-0 bottom-0 z-30 flex h-8 items-center bg-white px-3 dark:bg-black dark:text-white"
+  class="absolute inset-x-0 bottom-0 z-30 flex h-(--navbar-height) items-center bg-white px-3 dark:bg-black dark:text-white"
 >
   {@render navbar()}
 </nav>

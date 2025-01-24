@@ -33,51 +33,52 @@
   });
 </script>
 
-<article bind:this={article} class="scroll-timeline-y md:scroll-timeline-x">
-  <div id="top"></div>
-  <ScrollIndicator class="scroll-indicator top-0" direction="up" href="#top" />
-  <header>
-    <h1>
-      {title}
-    </h1>
-    <span>
-      {updated}
-    </span>
-  </header>
-
+<div id="top"></div>
+<article bind:this={article} class="">
+  <!-- <ScrollIndicator class="scroll-indicator top-0" direction="up" href="#top" /> -->
+  <!-- <div class="col-span-8 col-start-3">
+    <h1>{title}</h1>
+  </div> -->
+  <!-- <div class="col-span-8 col-start-3 row-start-2">
+    <span>{updated}</span>
+  </div> -->
+  <!-- <div class="col-span-8 col-start-3 row-start-2"> -->
   {@render children()}
+  <!-- </div> -->
 
   <footer></footer>
-  <ScrollIndicator class="scroll-indicator bottom-0" direction="down" href="#bottom" />
-  <div id="bottom"></div>
+  <!-- <ScrollIndicator class="scroll-indicator bottom-0" direction="down" href="#bottom" /> -->
 </article>
+<div id="bottom"></div>
 
 <style lang="postcss">
-  @import 'tailwindcss/theme' theme(reference);
-  @plugin "@tailwindcss/typography";
+  @reference "../../app.css";
 
   article {
     /* Layout */
     --y-spacer: theme('spacing.8');
-    position: relative;
-    height: calc(100svh - var(--y-spacer));
-    margin-bottom: var(--y-spacer);
+    /* position: relative; */
+    height: calc(100svh - var(--navbar-height));
+    margin-bottom: var(--navbar-height);
 
     /* Typography */
-    @apply prose max-w-none text-pretty;
+    /* @apply prose max-w-none text-pretty;
     orphans: 1;
     widows: 2;
     :global(p) {
       max-width: 64ch;
-    }
+    } */
+
+    /* Grid */
+    /* @apply grid grid-cols-11 lg:block; */
 
     /* Columns */
-    --x-spacer: theme('spacing.16');
+    --x-spacer: theme('spacing.4');
     columns: auto;
-    padding-right: var(--x-spacer);
-    padding-left: var(--x-spacer);
+    padding: var(--x-spacer);
 
     @media (width >= theme(--breakpoint-lg)) {
+      --x-spacer: theme('spacing.16');
       --visible-columns: 2;
       column-gap: var(--x-spacer);
       /* container query width relies on parent container class */

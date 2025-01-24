@@ -33,8 +33,6 @@ export default {
   importOrderSortSpecifiers: true,
   // tailwindcss
   tailwindStylesheet: './src/app.css', // for tailwindcss v4
-  // default parser
-  parser: 'typescript',
   // plugins
   plugins: [
     'prettier-plugin-svelte', // https://github.com/sveltejs/prettier-plugin-svelte
