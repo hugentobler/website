@@ -14,9 +14,9 @@
   --font-sans: Univers, sans-serif;
 
   /* Animation utilities */
-  --animate-fade: fade 1ms ease;
+  --animate-fade-in: fade-in 300ms ease;
 
-  @keyframes fade {
+  @keyframes fade-in {
     from {
       opacity: 0;
     }
@@ -27,7 +27,7 @@
 }
 
 :root {
-  /* Navbar variables */
+  /* Navbar - we provide this default to child layouts */
   --navbar-height: calc(var(--spacing) * 8);
 
   /* Scrollbar variables */
@@ -38,6 +38,9 @@
 
   /* Scroll timeline variables */
   --scroll-timeline: --scroll-timeline;
+
+  /* Page theme variables */
+  --page-background: var(--color-orange-100);
 }
 
 /* Default scrollbar styling */
@@ -74,16 +77,33 @@
 
 /* Scroll timeline utilities */
 @utility scroll-timeline-y {
-  scroll-timeline: --scroll-timeline y; /* Chromium */
-  scroll-timeline: --scroll-timeline vertical; /* Firefox */
+  animation-timeline: scroll(); /* Modern */
+  animation-timeline: --scroll-timeline; /* Legacy */
+  scroll-timeline-name: --scroll-timeline;
+  scroll-timeline-axis: block; /* Modern syntax for vertical */
 }
 
 @utility scroll-timeline-x {
-  scroll-timeline: --scroll-timeline x; /* Chromium */
-  scroll-timeline: --scroll-timeline horizontal; /* Firefox */
+  animation-timeline: scroll(); /* Modern */
+  animation-timeline: --scroll-timeline; /* Legacy */
+  scroll-timeline-name: --scroll-timeline;
+  scroll-timeline-axis: inline; /* Modern syntax for horizontal */
 }
 
 @utility animate-scroll-timeline {
+  animation: scroll-progress linear;
+  animation-timeline: scroll();
+  animation-range:
+    entry 0%,
+    exit 100%;
   animation-duration: 1ms; /* Firefox */
-  animation-timeline: --scroll-timeline;
+}
+
+@keyframes scroll-progress {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }

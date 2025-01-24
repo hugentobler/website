@@ -22,10 +22,10 @@
   <a
     {href}
     aria-label={direction}
-    class="w-full animate-fade bg-neutral-100/75 animate-scroll-timeline dark:bg-neutral-900/75 {direction ===
+    class="flex w-full animate-scroll-timeline items-center justify-center bg-(--page-background)/80 dark:bg-neutral-900/80 {direction ===
     'down'
       ? '[animation-direction:reverse] [animation-range:calc(100%-100svh)_100%]'
-      : '[animation-direction:normal] [animation-range:0%_100svh]'}"
+      : '[animation-direction:normal] [animation-range:entry_0%_exit_100svh]'}"
   >
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -35,6 +35,7 @@
       height="100%"
       preserveAspectRatio="xMidYMid meet"
       viewBox="0 0 256 256"
+      class="size-5"
     >
       <path fill="currentColor" d={paths[direction as keyof typeof paths]} />
     </svg>

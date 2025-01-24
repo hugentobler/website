@@ -33,49 +33,51 @@
   });
 </script>
 
-<div id="top"></div>
-<article bind:this={article} class="">
-  <!-- <ScrollIndicator class="scroll-indicator top-0" direction="up" href="#top" /> -->
-  <!-- <div class="col-span-8 col-start-3">
+<article bind:this={article} class="relative scroll-timeline-y lg:scroll-timeline-x">
+  <div id="top" class="absolute top-0"></div>
+  <ScrollIndicator class="scroll-indicator top-0 animate-fade-in" direction="up" href="#top" />
+  <div class="col-span-8 col-start-3">
     <h1>{title}</h1>
-  </div> -->
-  <!-- <div class="col-span-8 col-start-3 row-start-2">
-    <span>{updated}</span>
-  </div> -->
-  <!-- <div class="col-span-8 col-start-3 row-start-2"> -->
-  {@render children()}
-  <!-- </div> -->
+  </div>
+  <div class="col-span-1 col-start-1 row-start-2">
+    <span class="[writing-mode:vertical-rl] md:[writing-mode:unset]">{updated}</span>
+  </div>
+  <div class="relative col-span-8 col-start-3 row-start-2">
+    {@render children()}
+    <div id="bottom" class="absolute bottom-0"></div>
+  </div>
 
   <footer></footer>
-  <!-- <ScrollIndicator class="scroll-indicator bottom-0" direction="down" href="#bottom" /> -->
+  <ScrollIndicator
+    class="scroll-indicator bottom-0 animate-fade-in"
+    direction="down"
+    href="#bottom"
+  />
 </article>
-<div id="bottom"></div>
 
 <style lang="postcss">
   @reference "../../app.css";
 
   article {
     /* Layout */
-    --y-spacer: theme('spacing.8');
-    /* position: relative; */
     height: calc(100svh - var(--navbar-height));
     margin-bottom: var(--navbar-height);
 
     /* Typography */
-    /* @apply prose max-w-none text-pretty;
+    @apply prose max-w-none text-pretty;
     orphans: 1;
     widows: 2;
     :global(p) {
       max-width: 64ch;
-    } */
+    }
 
     /* Grid */
-    /* @apply grid grid-cols-11 lg:block; */
+    @apply grid grid-cols-11 lg:block;
 
     /* Columns */
     --x-spacer: theme('spacing.4');
     columns: auto;
-    padding: var(--x-spacer);
+    padding: 0 var(--x-spacer);
 
     @media (width >= theme(--breakpoint-lg)) {
       --x-spacer: theme('spacing.16');
@@ -105,6 +107,6 @@
   }
 
   :global(.scroll-indicator) {
-    @apply sticky inset-x-16 z-30 flex h-4 justify-center lg:hidden;
+    @apply sticky inset-x-16 z-30 col-span-11 flex h-8 justify-center lg:hidden;
   }
 </style>
