@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { setThemeFromPreference } from '$lib/theme.svelte';
+  import { watchTheme } from '$lib/theme.svelte';
 
   import { browser } from '$app/environment';
 
@@ -8,8 +8,20 @@
   let { children } = $props();
 
   if (browser) {
-    setThemeFromPreference();
+    watchTheme();
   }
 </script>
+
+<svelte:head>
+  <!-- Set initial theme in head to avoid FOUC -->
+  <script>
+    // Initial theme is either in localStorage or system preference
+    document.documentElement.dataset.theme =
+      localStorage.getItem('theme') === 'dark' ||
+      (!('theme' in localStorage) && window.matchMedia(`(prefers-color-scheme: dark)`).matches)
+        ? 'dark'
+        : 'light';
+  </script>
+</svelte:head>
 
 {@render children()}

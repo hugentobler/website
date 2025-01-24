@@ -5,6 +5,9 @@
 @plugin "@tailwindcss/typography";
 @plugin "@tailwindcss/forms";
 
+/* Use data attribute to apply theme */
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+
 @theme {
   /* Font family utilities */
   --font-mono: Berkeley Mono Variable, Berkeley Mono, monospace;

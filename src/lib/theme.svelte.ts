@@ -14,11 +14,11 @@ const isValidTheme = (theme: string): theme is Themes => {
 };
 
 // Create state, getter, setter functions
-let theme = $state(themes.system);
+let theme = $state();
 
 export const getTheme = () => theme;
 
-export const setTheme = (newTheme: string) => {
+const setTheme = (newTheme: string) => {
   console.log('setting theme', newTheme);
   if (!isValidTheme(newTheme)) {
     console.error('Invalid theme: ', newTheme);
@@ -30,15 +30,29 @@ export const setTheme = (newTheme: string) => {
 
 export const setThemeFromPreference = () => {
   // Set initial theme
-  document.documentElement.dataset.theme =
-    localStorage.getItem(localStorageKey) === themes.dark ||
-    (!(localStorageKey in localStorage) &&
-      window.matchMedia(`(prefers-color-scheme: ${themes.dark})`).matches)
-      ? themes.dark
-      : themes.light;
+  // document.documentElement.dataset.theme =
+  //   localStorage.getItem(localStorageKey) === themes.dark ||
+  //   (!(localStorageKey in localStorage) &&
+  //     window.matchMedia(`(prefers-color-scheme: ${themes.dark})`).matches)
+  //     ? themes.dark
+  //     : themes.light;
 
   // Listen for system theme changes
   window
     .matchMedia(`(prefers-color-scheme: ${themes.dark})`)
     .addEventListener('change', setThemeFromPreference);
+};
+
+export const watchTheme = () => {
+  const initialTheme =
+    localStorage.getItem('theme') ||
+    (!('theme' in localStorage) && window.matchMedia(`(prefers-color-scheme: dark)`).matches)
+      ? 'dark'
+      : 'light';
+
+  setTheme(initialTheme);
+};
+
+export const toggleTheme = () => {
+  theme = theme.system;
 };

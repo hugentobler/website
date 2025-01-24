@@ -2,7 +2,7 @@
   import type { Snippet } from 'svelte';
 
   import Clock from '$lib/components/Clock.svelte';
-  import { getTheme, setTheme } from '$lib/theme.svelte';
+  import { getTheme, toggleTheme } from '$lib/theme.svelte';
 
   // Map layout names to snippets
   const navbars: Record<string, Snippet> = {
@@ -33,8 +33,6 @@
   <div class="grow">
     <a href="/">Los Angeles</a>
     <Clock />
-    <button on:click={() => setTheme(getTheme() === 'light' ? 'dark' : 'light')}
-      >{getTheme()}</button
-    >
+    <button on:click={() => toggleTheme()}>{getTheme()}</button>
   </div>
 {/snippet}
