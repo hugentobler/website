@@ -64,7 +64,7 @@
     margin-bottom: var(--navbar-height);
 
     /* Typography */
-    @apply prose max-w-none text-pretty;
+    @apply prose max-w-none text-pretty dark:text-(--foreground-dark);
     orphans: 1;
     widows: 2;
     :global(p) {
