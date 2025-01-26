@@ -1,61 +1,39 @@
-import prettier from "eslint-config-prettier";
-import js from "@eslint/js";
-import svelte from "eslint-plugin-svelte";
-import globals from "globals";
-import ts from "typescript-eslint";
+import js from '@eslint/js';
+import svelte from 'eslint-plugin-svelte';
+import globals from 'globals';
+import * as svelteParser from 'svelte-eslint-parser';
+import ts from 'typescript-eslint';
 
 export default ts.config(
   js.configs.recommended,
   ...ts.configs.recommended,
-  ...svelte.configs["flat/recommended"],
-  prettier,
-  ...svelte.configs["flat/prettier"],
+  ...svelte.configs['flat/recommended'],
+  ...svelte.configs['flat/prettier'], // https://sveltejs.github.io/eslint-plugin-svelte/user-guide/#usage
+  // default modifications
   {
+    // https://eslint.org/docs/latest/use/configure/language-options
     languageOptions: {
       globals: {
         ...globals.browser,
-        ...globals.node,
-      },
-    },
-    rules: {
-      "prettier/prettier": [
-        "error",
-        {
-          useTabs: false,
-          singleQuote: true,
-          trailingComma: "none",
-          printWidth: 100,
-          tabWidth: 2,
-          plugins: ["prettier-plugin-svelte", "prettier-plugin-tailwindcss"],
-          overrides: [
-            {
-              files: "*.svelte",
-              options: {
-                parser: "svelte",
-              },
-            },
-          ],
-        },
-      ],
-    },
+        ...globals.node
+      }
+    }
   },
+  // use svelteParser to lint .svelte files, and ts.parser to handle script blocks inside .svelte files
+  // https://github.com/sveltejs/eslint-plugin-svelte#book-usage
   {
-    files: ["**/*.svelte"],
-
+    files: ['**/*.svelte'],
     languageOptions: {
+      parser: svelteParser,
       parserOptions: {
         parser: ts.parser,
-      },
-    },
+        project: './tsconfig.json',
+        extraFileExtensions: ['.svelte']
+      }
+    }
   },
+  // ignores https://eslint.org/docs/latest/use/configure/ignore
   {
-    ignores: [
-      "build/",
-      ".svelte-kit/",
-      "dist/",
-      "package-lock.json",
-      "pnpm-lock.yaml",
-      "yarn.lock",
-    ],
+    ignores: ['build/', '.svelte-kit/', 'dist/', 'package-lock.json', 'pnpm-lock.yaml', 'yarn.lock']
   }
 );

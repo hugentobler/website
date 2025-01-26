@@ -1,3 +1,113 @@
-@import "tailwindcss/base";
-@import "tailwindcss/components";
-@import "tailwindcss/utilities";
+@import 'tailwindcss';
+
+@import './styles/font.css';
+
+@plugin "@tailwindcss/typography";
+@plugin "@tailwindcss/forms";
+
+/* Use data attribute to apply theme */
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+
+@theme {
+  /* Font family utilities */
+  --font-mono: Berkeley Mono Variable, Berkeley Mono, monospace;
+  --font-sans: Univers, sans-serif;
+
+  /* Animation utilities */
+  --animate-fade-in: fade-in 300ms ease;
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+}
+
+:root {
+  /* Navbar - we provide this default to child layouts */
+  --navbar-height: calc(var(--spacing) * 8);
+
+  /* Scrollbar variables */
+  --scrollbar-color-thumb: var(--color-orange-900);
+  --scrollbar-color-track: var(--color-orange-100);
+  --scrollbar-width: auto;
+  --scrollbar-width-legacy: var(--text-base);
+
+  /* Scroll timeline variables */
+  --scroll-timeline: --scroll-timeline;
+
+  /* Page theme variables */
+  --background: var(--color-orange-100);
+  --background-dark: var(--color-orange-900);
+
+  --foreground: var(--color-black);
+  --foreground-dark: var(--color-white);
+}
+
+/* Default scrollbar styling */
+/* https://developer.chrome.com/docs/css-ui/scrollbar-styling */
+@supports (scrollbar-width: auto) {
+  * {
+    scrollbar-color: var(--scrollbar-color-thumb) var(--scrollbar-color-track);
+    scrollbar-width: var(--scrollbar-width);
+  }
+}
+
+/* Fallback scrollbar styling */
+@supports not (scrollbar-color: auto) {
+  ::-webkit-scrollbar {
+    -webkit-appearance: none;
+    height: var(--scrollbar-width-legacy);
+    width: var(--scrollbar-width-legacy);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-color-thumb);
+    border-radius: var(--radius-lg);
+    border: var(--spacing) solid var(--scrollbar-color-track);
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--scrollbar-color-track);
+  }
+
+  ::-webkit-scrollbar-corner {
+    background: var(--scrollbar-color-track);
+  }
+}
+
+/* Scroll timeline utilities */
+@utility scroll-timeline-y {
+  animation-timeline: scroll(); /* Modern */
+  animation-timeline: --scroll-timeline; /* Legacy */
+  scroll-timeline-name: --scroll-timeline;
+  scroll-timeline-axis: block; /* Modern syntax for vertical */
+}
+
+@utility scroll-timeline-x {
+  animation-timeline: scroll(); /* Modern */
+  animation-timeline: --scroll-timeline; /* Legacy */
+  scroll-timeline-name: --scroll-timeline;
+  scroll-timeline-axis: inline; /* Modern syntax for horizontal */
+}
+
+@utility animate-scroll-timeline {
+  animation: scroll-progress linear;
+  animation-timeline: scroll();
+  animation-range:
+    entry 0%,
+    exit 100%;
+  animation-duration: 1ms; /* Firefox */
+}
+
+@keyframes scroll-progress {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
