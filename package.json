@@ -11,7 +11,8 @@
     "format": "prettier --write .",
     "lint": "prettier --check . && eslint .",
     "pages:dev": "wrangler pages dev -- npm run dev",
-    "pages:deploy": "npm run build && wrangler pages deploy .svelte-kit/cloudflare"
+    "pages:deploy": "npm run build && wrangler pages deploy .svelte-kit/cloudflare",
+    "fonts:deploy": "node upload_fonts.js"
   },
   "devDependencies": {
     "@sveltejs/adapter-cloudflare": "^5.0.1",
@@ -23,6 +24,7 @@
     "@tailwindcss/vite": "^4.0.0",
     "@trivago/prettier-plugin-sort-imports": "^5.2.1",
     "@types/eslint": "^9.6.0",
+    "dotenv": "^16.4.7",
     "eslint": "^9.7.0",
     "eslint-plugin-svelte": "^2.46.1",
     "globals": "^15.0.0",
