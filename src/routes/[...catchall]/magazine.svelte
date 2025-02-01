@@ -36,13 +36,13 @@
 <article bind:this={article} class="relative scroll-timeline-y lg:scroll-timeline-x">
   <div id="top" class="absolute top-0"></div>
   <ScrollIndicator class="scroll-indicator top-0 animate-fade-in" direction="up" href="#top" />
-  <div class="col-span-8 col-start-3">
+  <div class="col-span-8 col-start-3 lg:h-full">
     <h1>{title}</h1>
-  </div>
-  <div class="col-span-1 col-start-1 row-start-2">
     <span class="[writing-mode:vertical-rl] md:[writing-mode:unset]">{updated}</span>
   </div>
-  <div class="relative col-span-8 col-start-3 row-start-2">
+  <div
+    class="relative col-span-8 col-start-3 row-start-2 first-letter:float-left first-letter:mt-1 first-letter:-mb-6 first-letter:text-8xl first-letter:leading-none first-letter:font-stretch-condensed"
+  >
     {@render children()}
     <div id="bottom" class="absolute bottom-0"></div>
   </div>
@@ -91,6 +91,7 @@
             var(--visible-columns)
         )
       );
+      padding-top: var(--x-spacer);
     }
 
     @media (width >= theme(--breakpoint-xl)) {
