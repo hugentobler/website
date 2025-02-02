@@ -49,6 +49,9 @@
 
   --foreground: var(--color-black);
   --foreground-dark: var(--color-white);
+
+  --primary: var(--color-orange-500);
+  --primary-dark: var(--color-orange-400);
 }
 
 /* Default scrollbar styling */
