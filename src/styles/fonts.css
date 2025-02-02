@@ -2,62 +2,63 @@
  * Berkeley Mono Variable font and fallback
  */
 @font-face {
+  font-display: swap;
   font-family: 'Berkeley Mono Variable';
   font-style: normal;
   font-weight: 100 150;
   src:
-    url('https://pub-df7bde3cde7f40d0b990842e957f9ebe.r2.dev/bm-variable.woff2')
-      format('woff2-variations'),
-    url('https://pub-df7bde3cde7f40d0b990842e957f9ebe.r2.dev/bm-variable.ttf') format('truetype');
+    url('https://cdn.hugentobler.xyz/bm-variable.woff2') format('woff2-variations'),
+    url('https://cdn.hugentobler.xyz/bm-variable.ttf') format('truetype');
 }
 
 @font-face {
+  font-display: swap;
   font-family: 'Berkeley Mono Variable';
   font-style: italic;
   font-weight: 100 150;
   src:
-    url('https://pub-df7bde3cde7f40d0b990842e957f9ebe.r2.dev/bm-variable-italic.woff2')
-      format('woff2-variations'),
-    url('https://pub-df7bde3cde7f40d0b990842e957f9ebe.r2.dev/bm-variable-italic.ttf')
-      format('truetype');
+    url('https://cdn.hugentobler.xyz/bm-variable-italic.woff2') format('woff2-variations'),
+    url('https://cdn.hugentobler.xyz/bm-variable-italic.ttf') format('truetype');
 }
 
 @font-face {
+  font-display: swap;
   font-family: 'Berkeley Mono';
   font-style: normal;
   font-weight: 400;
   src:
-    url('https://pub-df7bde3cde7f40d0b990842e957f9ebe.r2.dev/bm-regular.woff2') format('woff2'),
-    url('https://pub-df7bde3cde7f40d0b990842e957f9ebe.r2.dev/bm-regular.ttf') format('truetype');
+    url('https://cdn.hugentobler.xyz/bm-regular.woff2') format('woff2'),
+    url('https://cdn.hugentobler.xyz/bm-regular.ttf') format('truetype');
 }
 
 @font-face {
+  font-display: swap;
   font-family: 'Berkeley Mono';
   font-style: italic;
   font-weight: 400;
   src:
-    url('https://pub-df7bde3cde7f40d0b990842e957f9ebe.r2.dev/bm-regular-italic.woff2')
-      format('woff2'),
-    url('https://pub-df7bde3cde7f40d0b990842e957f9ebe.r2.dev/bm-regular-italic.ttf')
-      format('truetype');
+    url('https://cdn.hugentobler.xyz/bm-regular-italic.woff2') format('woff2'),
+    url('https://cdn.hugentobler.xyz/bm-regular-italic.ttf') format('truetype');
 }
 
 @font-face {
+  font-display: swap;
   font-family: 'Berkeley Mono';
   font-style: normal;
   font-weight: 600;
   src:
-    url('https://pub-df7bde3cde7f40d0b990842e957f9ebe.r2.dev/bm-bold.woff2') format('woff2'),
-    url('https://pub-df7bde3cde7f40d0b990842e957f9ebe.r2.dev/bm-bold.ttf') format('truetype');
+    url('https://cdn.hugentobler.xyz/bm-bold.woff2') format('woff2'),
+    url('https://cdn.hugentobler.xyz/bm-bold.ttf') format('truetype');
 }
 
 @font-face {
+  font-display: swap;
   font-family: 'Berkeley Mono';
   font-style: italic;
   font-weight: 600;
   src:
-    url('https://pub-df7bde3cde7f40d0b990842e957f9ebe.r2.dev/bm-bold-italic.woff2') format('woff2'),
-    url('https://pub-df7bde3cde7f40d0b990842e957f9ebe.r2.dev/bm-bold-italic.ttf') format('truetype');
+    url('https://cdn.hugentobler.xyz/bm-bold-italic.woff2') format('woff2'),
+    url('https://cdn.hugentobler.xyz/bm-bold-italic.ttf') format('truetype');
 }
 
 .font-mono.font-thin {
@@ -89,97 +90,100 @@
  */
 
 @font-face {
+  font-display: swap;
   font-family: 'Univers';
   font-stretch: normal;
   font-style: normal;
   font-weight: 400;
-  src: url('https://pub-df7bde3cde7f40d0b990842e957f9ebe.r2.dev/uni-regular.woff2') format('woff2');
+  src: url('https://cdn.hugentobler.xyz/uni-regular.woff2') format('woff2');
 }
 
 @font-face {
+  font-display: swap;
   font-family: 'Univers';
   font-stretch: normal;
   font-style: normal;
   font-weight: 300;
-  src: url('https://pub-df7bde3cde7f40d0b990842e957f9ebe.r2.dev/uni-light.woff2') format('woff2');
+  src: url('https://cdn.hugentobler.xyz/uni-light.woff2') format('woff2');
 }
 
 @font-face {
+  font-display: swap;
   font-family: 'Univers';
   font-stretch: normal;
   font-style: normal;
   font-weight: 600;
-  src: url('https://pub-df7bde3cde7f40d0b990842e957f9ebe.r2.dev/uni-bold.woff2') format('woff2');
+  src: url('https://cdn.hugentobler.xyz/uni-bold.woff2') format('woff2');
 }
 
 @font-face {
+  font-display: swap;
   font-family: 'Univers';
   font-stretch: normal;
   font-style: italic;
   font-weight: 600;
-  src: url('https://pub-df7bde3cde7f40d0b990842e957f9ebe.r2.dev/uni-bold-italic.woff2')
-    format('woff2');
+  src: url('https://cdn.hugentobler.xyz/uni-bold-italic.woff2') format('woff2');
 }
 
 @font-face {
+  font-display: swap;
   font-family: 'Univers';
   font-stretch: expanded;
   font-style: normal;
   font-weight: 400;
-  src: url('https://pub-df7bde3cde7f40d0b990842e957f9ebe.r2.dev/uni-extended-regular.woff2')
-    format('woff2');
+  src: url('https://cdn.hugentobler.xyz/uni-extended-regular.woff2') format('woff2');
 }
 
 @font-face {
+  font-display: swap;
   font-family: 'Univers';
   font-stretch: condensed;
   font-style: normal;
   font-weight: 400;
-  src: url('https://pub-df7bde3cde7f40d0b990842e957f9ebe.r2.dev/uni-condensed-regular.woff2')
-    format('woff2');
+  src: url('https://cdn.hugentobler.xyz/uni-condensed-regular.woff2') format('woff2');
 }
 
 @font-face {
+  font-display: swap;
   font-family: 'Univers';
   font-stretch: condensed;
   font-style: normal;
   font-weight: 300;
-  src: url('https://pub-df7bde3cde7f40d0b990842e957f9ebe.r2.dev/uni-condensed-light.woff2')
-    format('woff2');
+  src: url('https://cdn.hugentobler.xyz/uni-condensed-light.woff2') format('woff2');
 }
 
 @font-face {
+  font-display: swap;
   font-family: 'Univers';
   font-stretch: condensed;
   font-style: normal;
   font-weight: 600;
-  src: url('https://pub-df7bde3cde7f40d0b990842e957f9ebe.r2.dev/uni-condensed-bold.woff2')
-    format('woff2');
+  src: url('https://cdn.hugentobler.xyz/uni-condensed-bold.woff2') format('woff2');
 }
 
 @font-face {
+  font-display: swap;
   font-family: 'Univers';
   font-stretch: ultra-condensed;
   font-style: normal;
   font-weight: 400;
-  src: url('https://pub-df7bde3cde7f40d0b990842e957f9ebe.r2.dev/uni-ultra-condensed.woff2')
-    format('woff2');
+  src: url('https://cdn.hugentobler.xyz/uni-ultra-condensed.woff2') format('woff2');
 }
 
 @font-face {
+  font-display: swap;
   font-family: 'Univers';
   font-stretch: ultra-condensed;
   font-style: normal;
   font-weight: 300;
-  src: url('https://pub-df7bde3cde7f40d0b990842e957f9ebe.r2.dev/uni-ultra-condensed-light.woff2')
-    format('woff2');
+  src: url('https://cdn.hugentobler.xyz/uni-ultra-condensed-light.woff2') format('woff2');
 }
 
 @font-face {
+  font-display: swap;
   font-family: 'Univers';
   font-stretch: ultra-condensed;
   font-style: normal;
   font-weight: 200;
-  src: url('https://pub-df7bde3cde7f40d0b990842e957f9ebe.r2.dev/uni-ultra-condensed-thin.woff2')
-    format('woff2');
+  src: url('https://cdn.hugentobler.xyz/uni-ultra-condensed-thin.woff2') format('woff2');
 }

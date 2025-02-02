@@ -22,6 +22,9 @@
         ? 'dark'
         : 'light';
   </script>
+
+  <!-- Preconnect to CDN -->
+  <link rel="preconnect" href="https://cdn.hugentobler.xyz" crossorigin="anonymous" />
 </svelte:head>
 
 {@render children()}

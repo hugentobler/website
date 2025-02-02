@@ -11,7 +11,9 @@ const __dirname = path.dirname(__filename);
 const sourceDir = path.join(__dirname, 'static/fonts');
 
 // Fonts R2 bucket name
-const bucketName = 'fonts-hvgentobler';
+// https://developers.cloudflare.com/workers/wrangler/commands/#r2-object-put
+const bucketName = 'hugentobler';
+const cacheControl = 'public, max-age=31536000, immutable';
 
 // Load env variable
 dotenv.config();
@@ -30,7 +32,7 @@ fs.readdir(sourceDir, (err, files) => {
 
   files.forEach((file) => {
     const filePath = path.join(sourceDir, file);
-    const command = `npx wrangler r2 object put ${bucketName}/${file} --file=${filePath}`;
+    const command = `npx wrangler r2 object put ${bucketName}/${file} --file=${filePath} --cache-control="${cacheControl}"`;
 
     exec(command, (error) => {
       if (error) {
