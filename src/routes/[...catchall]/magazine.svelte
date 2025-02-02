@@ -36,12 +36,15 @@
 <article bind:this={article} class="relative scroll-timeline-y lg:scroll-timeline-x">
   <div id="top" class="absolute top-0"></div>
   <ScrollIndicator class="scroll-indicator top-0 animate-fade-in" direction="up" href="#top" />
-  <div class="col-span-8 col-start-3 lg:h-full">
+  <div class="col-span-8 col-start-3 pt-16 lg:h-full lg:pt-0">
     <h1>{title}</h1>
-    <span class="[writing-mode:vertical-rl] md:[writing-mode:unset]">{updated}</span>
+    <span class="hidden lg:block">{updated}</span>
+  </div>
+  <div class="col-start-1 row-start-3 lg:hidden">
+    <span class="[writing-mode:vertical-rl] lg:[writing-mode:unset]">{updated}</span>
   </div>
   <div
-    class="relative col-span-8 col-start-3 row-start-2 first-letter:float-left first-letter:mt-1 first-letter:-mb-6 first-letter:text-8xl first-letter:leading-none first-letter:font-stretch-condensed"
+    class="relative col-span-8 col-start-3 first-letter:float-left first-letter:mt-1 first-letter:mr-2 first-letter:-mb-6 first-letter:text-8xl first-letter:leading-none first-letter:font-stretch-ultra-condensed"
   >
     {@render children()}
     <div id="bottom" class="absolute bottom-0"></div>
@@ -64,12 +67,15 @@
     margin-bottom: var(--navbar-height);
 
     /* Typography */
-    @apply prose max-w-none text-pretty dark:text-(--foreground-dark);
+    @apply prose max-w-none text-pretty text-(--foreground) dark:text-(--foreground-dark);
+    @apply prose-headings:font-normal prose-headings:tracking-tight prose-headings:font-stretch-condensed;
+    @apply prose-h1:text-5xl;
+    @apply prose-h2:text-4xl;
+    @apply prose-h3:text-3xl;
+    @apply prose-p:max-w-[64ch] prose-p:text-base prose-p:first:mt-0;
+    @apply prose-ol:list-outside prose-ol:ps-0 prose-ol:marker:text-[0.75em] prose-ol:marker:text-current prose-ol:marker:font-stretch-expanded prose-ul:list-outside prose-ul:ps-0 prose-ul:marker:text-current prose-ul:marker:font-stretch-condensed;
     orphans: 1;
     widows: 2;
-    :global(p) {
-      max-width: 64ch;
-    }
 
     /* Grid */
     @apply grid grid-cols-11 lg:block;
@@ -77,7 +83,7 @@
     /* Columns */
     --x-spacer: theme('spacing.4');
     columns: auto;
-    padding: 0 var(--x-spacer);
+    @apply py-0 lg:px-(--x-spacer);
 
     @media (width >= theme(--breakpoint-lg)) {
       --x-spacer: theme('spacing.16');
@@ -94,11 +100,11 @@
       padding-top: var(--x-spacer);
     }
 
-    @media (width >= theme(--breakpoint-xl)) {
+    @media (width >= theme(--breakpoint-2xl)) {
       --visible-columns: 3;
     }
 
-    @media (width >= theme(--breakpoint-2xl)) {
+    @media (width >= theme(--breakpoint-4xl)) {
       --visible-columns: 4;
     }
 

@@ -9,12 +9,16 @@
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
 @theme {
+  /* Animation utilities */
+  --animate-fade-in: fade-in 300ms ease;
+
+  /* Breakpoint utilities */
+  --breakpoint-3xl: 120rem;
+  --breakpoint-4xl: 150rem;
+
   /* Font family utilities */
   --font-mono: Berkeley Mono Variable, Berkeley Mono, monospace;
   --font-sans: Univers, sans-serif;
-
-  /* Animation utilities */
-  --animate-fade-in: fade-in 300ms ease;
 
   @keyframes fade-in {
     from {
