@@ -17,30 +17,25 @@ const validateDates = (slug: string, dates: (string | undefined)[]) => {
   }
 };
 
+// eagerly import all markdown files
+const markdownModules = import.meta.glob('../markdown/*.md', { eager: true });
+
 export const get = async (slug: string) => {
-  const file: MarkdownFile = await import(`../markdown/${slug}.md`).catch(() => {
+  const path = `../markdown/${slug}.md`;
+  if (!(path in markdownModules)) {
     throw error(404, `Content ${slug} not found`);
-  });
+  }
+
+  const file = markdownModules[path] as MarkdownFile;
   validateDates(slug, [file.metadata.published, file.metadata.updated]);
   return { content: file.default, frontmatter: file.metadata, slug };
 };
 
 export const list = async () => {
   const frontmatters: Frontmatter[] = [];
-  let modules: Record<string, MarkdownFile>;
 
-  try {
-    modules = import.meta.glob('../markdown/*.md', {
-      eager: true
-    });
-    // import multiple modules from fs, not lazy loaded
-    // ref: https://vite.dev/guide/features.html#glob-import
-  } catch {
-    throw error(404, 'Markdown files not found');
-  }
-
-  for (const path in modules) {
-    const file = modules[path];
+  for (const path in markdownModules) {
+    const file = markdownModules[path] as MarkdownFile;
     const slug = path.split('/').at(-1)?.replace('.md', '');
 
     if (file && typeof file === 'object' && 'metadata' in file && slug) {
