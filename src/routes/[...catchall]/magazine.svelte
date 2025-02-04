@@ -38,10 +38,13 @@
   <ScrollIndicator class="scroll-indicator top-0 animate-fade-in" direction="up" href="#top" />
   <div class="col-span-8 col-start-3 pt-16 lg:h-full lg:pt-0">
     <h1>{title}</h1>
-    <span class="hidden lg:block">{updated}</span>
+    <span class="hidden font-stretch-condensed lg:block">{updated}</span>
   </div>
-  <div class="col-start-1 row-start-3 lg:hidden">
-    <span class="[writing-mode:vertical-rl] lg:[writing-mode:unset]">{updated}</span>
+  <div class="col-start-1 row-start-3 flex justify-end lg:hidden">
+    <span
+      class="leading-none font-stretch-condensed [writing-mode:vertical-rl] lg:[writing-mode:unset]"
+      >{updated}</span
+    >
   </div>
   <div
     class="relative col-span-8 col-start-3 first-letter:float-left first-letter:mt-1 first-letter:mr-2 first-letter:-mb-6 first-letter:text-8xl first-letter:leading-none first-letter:font-stretch-ultra-condensed"

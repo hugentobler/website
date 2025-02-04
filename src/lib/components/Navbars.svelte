@@ -27,12 +27,15 @@
 {/snippet}
 
 {#snippet magazine()}
-  <div class="grow">
-    <a href="/">Blog</a>
-  </div>
-  <div class="grow">
-    <a href="/">Los Angeles</a>
+  <button class="flex h-full grow items-center">
+    <a class="uppercase font-stretch-expanded" href="/">Blog</a>
+  </button>
+  <div class="flex grow justify-between uppercase font-stretch-condensed">
+    <span>Los Angeles</span>
     <Clock />
-    <button on:click={() => toggleTheme()}>{getNextTheme()}</button>
+    <button on:click={() => toggleTheme()}>
+      <span class="sr-only">Toggle theme</span>
+      <span class="uppercase font-stretch-condensed">{getNextTheme()}</span>
+    </button>
   </div>
 {/snippet}
