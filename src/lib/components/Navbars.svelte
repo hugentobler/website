@@ -28,14 +28,20 @@
 
 {#snippet magazine()}
   <button class="flex h-full grow items-center">
-    <a class="uppercase font-stretch-expanded" href="/">Blog</a>
+    <a class="flex h-full items-center uppercase font-stretch-expanded" href="/">
+      <span class="translate-y-1">Blog</span>
+    </a>
   </button>
-  <div class="flex grow justify-between uppercase font-stretch-condensed">
-    <span>Los Angeles</span>
-    <Clock />
-    <button on:click={() => toggleTheme()}>
+  <div
+    class="flex h-full grow items-center justify-between text-base leading-none uppercase font-stretch-ultra-condensed"
+  >
+    <span class="translate-y-1">Los Angeles</span>
+    <span class="translate-y-1"><Clock /></span>
+    <button on:click={() => toggleTheme()} class="h-full">
       <span class="sr-only">Toggle theme</span>
-      <span class="uppercase font-stretch-condensed">{getNextTheme()}</span>
+      <span class="inline-block translate-y-1 uppercase font-stretch-ultra-condensed"
+        >‣{getNextTheme()}</span
+      >
     </button>
   </div>
 {/snippet}

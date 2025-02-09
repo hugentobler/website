@@ -16,4 +16,4 @@
   });
 </script>
 
-<span>{date.getHours()}:{pad(date.getMinutes())}:{pad(date.getSeconds())}</span>
+{date.getHours()}:{pad(date.getMinutes())}:{pad(date.getSeconds())}
