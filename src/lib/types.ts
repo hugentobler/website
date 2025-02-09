@@ -10,7 +10,8 @@ export type Frontmatter = {
   layout?: string;
 };
 
-// declare processed data from MDSvex - it reformats the dates
+// declare processed data from MDSvex
+// MDSvex auto converts valid date strings into ISO format
 export interface MarkdownFile {
   default: Component;
   metadata: Omit<Frontmatter, 'slug'>;

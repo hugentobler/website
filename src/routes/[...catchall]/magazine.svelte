@@ -1,20 +1,25 @@
 <script lang="ts">
   import { onMount } from 'svelte';
 
+  import { SvelteDate } from 'svelte/reactivity';
+
   import ScrollIndicator from '$lib/components/ScrollIndicator.svelte';
   import type { MarkdownLayoutProps } from '$lib/types';
 
   let { children, title, updated } = $props() as MarkdownLayoutProps;
+  const updatedDate = new SvelteDate(updated).toISOString().split('T')[0];
+
+  // watch article element scrolling
   let article: HTMLElement;
 
   onMount(() => {
-    // Horizontal scroll listener
+    // horizontal scroll listener
     const handleWheel = (event: WheelEvent) => {
       event.preventDefault();
       article.scrollLeft += event.deltaY + event.deltaX;
     };
 
-    // Observe article scroll style to add/remove horizontal scroll listener
+    // observe article scroll style to add/remove horizontal scroll listener
     const observer = new ResizeObserver(() => {
       const overflowX = window.getComputedStyle(article).overflowX;
       if (overflowX === 'scroll') {
@@ -25,7 +30,7 @@
     });
     observer.observe(article);
 
-    // Cleanup
+    // cleanup
     return () => {
       window.removeEventListener('wheel', handleWheel);
       observer.disconnect();
@@ -38,12 +43,12 @@
   <ScrollIndicator class="scroll-indicator top-0 animate-fade-in" direction="up" href="#top" />
   <div class="col-span-8 col-start-3 pt-16 lg:h-full lg:pt-0">
     <h1>{title}</h1>
-    <span class="hidden font-stretch-condensed lg:block">{updated}</span>
+    <span class="hidden font-stretch-condensed lg:block">{updatedDate}</span>
   </div>
   <div class="col-start-1 row-start-3 flex justify-end lg:hidden">
     <span
       class="leading-none font-stretch-condensed [writing-mode:vertical-rl] lg:[writing-mode:unset]"
-      >{updated}</span
+      >{updatedDate}</span
     >
   </div>
   <div

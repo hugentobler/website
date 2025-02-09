@@ -37,11 +37,15 @@
   >
     <span class="translate-y-1">Los Angeles</span>
     <span class="translate-y-1"><Clock /></span>
-    <button on:click={() => toggleTheme()} class="h-full">
+    <button on:click={() => toggleTheme()} class="flex h-full flex-col justify-center">
       <span class="sr-only">Toggle theme</span>
-      <span class="inline-block translate-y-1 uppercase font-stretch-ultra-condensed"
-        >‣{getNextTheme()}</span
-      >
+      <span class="w-full translate-y-1 text-right uppercase font-stretch-ultra-condensed">
+        ‣{getNextTheme()}
+      </span>
+      <!-- Invisible placeholder sets constant width -->
+      <span class="invisible h-0 uppercase font-stretch-ultra-condensed" aria-hidden="true">
+        ‣System
+      </span>
     </button>
   </div>
 {/snippet}
