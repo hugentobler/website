@@ -31,6 +31,8 @@
 }
 
 :root {
+  /* light theme variables */
+
   /* Navbar - we provide this default to child layouts */
   --navbar-height: calc(var(--spacing) * 10);
 
@@ -52,6 +54,14 @@
 
   --primary: var(--color-orange-500);
   --primary-dark: var(--color-orange-400);
+}
+
+[data-theme='dark'] {
+  /* dark theme variables */
+
+  /* Scrollbar variables */
+  --scrollbar-color-thumb: var(--color-orange-100);
+  --scrollbar-color-track: var(--color-orange-900);
 }
 
 /* Default scrollbar styling */

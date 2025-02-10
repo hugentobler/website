@@ -76,7 +76,7 @@
 
     /* Typography */
     @apply prose max-w-none text-pretty text-(--foreground) dark:text-(--foreground-dark);
-    @apply prose-headings:font-normal prose-headings:tracking-tight prose-headings:font-stretch-condensed;
+    @apply prose-headings:font-normal prose-headings:tracking-tight prose-headings:text-(--foreground) prose-headings:font-stretch-condensed prose-headings:dark:text-(--foreground-dark);
     @apply prose-h1:text-5xl;
     @apply prose-h2:text-4xl;
     @apply prose-h3:text-3xl;
