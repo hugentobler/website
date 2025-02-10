@@ -11,6 +11,8 @@
 @theme {
   /* animation utilities */
   --animate-fade-in: fade-in 300ms ease;
+  --animate-underline: underline 150ms ease-out;
+  --animate-underline-vertical: underline-vertical 150ms ease-out;
 
   /* breakpoint utilities */
   --breakpoint-3xl: 120rem;
@@ -20,12 +22,31 @@
   --font-mono: Berkeley Mono Variable, Berkeley Mono, monospace;
   --font-sans: Univers, sans-serif;
 
+  /* animation keyframes */
   @keyframes fade-in {
     from {
       opacity: 0;
     }
     to {
       opacity: 1;
+    }
+  }
+
+  @keyframes underline {
+    from {
+      background-size: '0 0';
+    }
+    to {
+      background-size: '100% 1px';
+    }
+  }
+
+  @keyframes underline-vertical {
+    from {
+      background-size: '0 0';
+    }
+    to {
+      background-size: '1px 100%';
     }
   }
 }
