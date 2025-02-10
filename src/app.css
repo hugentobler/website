@@ -5,18 +5,18 @@
 @plugin "@tailwindcss/typography";
 @plugin "@tailwindcss/forms";
 
-/* Use data attribute to apply theme */
+/* apply theme using data attribute */
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
 @theme {
-  /* Animation utilities */
+  /* animation utilities */
   --animate-fade-in: fade-in 300ms ease;
 
-  /* Breakpoint utilities */
+  /* breakpoint utilities */
   --breakpoint-3xl: 120rem;
   --breakpoint-4xl: 150rem;
 
-  /* Font family utilities */
+  /* font family utilities */
   --font-mono: Berkeley Mono Variable, Berkeley Mono, monospace;
   --font-sans: Univers, sans-serif;
 
@@ -33,19 +33,19 @@
 :root {
   /* light theme variables */
 
-  /* Navbar - we provide this default to child layouts */
-  --navbar-height: calc(var(--spacing) * 10);
+  /* navbar - we provide this default to child layouts */
+  --navbar-height: calc(var(--spacing) * 12);
 
-  /* Scrollbar variables */
+  /* scrollbar variables */
   --scrollbar-color-thumb: var(--color-orange-900);
   --scrollbar-color-track: var(--color-orange-100);
   --scrollbar-width: auto;
   --scrollbar-width-legacy: var(--text-base);
 
-  /* Scroll timeline variables */
+  /* scroll timeline variables */
   --scroll-timeline: --scroll-timeline;
 
-  /* Page theme variables */
+  /* page theme variables */
   --background: var(--color-orange-100);
   --background-dark: var(--color-orange-900);
 
@@ -59,12 +59,12 @@
 [data-theme='dark'] {
   /* dark theme variables */
 
-  /* Scrollbar variables */
+  /* scrollbar variables */
   --scrollbar-color-thumb: var(--color-orange-100);
   --scrollbar-color-track: var(--color-orange-900);
 }
 
-/* Default scrollbar styling */
+/* default scrollbar styling */
 /* https://developer.chrome.com/docs/css-ui/scrollbar-styling */
 @supports (scrollbar-width: auto) {
   * {
@@ -73,7 +73,7 @@
   }
 }
 
-/* Fallback scrollbar styling */
+/* fallback scrollbar styling */
 @supports not (scrollbar-color: auto) {
   ::-webkit-scrollbar {
     -webkit-appearance: none;
@@ -96,7 +96,7 @@
   }
 }
 
-/* Scroll timeline utilities */
+/* scroll timeline utilities */
 @utility scroll-timeline-y {
   animation-timeline: scroll(); /* Modern */
   animation-timeline: --scroll-timeline; /* Legacy */

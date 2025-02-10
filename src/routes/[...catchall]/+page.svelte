@@ -20,7 +20,7 @@
   Each child page may have it's own custom navbar
 -->
 <nav
-  class="absolute inset-x-0 bottom-0 z-30 flex h-(--navbar-height) items-center overflow-hidden bg-(--background) px-3 text-(--foreground) inset-shadow-sm dark:bg-(--background-dark) dark:text-(--foreground-dark)"
+  class="absolute inset-x-0 bottom-0 z-30 mx-auto flex h-(--navbar-height) max-w-[calc(var(--container-5xl)*2)] items-center overflow-hidden bg-(--background) text-base leading-none text-(--foreground) inset-shadow-sm lg:text-xl dark:bg-(--background-dark) dark:text-(--foreground-dark)"
 >
   {@render navbar()}
 </nav>
@@ -29,6 +29,8 @@
   Each child page may have it's own custom layout
   Main is a container query parent
 -->
-<main class="@container absolute inset-0 h-[100svh] bg-(--background) dark:bg-(--background-dark)">
+<main
+  class="@container absolute inset-0 mx-auto h-[100svh] max-w-[calc(var(--container-5xl)*2)] bg-(--background) dark:bg-(--background-dark)"
+>
   <data.content />
 </main>

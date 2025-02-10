@@ -41,18 +41,18 @@
 <article bind:this={article} class="relative scroll-timeline-y lg:scroll-timeline-x">
   <div id="top" class="absolute top-0"></div>
   <ScrollIndicator class="scroll-indicator top-0 animate-fade-in" direction="up" href="#top" />
-  <div class="col-span-8 col-start-3 pt-16 lg:h-full lg:pt-0">
+  <div class="col-span-8 col-start-3 pt-16 lg:ml-12 lg:h-full lg:pt-0">
     <h1>{title}</h1>
     <span class="hidden font-stretch-condensed lg:block">{updatedDate}</span>
   </div>
-  <div class="col-start-1 row-start-3 flex justify-end lg:hidden">
+  <div class="col-start-1 row-start-3 mr-2 flex justify-end lg:hidden">
     <span
       class="leading-none font-stretch-condensed [writing-mode:vertical-rl] lg:[writing-mode:unset]"
       >{updatedDate}</span
     >
   </div>
   <div
-    class="relative col-span-8 col-start-3 first-letter:float-left first-letter:mt-1 first-letter:mr-2 first-letter:-mb-6 first-letter:text-8xl first-letter:leading-none first-letter:font-stretch-ultra-condensed"
+    class="relative col-span-8 col-start-3 first-letter:float-left first-letter:mt-1 first-letter:mr-1 first-letter:-mb-6 first-letter:text-8xl first-letter:leading-none first-letter:font-stretch-ultra-condensed lg:ml-12"
   >
     {@render children()}
     <div id="bottom" class="absolute bottom-0"></div>
@@ -70,15 +70,41 @@
   @reference "../../app.css";
 
   article {
-    /* Layout */
-    height: calc(100svh - var(--navbar-height));
+    /* grid */
+    --x-spacer: theme('spacing.4');
+    @apply grid grid-cols-11 lg:block;
+    @apply mb-(--x-spacer) lg:mx-(--x-spacer) lg:py-[calc(var(--x-spacer)*2)];
+
+    /* layout */
+    height: calc(100svh - var(--navbar-height) - var(--x-spacer) / 2);
     margin-bottom: var(--navbar-height);
 
-    /* Typography */
+    /* columns */
+    columns: auto;
+
+    @media (width >= theme(--breakpoint-lg)) {
+      --visible-columns: 2;
+      /* no column gap, instead we set margin on child columns so we can have floating list numbers and bullets */
+      column-gap: 0;
+      /* container query width relies on parent container class */
+      columns: calc(min(65ch, (100cqw - var(--x-spacer) * 2) / var(--visible-columns)));
+      /* padding-top: var(--x-spacer);
+      padding-bottom: calc(var(--x-spacer) / 2); */
+    }
+
+    @media (width >= theme(--breakpoint-2xl)) {
+      --visible-columns: 3;
+    }
+
+    @media (width >= theme(--breakpoint-3xl)) {
+      --visible-columns: 4;
+    }
+
+    /* typography */
     @apply prose max-w-none text-pretty text-(--foreground) dark:text-(--foreground-dark);
     @apply prose-headings:font-normal prose-headings:tracking-tight prose-headings:text-(--foreground) prose-headings:font-stretch-condensed prose-headings:dark:text-(--foreground-dark);
-    @apply prose-h1:text-5xl;
-    @apply prose-h2:text-4xl;
+    @apply prose-h1:text-6xl lg:prose-h1:text-5xl;
+    @apply lg:prose-h1:text-4xl prose-h2:text-5xl;
     @apply prose-h3:text-3xl;
     @apply prose-p:max-w-[64ch] prose-p:text-base prose-p:first:mt-0;
     @apply prose-ol:list-outside prose-ol:ps-0 prose-ol:marker:text-[0.8em] prose-ol:marker:text-current prose-ol:marker:font-stretch-expanded prose-ul:list-outside prose-ul:list-['+_'] prose-ul:ps-0 prose-ul:marker:pr-2 prose-ul:marker:text-[0.8em] prose-ul:marker:text-current prose-ul:marker:font-stretch-expanded prose-li:ps-0;
@@ -86,38 +112,7 @@
     orphans: 1;
     widows: 2;
 
-    /* Grid */
-    @apply grid grid-cols-11 lg:block;
-
-    /* Columns */
-    --x-spacer: theme('spacing.4');
-    columns: auto;
-    @apply py-0 lg:px-(--x-spacer);
-
-    @media (width >= theme(--breakpoint-lg)) {
-      --x-spacer: theme('spacing.16');
-      --visible-columns: 2;
-      column-gap: var(--x-spacer);
-      /* container query width relies on parent container class */
-      columns: calc(
-        min(
-          65ch,
-          (100cqw - var(--x-spacer) * 2 - (var(--x-spacer) * (var(--visible-columns) - 1))) /
-            var(--visible-columns)
-        )
-      );
-      padding-top: var(--x-spacer);
-    }
-
-    @media (width >= theme(--breakpoint-2xl)) {
-      --visible-columns: 3;
-    }
-
-    @media (width >= theme(--breakpoint-4xl)) {
-      --visible-columns: 4;
-    }
-
-    /* Scrollbars */
+    /* scrollbars */
     @apply overflow-x-hidden overflow-y-scroll lg:overflow-x-scroll lg:overflow-y-hidden;
     @apply scroll-smooth lg:scroll-auto;
   }

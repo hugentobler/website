@@ -27,25 +27,30 @@
 {/snippet}
 
 {#snippet magazine()}
+  <div class="w-4"></div>
   <button class="flex h-full grow items-center">
     <a class="flex h-full items-center uppercase font-stretch-expanded" href="/">
       <span class="translate-y-1">Blog</span>
     </a>
   </button>
-  <div
-    class="flex h-full grow items-center justify-between text-base leading-none uppercase font-stretch-ultra-condensed"
-  >
+  <div class="flex h-full grow items-center uppercase font-stretch-ultra-condensed">
     <span class="translate-y-1">Los Angeles</span>
-    <span class="translate-y-1"><Clock /></span>
-    <button on:click={() => toggleTheme()} class="flex h-full flex-col justify-center">
-      <span class="sr-only">Toggle theme</span>
-      <span class="w-full translate-y-1 text-right uppercase font-stretch-ultra-condensed">
-        ‣{getNextTheme()}
-      </span>
-      <!-- Invisible placeholder sets constant width -->
-      <span class="invisible h-0 uppercase font-stretch-ultra-condensed" aria-hidden="true">
-        ‣System
-      </span>
-    </button>
   </div>
+  <div class="flex h-full grow items-center uppercase font-stretch-ultra-condensed">
+    <span class="translate-y-1"><Clock /></span>
+  </div>
+  <button
+    on:click={() => toggleTheme()}
+    class="flex h-full flex-col justify-center hover:cursor-pointer"
+  >
+    <span class="sr-only">Toggle theme</span>
+    <span class="w-full translate-y-1 text-right uppercase font-stretch-ultra-condensed">
+      ‣{getNextTheme()}
+    </span>
+    <!-- Invisible placeholder sets constant width -->
+    <span class="invisible h-0 uppercase font-stretch-ultra-condensed" aria-hidden="true">
+      ‣System
+    </span>
+  </button>
+  <div class="w-4"></div>
 {/snippet}

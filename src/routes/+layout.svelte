@@ -28,3 +28,11 @@
 </svelte:head>
 
 {@render children()}
+
+<style lang="postcss">
+  @reference "../app.css";
+
+  :global(body) {
+    @apply bg-(--background) dark:bg-(--background-dark);
+  }
+</style>
