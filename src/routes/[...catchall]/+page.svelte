@@ -19,8 +19,12 @@
 <!--
   each child page may have it's own custom navbar
 -->
+<!-- <nav
+class="absolute inset-x-0 bottom-0 z-30 mx-auto flex h-(--navbar-height) max-w-[calc(var(--container-5xl)*2)]
+items-center overflow-hidden bg-(--background) text-base leading-none text-(--foreground) lg:text-xl
+dark:bg-(--background-dark) dark:text-(--foreground-dark)" > -->
 <nav
-  class="absolute inset-x-0 bottom-0 z-30 mx-auto flex h-(--navbar-height) max-w-[calc(var(--container-5xl)*2)] items-center overflow-hidden bg-(--background) text-base leading-none text-(--foreground) inset-shadow-sm lg:text-xl dark:bg-(--background-dark) dark:text-(--foreground-dark)"
+  class="fixed inset-x-0 bottom-0 z-30 mx-auto grid h-(--navbar-height) max-w-[calc(var(--container-5xl)*2)] grid-cols-32"
 >
   {@render navbar()}
 </nav>

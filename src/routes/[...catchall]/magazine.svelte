@@ -96,8 +96,6 @@
       column-gap: 0;
       /* container query width relies on parent container class */
       columns: calc(min(65ch, (100cqw - var(--x-spacer) * 2) / var(--visible-columns)));
-      /* padding-top: var(--x-spacer);
-      padding-bottom: calc(var(--x-spacer) / 2); */
     }
 
     @media (width >= theme(--breakpoint-2xl)) {
@@ -111,8 +109,8 @@
     /* typography */
     @apply prose max-w-none text-pretty text-(--foreground) dark:text-(--foreground-dark);
     @apply prose-headings:font-normal prose-headings:tracking-tight prose-headings:text-(--foreground) prose-headings:font-stretch-condensed prose-headings:dark:text-(--foreground-dark);
-    @apply prose-h1:text-6xl lg:prose-h1:text-5xl;
-    @apply prose-h2:text-5xl lg:prose-h2:text-4xl;
+    @apply prose-h1:text-5xl;
+    @apply prose-h2:text-4xl;
     @apply prose-h3:text-3xl;
     @apply prose-p:max-w-[64ch] prose-p:text-base prose-p:first:mt-0;
     @apply prose-ol:list-outside prose-ol:ps-0 prose-ol:marker:text-[0.8em] prose-ol:marker:text-current prose-ol:marker:font-stretch-expanded prose-ul:list-outside prose-ul:list-['+_'] prose-ul:ps-0 prose-ul:marker:pr-2 prose-ul:marker:text-[0.8em] prose-ul:marker:text-current prose-ul:marker:font-stretch-expanded prose-li:ps-0;
