@@ -57,24 +57,24 @@
   /* navbar - we provide this default to child layouts */
   --navbar-height: calc(var(--spacing) * 16);
 
+  /* page theme variables */
+  --background: var(--color-zinc-200);
+  --background-dark: var(--color-zinc-600);
+
+  --foreground: var(--color-teal-900);
+  --foreground-dark: var(--color-teal-50);
+
+  --primary: var(--color-orange-500);
+  --primary-dark: var(--color-orange-400);
+
   /* scrollbar variables */
-  --scrollbar-color-thumb: var(--color-orange-900);
-  --scrollbar-color-track: var(--color-orange-100);
+  --scrollbar-color-thumb: var(--foreground);
+  --scrollbar-color-track: var(--background);
   --scrollbar-width: auto;
   --scrollbar-width-legacy: var(--text-base);
 
   /* scroll timeline variables */
   --scroll-timeline: --scroll-timeline;
-
-  /* page theme variables */
-  --background: var(--color-orange-100);
-  --background-dark: var(--color-orange-900);
-
-  --foreground: var(--color-black);
-  --foreground-dark: var(--color-white);
-
-  --primary: var(--color-orange-500);
-  --primary-dark: var(--color-orange-400);
 }
 
 [data-theme='dark'] {

@@ -49,18 +49,18 @@
 <article bind:this={article} class="relative scroll-timeline-y lg:scroll-timeline-x">
   <div id="top" class="absolute top-0"></div>
   <ScrollIndicator class="scroll-indicator top-0 animate-fade-in" direction="up" href="#top" />
-  <div class="col-span-24 col-start-5 pt-16 lg:ml-12 lg:h-full lg:pt-0">
+  <div class="col-span-26 col-start-5 pt-16 lg:ml-12 lg:h-full lg:pt-0">
     <h1>{title}</h1>
     <span class="hidden font-stretch-condensed lg:block">{updatedDate}</span>
   </div>
-  <div class="col-start-2 row-start-3 mr-2 flex justify-end lg:hidden">
+  <div class="col-start-2 row-start-3 flex translate-y-1 lg:hidden">
     <span
       class="leading-none font-stretch-condensed [writing-mode:vertical-rl] lg:[writing-mode:unset]"
       >{updatedDate}</span
     >
   </div>
   <div
-    class="relative col-span-24 col-start-5 first-letter:float-left first-letter:mt-1 first-letter:mr-1 first-letter:-mb-6 first-letter:text-8xl first-letter:leading-none first-letter:font-stretch-ultra-condensed lg:ml-12"
+    class="relative col-span-26 col-start-5 first-letter:float-left first-letter:mt-1 first-letter:mr-1 first-letter:-mb-6 first-letter:text-8xl first-letter:leading-none first-letter:font-stretch-ultra-condensed lg:ml-12"
   >
     {@render children()}
     <div id="bottom" class="absolute bottom-0"></div>
