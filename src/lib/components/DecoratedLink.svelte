@@ -5,17 +5,13 @@
 </script>
 
 <a
+  class="focus:ring-offset-background bg-gradient-to-r from-(--foreground) to-(--foreground) bg-[length:100%_1px] bg-[left_bottom] bg-no-repeat no-underline! hover:animate-underline hover:from-(--foreground) hover:to-(--foreground) focus:ring focus:ring-(--foreground) focus:ring-offset-2 focus:ring-offset-(--background) focus:outline-none"
   {...rest}
-  class="focus:ring-primary focus:ring-offset-background bg-gradient-to-r from-black
-to-black bg-[length:100%_1px] bg-[left_bottom]
-bg-no-repeat no-underline!
-hover:animate-underline
-hover:from-white hover:to-white focus:ring-1 focus:ring-offset-2 focus:outline-none"
 >
   {@render children?.()}
 </a>
 
-<!-- reference code below from past project -->
+<!-- reference code below from past project, eg vertical underline -->
 
 <!-- export default function DecoratedLink({
   href,

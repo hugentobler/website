@@ -106,15 +106,15 @@
     }
 
     /* typography */
-    @apply prose max-w-none text-pretty text-(--foreground) dark:text-(--foreground-dark);
-    @apply prose-headings:font-normal prose-headings:tracking-tight prose-headings:text-(--foreground) prose-headings:font-stretch-condensed prose-headings:dark:text-(--foreground-dark);
+    @apply prose max-w-none text-pretty text-(--foreground);
+    @apply prose-headings:font-normal prose-headings:tracking-tight prose-headings:text-(--foreground) prose-headings:font-stretch-condensed;
     @apply prose-h1:text-5xl;
     @apply prose-h2:text-4xl;
     @apply prose-h3:text-3xl;
     @apply prose-p:max-w-[64ch] prose-p:text-base prose-p:first:mt-0;
     @apply prose-ol:list-outside prose-ol:ps-0 prose-ol:marker:text-[0.8em] prose-ol:marker:text-current prose-ol:marker:font-stretch-expanded prose-ul:list-outside prose-ul:list-['+_'] prose-ul:ps-0 prose-ul:marker:pr-2 prose-ul:marker:text-[0.8em] prose-ul:marker:text-current prose-ul:marker:font-stretch-expanded prose-li:ps-0;
-    @apply prose-a:text-(--foreground) prose-a:dark:text-(--foreground-dark);
-    @apply prose-blockquote:-ml-5 prose-blockquote:border-s-2 prose-blockquote:border-s-(--primary) prose-blockquote:ps-5 prose-blockquote:text-(--foreground) prose-blockquote:dark:text-(--foreground-dark) prose-blockquote:[&_p]:text-xl/6 prose-blockquote:[&_p]:tracking-tight;
+    @apply prose-a:text-(--foreground);
+    @apply prose-blockquote:-ml-5 prose-blockquote:border-s-2 prose-blockquote:border-s-(--primary) prose-blockquote:ps-5 prose-blockquote:text-(--foreground) prose-blockquote:[&_p]:text-xl/6 prose-blockquote:[&_p]:tracking-tight;
     orphans: 1;
     widows: 2;
 

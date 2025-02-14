@@ -33,6 +33,6 @@
   @reference "../app.css";
 
   :global(body) {
-    @apply bg-(--background) dark:bg-(--background-dark);
+    @apply bg-(--background) text-(--foreground);
   }
 </style>

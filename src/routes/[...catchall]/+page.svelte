@@ -30,7 +30,7 @@
   <main> is a container query parent
 -->
 <main
-  class="@container absolute inset-0 mx-auto h-[100svh] max-w-[calc(var(--container-5xl)*2)] bg-(--background) dark:bg-(--background-dark)"
+  class="@container absolute inset-0 mx-auto h-[100svh] max-w-[calc(var(--container-5xl)*2)] bg-(--background)"
 >
   <data.content />
 </main>

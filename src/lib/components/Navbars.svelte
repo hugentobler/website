@@ -28,48 +28,48 @@
 
 {#snippet magazine()}
   <button
-    class="group col-span-11 m-px flex items-center rounded-lg bg-zinc-50 inset-shadow-sm inset-shadow-zinc-600/40 hover:inset-shadow-none md:col-span-8"
+    class="col-span-11 m-px flex items-center rounded-lg bg-zinc-50 inset-shadow-sm inset-shadow-zinc-600/40 hover:inset-shadow-none md:col-span-8 dark:bg-zinc-800 dark:inset-shadow-zinc-950/40"
+    tabindex="-1"
   >
     <a
-      class="flex h-full w-full items-center justify-center text-xl leading-0 text-(--foreground) uppercase font-stretch-expanded"
+      class="group flex h-full w-full items-center justify-center rounded-lg text-xl leading-0 text-(--foreground) uppercase font-stretch-expanded focus:inset-ring-2 focus:outline-none"
       href="/"
     >
-      <span class="translate-y-1 group-hover:translate-x-px">Blog</span>
+      <span class="translate-y-1 group-hover:translate-x-px group-focus:translate-x-px">Blog</span>
     </a>
   </button>
   <button
-    class="group col-span-6 m-px hidden rounded-lg bg-zinc-100 inset-shadow-sm inset-shadow-zinc-600/40 hover:inset-shadow-none md:col-span-8 lg:col-span-6 lg:flex"
+    class="col-span-6 m-px hidden rounded-lg bg-zinc-100 inset-shadow-sm inset-shadow-zinc-600/40 hover:inset-shadow-none md:col-span-8 lg:col-span-6 lg:flex dark:bg-zinc-700 dark:inset-shadow-zinc-950/40"
+    tabindex="-1"
   >
     <a
       href="#top"
-      class="flex h-full w-full translate-y-1 items-center justify-center text-xl leading-0 text-(--foreground) uppercase font-stretch-ultra-condensed group-hover:translate-x-px"
+      class="group flex h-full w-full items-center justify-center rounded-lg text-xl leading-0 text-(--foreground) uppercase font-stretch-ultra-condensed focus:inset-ring-2 focus:outline-none"
     >
-      top
+      <span class="translate-y-1 group-hover:translate-x-px group-focus:translate-x-px">Top</span>
     </a>
   </button>
   <div
-    class="col-span-7 m-px flex items-center justify-center rounded-lg bg-zinc-100 md:col-span-8 lg:col-span-6"
+    class="col-span-7 m-px flex items-center justify-center rounded-lg bg-zinc-100 md:col-span-8 lg:col-span-6 dark:bg-zinc-700"
   >
-    <span
-      class="translate-y-1 text-xl leading-0 text-(--background-dark)/50 uppercase font-stretch-ultra-condensed"
+    <span class="translate-y-1 text-xl leading-0 uppercase font-stretch-ultra-condensed invert-50"
       >Los Angeles</span
     >
   </div>
   <div
-    class="col-span-7 m-px flex items-center justify-center rounded-lg bg-zinc-100 md:col-span-8 lg:col-span-6"
+    class="col-span-7 m-px flex items-center justify-center rounded-lg bg-zinc-100 md:col-span-8 lg:col-span-6 dark:bg-zinc-700"
   >
-    <span
-      class="translate-y-1 text-xl leading-0 text-(--background-dark)/50 uppercase font-stretch-ultra-condensed"
+    <span class="translate-y-1 text-xl leading-0 uppercase font-stretch-ultra-condensed invert-50"
       ><Clock /></span
     >
   </div>
   <button
     on:click={() => toggleTheme()}
-    class="col-span-7 col-end-33 m-px flex items-center justify-center rounded-lg bg-zinc-100 inset-shadow-sm inset-shadow-zinc-600/40 hover:cursor-pointer hover:inset-shadow-none md:col-span-8 lg:col-span-6"
+    class="group col-span-7 col-end-33 m-px flex items-center justify-center rounded-lg bg-zinc-100 inset-shadow-sm inset-shadow-zinc-600/40 hover:cursor-pointer hover:inset-shadow-none focus:inset-ring-2 focus:inset-shadow-none focus:outline-none md:col-span-8 lg:col-span-6 dark:bg-zinc-700 dark:inset-shadow-zinc-950/40"
   >
     <span class="sr-only">Toggle theme</span>
     <span
-      class="translate-y-1 text-xl leading-0 text-(--foreground) uppercase font-stretch-ultra-condensed"
+      class="translate-y-1 text-xl leading-0 text-(--foreground) uppercase font-stretch-ultra-condensed group-hover:translate-x-px group-focus:translate-x-px"
     >
       ‣{getNextTheme()}
     </span>

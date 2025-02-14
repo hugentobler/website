@@ -11,8 +11,8 @@
 @theme {
   /* animation utilities */
   --animate-fade-in: fade-in 300ms ease;
-  --animate-underline: underline 150ms ease-out;
-  --animate-underline-vertical: underline-vertical 150ms ease-out;
+  --animate-underline: underline 100ms ease-out;
+  --animate-underline-vertical: underline-vertical 100ms ease-out;
 
   /* breakpoint utilities */
   --breakpoint-3xl: 120rem;
@@ -34,10 +34,10 @@
 
   @keyframes underline {
     from {
-      background-size: '0 0';
+      background-size: 0 1px;
     }
     to {
-      background-size: '100% 1px';
+      background-size: 100% 1px;
     }
   }
 
@@ -59,10 +59,7 @@
 
   /* page theme variables */
   --background: var(--color-zinc-200);
-  --background-dark: var(--color-zinc-600);
-
   --foreground: var(--color-teal-900);
-  --foreground-dark: var(--color-teal-50);
 
   --primary: var(--color-orange-500);
   --primary-dark: var(--color-orange-400);
@@ -79,10 +76,8 @@
 
 [data-theme='dark'] {
   /* dark theme variables */
-
-  /* scrollbar variables */
-  --scrollbar-color-thumb: var(--color-orange-100);
-  --scrollbar-color-track: var(--color-orange-900);
+  --background: var(--color-zinc-600);
+  --foreground: var(--color-sky-100);
 }
 
 /* default scrollbar styling */
