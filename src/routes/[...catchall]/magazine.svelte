@@ -49,24 +49,23 @@
 <article bind:this={article} class="relative scroll-timeline-y lg:scroll-timeline-x">
   <div id="top" class="absolute top-0"></div>
   <ScrollIndicator class="scroll-indicator top-0 animate-fade-in" direction="up" href="#top" />
-  <div class="col-span-8 col-start-3 pt-16 lg:ml-12 lg:h-full lg:pt-0">
+  <div class="col-span-24 col-start-5 pt-16 lg:ml-12 lg:h-full lg:pt-0">
     <h1>{title}</h1>
     <span class="hidden font-stretch-condensed lg:block">{updatedDate}</span>
   </div>
-  <div class="col-start-1 row-start-3 mr-2 flex justify-end lg:hidden">
+  <div class="col-start-2 row-start-3 mr-2 flex justify-end lg:hidden">
     <span
       class="leading-none font-stretch-condensed [writing-mode:vertical-rl] lg:[writing-mode:unset]"
       >{updatedDate}</span
     >
   </div>
   <div
-    class="relative col-span-8 col-start-3 first-letter:float-left first-letter:mt-1 first-letter:mr-1 first-letter:-mb-6 first-letter:text-8xl first-letter:leading-none first-letter:font-stretch-ultra-condensed lg:ml-12"
+    class="relative col-span-24 col-start-5 first-letter:float-left first-letter:mt-1 first-letter:mr-1 first-letter:-mb-6 first-letter:text-8xl first-letter:leading-none first-letter:font-stretch-ultra-condensed lg:ml-12"
   >
     {@render children()}
     <div id="bottom" class="absolute bottom-0"></div>
   </div>
-
-  <footer></footer>
+  <!-- <footer></footer> -->
   <ScrollIndicator
     class="scroll-indicator bottom-0 animate-fade-in"
     direction="down"
@@ -80,7 +79,7 @@
   article {
     /* grid */
     --x-spacer: theme('spacing.4');
-    @apply grid grid-cols-11 lg:block;
+    @apply grid grid-cols-32 lg:block;
     @apply mb-(--x-spacer) lg:mx-(--x-spacer) lg:py-[calc(var(--x-spacer)*2)];
 
     /* layout */
@@ -125,6 +124,6 @@
   }
 
   :global(.scroll-indicator) {
-    @apply sticky inset-x-16 z-30 col-span-11 flex h-8 justify-center lg:hidden;
+    @apply sticky inset-x-16 z-30 col-span-32 flex h-8 justify-center lg:hidden;
   }
 </style>
