@@ -13,6 +13,7 @@
   --animate-fade-in: fade-in 300ms ease;
   --animate-underline: underline 100ms ease-out;
   --animate-underline-vertical: underline-vertical 100ms ease-out;
+  --animate-flip-in: flip-in 600ms;
 
   /* breakpoint utilities */
   --breakpoint-3xl: 120rem;
@@ -29,6 +30,15 @@
     }
     to {
       opacity: 1;
+    }
+  }
+
+  @keyframes flip-in {
+    from {
+      transform: rotateX(-36deg);
+    }
+    to {
+      transform: rotateX(0deg);
     }
   }
 

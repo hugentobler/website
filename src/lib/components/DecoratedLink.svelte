@@ -5,7 +5,7 @@
 </script>
 
 <a
-  class="focus:ring-offset-background bg-gradient-to-r from-(--foreground) to-(--foreground) bg-[length:100%_1px] bg-[left_bottom] bg-no-repeat no-underline! hover:animate-underline hover:from-(--foreground) hover:to-(--foreground) focus:ring focus:ring-(--foreground) focus:ring-offset-2 focus:ring-offset-(--background) focus:outline-none"
+  class="focus:ring-offset-background bg-gradient-to-r from-(--foreground)/50 to-(--foreground)/50 bg-[length:100%_1px] bg-[left_bottom] bg-no-repeat no-underline! hover:animate-underline hover:from-(--foreground) hover:to-(--foreground) focus:ring focus:ring-(--foreground) focus:ring-offset-2 focus:ring-offset-(--background) focus:outline-none"
   {...rest}
 >
   {@render children?.()}
