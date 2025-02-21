@@ -24,22 +24,27 @@ if (!process.env.CLOUDFLARE_API_TOKEN) {
   process.exit(1);
 }
 
+// Define allowed font extensions
+const allowedExtensions = ['.otf', '.ttf', '.woff2'];
+
 fs.readdir(sourceDir, (err, files) => {
   if (err) {
     console.error(`Error reading directory ${sourceDir}: ${err}`);
     return;
   }
 
-  files.forEach((file) => {
-    const filePath = path.join(sourceDir, file);
-    const command = `npx wrangler r2 object put ${bucketName}/${file} --file=${filePath} --cache-control="${cacheControl}"`;
+  files
+    .filter((file) => allowedExtensions.includes(path.extname(file).toLowerCase()))
+    .forEach((file) => {
+      const filePath = path.join(sourceDir, file);
+      const command = `npx wrangler r2 object put ${bucketName}/${file} --file=${filePath} --cache-control="${cacheControl}"`;
 
-    exec(command, (error) => {
-      if (error) {
-        console.error(`Error uploading ${file}:`, error);
-        return;
-      }
-      console.log(`Successfully uploaded ${file}`);
+      exec(command, (error) => {
+        if (error) {
+          console.error(`Error uploading ${file}:`, error);
+          return;
+        }
+        console.log(`Successfully uploaded ${file}`);
+      });
     });
-  });
 });
