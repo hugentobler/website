@@ -1,28 +1,53 @@
 <script lang="ts">
   import { SvelteDate } from 'svelte/reactivity';
 
+  // clock height can be customised
   let { height = 1.25 } = $props();
 
+  // record start time
   const date = new SvelteDate();
-  // const pad = (n: number) => (n < 10 ? '0' + n : n);
+  const startTime = Date.now();
+  date.setTime(startTime);
 
+  // initialise cumulative counters
+  let initialSeconds = date.getSeconds();
+  let initialMinutes = date.getMinutes();
+  let initialHours = date.getHours();
+  let secondsOnes = $state(initialSeconds);
+  let secondsTens = $state(Math.floor(initialSeconds / 10));
+  let minutesOnes = $state(initialMinutes);
+  let minutesTens = $state(Math.floor(initialMinutes / 10));
+  let hoursOnes = $state(initialHours);
+  let hoursTens = $state(Math.floor(initialHours / 10));
+
+  // update every second
   $effect(() => {
     const interval = setInterval(() => {
-      date.setTime(Date.now());
+      const now = date.setTime(Date.now());
+      console.log(date.getHours(), date.getMinutes(), date.getSeconds());
+      const elapsed = Math.floor((now - startTime) / 1000);
+
+      secondsOnes = initialSeconds + elapsed;
+      secondsTens = Math.floor((initialSeconds + elapsed) / 10);
+      minutesOnes = initialMinutes + Math.floor(elapsed / 60);
+      minutesTens = Math.floor((initialMinutes + Math.floor(elapsed / 60)) / 10);
+      hoursOnes = initialHours + Math.floor(elapsed / 3600);
+      hoursTens = Math.floor((initialHours + Math.floor(elapsed / 3600)) / 10);
     }, 1000);
 
     return () => clearInterval(interval);
   });
 </script>
 
-{#snippet wheel(length: number, currentDigit: number)}
+{#snippet wheel(length: number, current: number)}
   <span
-    class="wheel relative h-[calc(var(--height)*1.25)] -rotate-x-[calc(360deg/var(--length)*var(--current))] tabular-nums transition-transform transform-3d"
-    style="--current: {currentDigit}; --length: {length}; --radius: calc(var(--height) * 1.25 / sin(36deg) * -1);"
+    class="relative h-[calc(var(--height)*1.25)] -rotate-x-[calc(var(--rotation)*1deg)] tabular-nums transition-transform transform-3d"
+    style="--rotation: {(current * 360) /
+      length}; --length: {length}; --radius: calc(var(--height) * 1.25 / sin(36deg) * -1);"
   >
     {#each Array.from({ length }, (_, i) => i) as digit, i}
       <span
-        class="absolute top-1/2 left-1/2 text-(length:--height) leading-none"
+        class="absolute top-1/2 left-1/2 text-(length:--height) leading-none backface-hidden"
         style="--index: {i}; transform: translate(-50%, -50%) rotateX(calc(360deg/var(--length)*var(--index))) translateZ(calc(var(--radius) * -1));"
         >{digit}</span
       >
@@ -30,9 +55,19 @@
   </span>
 {/snippet}
 
-<div class="wheels relative h-[calc(var(--height)*2)] font-mono" style="--height: {height}rem">
-  {@render wheel(6, 0)}
-  {@render wheel(10, 0)}
+<div
+  class="relative grid h-[calc(var(--height)*2)] grid-cols-[repeat(6,var(--height))] content-center font-mono"
+  style="--height: {height}rem; mask: linear-gradient(#0000 0.25rem, #000 calc(50% - 0.35rem) calc(50% + 0.35rem), #0000 calc(100% - 0.25rem));"
+>
+  <!-- minutes tens place -->
+  {@render wheel(6, minutesTens)}
+  <!-- minutes ones place -->
+  {@render wheel(10, minutesOnes)}
+  <span>:</span>
+  <!-- seconds tens place -->
+  {@render wheel(6, secondsTens)}
+  <!-- seconds ones place -->
+  {@render wheel(10, secondsOnes)}
 </div>
 
 <!-- <div class="flex perspective-midrange">
@@ -49,33 +84,3 @@
   {/key}
   {date.getHours()}:{pad(date.getMinutes())}:{pad(date.getSeconds())}
 </div> -->
-
-<style lang="postcss">
-  .wheels {
-    --label: 1.25;
-    /* --wheel-width: calc(var(--label) * 0.65rem); */
-    position: relative;
-    display: grid;
-    grid-template-columns: repeat(2, var(--height));
-    /* height: calc(var(--label) * 2rem); */
-    align-content: center;
-    mask: linear-gradient(
-      #0000 0.25rem,
-      #000 calc(50% - 0.35rem) calc(50% + 0.35rem),
-      #0000 calc(100% - 0.25rem)
-    );
-  }
-  .wheel {
-    span {
-      /* --radius: calc(var(--label) * 1.25 / sin(36deg) * -1rem); */
-      /* transform: translate(-50%, -50%) rotateX(calc(36deg * var(--index)))
-        translateZ(calc(var(--radius) * -1)); */
-      display: grid;
-      place-items: center;
-      /* position: absolute;
-      top: 50%;
-      left: 50%; */
-      backface-visibility: hidden;
-    }
-  }
-</style>
