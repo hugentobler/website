@@ -33,6 +33,6 @@
   @reference "../app.css";
 
   :global(body) {
-    @apply bg-(--background) text-(--foreground);
+    @apply bg-(--background) text-(--foreground) antialiased;
   }
 </style>

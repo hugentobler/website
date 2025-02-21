@@ -59,9 +59,9 @@
   <div
     class="col-span-7 m-px flex items-center justify-center rounded-lg bg-zinc-100 md:col-span-8 lg:col-span-6 dark:bg-zinc-700"
   >
-    <span class="translate-y-1 text-xl leading-0 uppercase font-stretch-ultra-condensed invert-50"
-      ><Clock /></span
-    >
+    <!-- <span class="translate-y-1 text-xl leading-0 uppercase font-stretch-ultra-condensed invert-50"> -->
+    <Clock />
+    <!-- </span -->
   </div>
   <button
     on:click={() => toggleTheme()}
