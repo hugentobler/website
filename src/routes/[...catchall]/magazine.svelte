@@ -80,7 +80,7 @@
     /* grid */
     --x-spacer: theme('spacing.4');
     @apply grid grid-cols-32 lg:block;
-    @apply mb-(--x-spacer) lg:mx-(--x-spacer) lg:py-[calc(var(--x-spacer)*2)];
+    @apply lg:mx-(--x-spacer) lg:py-[calc(var(--x-spacer)*2)];
 
     /* layout */
     height: calc(100svh - var(--navbar-height) - var(--x-spacer) / 2);
@@ -88,6 +88,19 @@
 
     /* columns */
     columns: auto;
+    @media (width >= theme(--breakpoint-lg)) {
+      --visible-columns: 2;
+      /* no column gap, instead we set margin on child columns so we can have floating list numbers and bullets */
+      column-gap: 0;
+      /* container query width relies on parent container class */
+      columns: calc(min(65ch, (100cqw - var(--x-spacer) * 2) / var(--visible-columns))) !important;
+    }
+    @media (width >= theme(--breakpoint-2xl)) {
+      --visible-columns: 3;
+    }
+    @media (width >= theme(--breakpoint-3xl)) {
+      --visible-columns: 4;
+    }
 
     /* typography */
     @apply prose max-w-none text-pretty text-(--foreground);
@@ -103,30 +116,8 @@
     widows: 2;
 
     /* scrollbars */
-    @apply overflow-x-hidden overflow-y-scroll lg:overflow-x-auto lg:overflow-x-scroll lg:overflow-y-hidden;
-    @apply scroll-smooth lg:scroll-auto;
-  }
-
-  @media (width >= theme(--breakpoint-lg)) {
-    article {
-      --visible-columns: 2;
-      /* no column gap, instead we set margin on child columns so we can have floating list numbers and bullets */
-      column-gap: 0;
-      /* container query width relies on parent container class */
-      columns: calc(min(65ch, (100cqw - var(--x-spacer) * 2) / var(--visible-columns)));
-    }
-  }
-
-  @media (width >= theme(--breakpoint-2xl)) {
-    article {
-      --visible-columns: 3;
-    }
-  }
-
-  @media (width >= theme(--breakpoint-3xl)) {
-    article {
-      --visible-columns: 4;
-    }
+    @apply overflow-x-hidden overflow-y-scroll lg:overflow-x-scroll! lg:overflow-y-hidden!;
+    @apply scroll-smooth lg:scroll-auto!;
   }
 
   :global(.scroll-indicator) {
