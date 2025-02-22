@@ -51,11 +51,11 @@
   <ScrollIndicator class="scroll-indicator top-0 animate-fade-in" direction="up" href="#top" />
   <div class="col-span-26 col-start-5 pt-16 lg:ml-12 lg:h-full lg:pt-0">
     <h1>{title}</h1>
-    <span class="hidden font-stretch-condensed lg:block">{updatedDate}</span>
+    <span class="hidden font-mono font-medium font-stretch-condensed lg:block">{updatedDate}</span>
   </div>
   <div class="col-start-2 row-start-3 flex translate-y-1 lg:hidden">
     <span
-      class="leading-none font-stretch-condensed [writing-mode:vertical-rl] lg:[writing-mode:unset]"
+      class="font-mono leading-none font-medium font-stretch-condensed [writing-mode:vertical-rl] lg:[writing-mode:unset]"
       >{updatedDate}</span
     >
   </div>
@@ -89,22 +89,6 @@
     /* columns */
     columns: auto;
 
-    @media (width >= theme(--breakpoint-lg)) {
-      --visible-columns: 2;
-      /* no column gap, instead we set margin on child columns so we can have floating list numbers and bullets */
-      column-gap: 0;
-      /* container query width relies on parent container class */
-      columns: calc(min(65ch, (100cqw - var(--x-spacer) * 2) / var(--visible-columns)));
-    }
-
-    @media (width >= theme(--breakpoint-2xl)) {
-      --visible-columns: 3;
-    }
-
-    @media (width >= theme(--breakpoint-3xl)) {
-      --visible-columns: 4;
-    }
-
     /* typography */
     @apply prose max-w-none text-pretty text-(--foreground);
     @apply prose-headings:font-normal prose-headings:tracking-tight prose-headings:text-(--foreground) prose-headings:font-stretch-condensed;
@@ -119,8 +103,30 @@
     widows: 2;
 
     /* scrollbars */
-    @apply overflow-x-hidden overflow-y-scroll lg:overflow-x-scroll lg:overflow-y-hidden;
+    @apply overflow-x-hidden overflow-y-scroll lg:overflow-x-auto lg:overflow-x-scroll lg:overflow-y-hidden;
     @apply scroll-smooth lg:scroll-auto;
+  }
+
+  @media (width >= theme(--breakpoint-lg)) {
+    article {
+      --visible-columns: 2;
+      /* no column gap, instead we set margin on child columns so we can have floating list numbers and bullets */
+      column-gap: 0;
+      /* container query width relies on parent container class */
+      columns: calc(min(65ch, (100cqw - var(--x-spacer) * 2) / var(--visible-columns)));
+    }
+  }
+
+  @media (width >= theme(--breakpoint-2xl)) {
+    article {
+      --visible-columns: 3;
+    }
+  }
+
+  @media (width >= theme(--breakpoint-3xl)) {
+    article {
+      --visible-columns: 4;
+    }
   }
 
   :global(.scroll-indicator) {
