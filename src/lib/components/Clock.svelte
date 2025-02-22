@@ -1,3 +1,5 @@
+<!-- Inspiration: https://x.com/jh3yy/status/1842302009992675474 -->
+
 <script lang="ts">
   import { SvelteDate } from 'svelte/reactivity';
 
@@ -13,26 +15,40 @@
   let initialSeconds = date.getSeconds();
   let initialMinutes = date.getMinutes();
   let initialHours = date.getHours();
-  let secondsOnes = $state(initialSeconds);
+  let secondsOnes = $state(initialSeconds % 10);
   let secondsTens = $state(Math.floor(initialSeconds / 10));
-  let minutesOnes = $state(initialMinutes);
+  let minutesOnes = $state(initialMinutes % 10);
   let minutesTens = $state(Math.floor(initialMinutes / 10));
-  let hoursOnes = $state(initialHours);
+  let hoursOnes = $state(initialHours % 10);
   let hoursTens = $state(Math.floor(initialHours / 10));
+
+  let totalSeconds = $state(0);
 
   // update every second
   $effect(() => {
     const interval = setInterval(() => {
-      const now = date.setTime(Date.now());
-      console.log(date.getHours(), date.getMinutes(), date.getSeconds());
-      const elapsed = Math.floor((now - startTime) / 1000);
+      date.setTime(Date.now());
+      const currentSeconds = date.getSeconds();
+      const currentMinutes = date.getMinutes();
+      const currentHours = date.getHours();
 
-      secondsOnes = initialSeconds + elapsed;
-      secondsTens = Math.floor((initialSeconds + elapsed) / 10);
-      minutesOnes = initialMinutes + Math.floor(elapsed / 60);
-      minutesTens = Math.floor((initialMinutes + Math.floor(elapsed / 60)) / 10);
-      hoursOnes = initialHours + Math.floor(elapsed / 3600);
-      hoursTens = Math.floor((initialHours + Math.floor(elapsed / 3600)) / 10);
+      // calculate how many seconds have actually elapsed since start
+      totalSeconds =
+        currentSeconds +
+        currentMinutes * 60 +
+        currentHours * 3600 -
+        (initialSeconds + initialMinutes * 60 + initialHours * 3600);
+      if (totalSeconds < 0) totalSeconds += 24 * 3600; // handle day wraparound
+
+      // update digits with continuous rotation based on actual elapsed time
+      secondsOnes = initialSeconds + totalSeconds;
+      secondsTens = Math.floor((initialSeconds + totalSeconds) / 10);
+      const totalMinutes = initialMinutes + Math.floor((initialSeconds + totalSeconds) / 60);
+      minutesOnes = totalMinutes % 10;
+      minutesTens = Math.floor(totalMinutes / 10);
+      const totalHours = initialHours + Math.floor(totalMinutes / 60);
+      hoursOnes = totalHours % 10;
+      hoursTens = Math.floor(totalHours / 10);
     }, 1000);
 
     return () => clearInterval(interval);
@@ -41,7 +57,7 @@
 
 {#snippet wheel(length: number, current: number)}
   <span
-    class="relative h-[calc(var(--height)*1.25)] -rotate-x-[calc(var(--rotation)*1deg)] tabular-nums transition-transform transform-3d"
+    class="relative h-[calc(var(--height)*1.25)] -rotate-x-[calc(var(--rotation)*1deg)] tabular-nums transition-transform duration-500 ease-out transform-3d"
     style="--rotation: {(current * 360) /
       length}; --length: {length}; --radius: calc(var(--height) * 1.25 / sin(36deg) * -1);"
   >
@@ -56,9 +72,14 @@
 {/snippet}
 
 <div
-  class="relative grid h-[calc(var(--height)*2)] grid-cols-[repeat(6,var(--height))] content-center font-mono"
+  class="relative grid h-[calc(var(--height)*2)] grid-cols-[repeat(2,calc(var(--height)*0.4))_auto_repeat(2,calc(var(--height)*0.4))_auto_repeat(2,calc(var(--height)*0.4))] content-center font-mono"
   style="--height: {height}rem; mask: linear-gradient(#0000 0.25rem, #000 calc(50% - 0.35rem) calc(50% + 0.35rem), #0000 calc(100% - 0.25rem));"
 >
+  <!-- hours tens place -->
+  {@render wheel(3, hoursTens)}
+  <!-- hours ones place -->
+  {@render wheel(10, hoursOnes)}
+  <span>:</span>
   <!-- minutes tens place -->
   {@render wheel(6, minutesTens)}
   <!-- minutes ones place -->
@@ -69,18 +90,3 @@
   <!-- seconds ones place -->
   {@render wheel(10, secondsOnes)}
 </div>
-
-<!-- <div class="flex perspective-midrange">
-  {#key pad(date.getMinutes())}
-    <span class="inline-block animate-flip-in backface-hidden transform-3d">
-      {pad(date.getMinutes())}
-    </span>
-  {/key}
-  <span>:</span>
-  {#key pad(date.getSeconds())}
-    <span class="h-4 animate-flip-in backface-hidden transform-3d">
-      {pad(date.getSeconds())}
-    </span>
-  {/key}
-  {date.getHours()}:{pad(date.getMinutes())}:{pad(date.getSeconds())}
-</div> -->

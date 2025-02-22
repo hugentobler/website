@@ -59,13 +59,13 @@
   <div
     class="col-span-7 m-px flex items-center justify-center rounded-lg bg-zinc-100 md:col-span-8 lg:col-span-6 dark:bg-zinc-700"
   >
-    <!-- <span class="translate-y-1 text-xl leading-0 uppercase font-stretch-ultra-condensed invert-50"> -->
-    <Clock />
-    <!-- </span -->
+    <span class="translate-y-px font-medium font-stretch-ultra-condensed invert-50">
+      <Clock />
+    </span>
   </div>
   <button
     on:click={() => toggleTheme()}
-    class="group col-span-7 col-end-33 m-px flex items-center justify-center rounded-lg bg-zinc-100 inset-shadow-sm inset-shadow-zinc-600/40 hover:cursor-pointer hover:inset-shadow-none focus:inset-ring-2 focus:inset-shadow-none focus:outline-none md:col-span-8 lg:col-span-6 dark:bg-zinc-700 dark:inset-shadow-zinc-950/40"
+    class="group col-span-7 col-end-33 m-px flex items-center justify-center rounded-lg bg-zinc-100 inset-shadow-sm inset-shadow-zinc-600/40 hover:cursor-pointer hover:inset-shadow-none focus:inset-shadow-none focus:inset-ring-2 focus:outline-none md:col-span-8 lg:col-span-6 dark:bg-zinc-700 dark:inset-shadow-zinc-950/40"
   >
     <span class="sr-only">Toggle theme</span>
     <span
