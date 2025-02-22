@@ -32,10 +32,13 @@
     tabindex="-1"
   >
     <a
-      class="group flex h-full w-full items-center justify-center rounded-lg text-xl leading-0 text-(--foreground) uppercase font-stretch-expanded focus:inset-ring-2 focus:outline-none"
+      class="group flex h-full w-full items-center justify-center rounded-lg text-lg leading-0 text-(--foreground) uppercase font-stretch-expanded focus:inset-ring-2 focus:outline-none lg:text-xl"
       href="/"
     >
-      <span class="translate-y-1 group-hover:translate-x-px group-focus:translate-x-px">Blog</span>
+      <span
+        class="flex h-full translate-y-1 items-center group-hover:translate-x-px group-focus:translate-x-px"
+        >Blog</span
+      >
     </a>
   </button>
   <button
@@ -44,22 +47,28 @@
   >
     <a
       href="#top"
-      class="group flex h-full w-full items-center justify-center rounded-lg text-xl leading-0 text-(--foreground) uppercase font-stretch-ultra-condensed focus:inset-ring-2 focus:outline-none"
+      class="group flex h-full w-full items-center justify-center rounded-lg text-lg leading-0 text-(--foreground) uppercase font-stretch-ultra-condensed focus:inset-ring-2 focus:outline-none lg:text-xl"
     >
-      <span class="translate-y-1 group-hover:translate-x-px group-focus:translate-x-px">Top</span>
+      <span
+        class="flex h-full translate-y-1 items-center group-hover:translate-x-px group-focus:translate-x-px"
+        >Top</span
+      >
     </a>
   </button>
   <div
     class="col-span-7 m-px flex items-center justify-center rounded-lg bg-zinc-100 md:col-span-8 lg:col-span-6 dark:bg-zinc-700"
   >
-    <span class="translate-y-1 text-xl leading-0 uppercase font-stretch-ultra-condensed invert-50"
+    <span
+      class="flex h-full translate-y-1 items-center text-lg leading-0 uppercase font-stretch-ultra-condensed invert-50 lg:text-xl"
       >Los Angeles</span
     >
   </div>
   <div
-    class="col-span-7 m-px flex items-center justify-center rounded-lg bg-zinc-100 md:col-span-8 lg:col-span-6 dark:bg-zinc-700"
+    class="clock col-span-7 m-px flex items-center justify-center rounded-lg bg-zinc-100 hover:cursor-wait md:col-span-8 lg:col-span-6 dark:bg-zinc-700"
   >
-    <span class="translate-y-px font-medium font-stretch-ultra-condensed invert-50">
+    <span
+      class="flex h-full translate-y-px items-center font-medium font-stretch-ultra-condensed invert-50 supports-font-variation-settings:font-semibold"
+    >
       <Clock />
     </span>
   </div>
@@ -69,7 +78,7 @@
   >
     <span class="sr-only">Toggle theme</span>
     <span
-      class="translate-y-1 text-xl leading-0 text-(--foreground) uppercase font-stretch-ultra-condensed group-hover:translate-x-px group-focus:translate-x-px"
+      class="translate-y-1 text-lg leading-0 text-(--foreground) uppercase font-stretch-ultra-condensed group-hover:translate-x-px group-focus:translate-x-px lg:text-xl"
     >
       ‣{getNextTheme()}
     </span>

@@ -8,7 +8,7 @@
   font-stretch: 60% 100%;
   font-style: oblique -16deg 0deg;
   src:
-    url('https://cdn.hugentobler.xyz/bm-variable.woff2') format('woff2-variations'),
+    url('https://cdn.hugentobler.xyz/bm-variable-1.woff2') format('woff2-variations'),
     url('https://cdn.hugentobler.xyz/bm-variable.otf') format('opentype-variations');
 }
 
