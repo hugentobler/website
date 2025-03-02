@@ -17,21 +17,22 @@ const config = {
     // Ref: https://github.com/sveltejs/vite-plugin-svelte/blob/main/docs/preprocess.md
     mdsvex({
       extensions: ['.md'],
-      // Specify markdown layout in frontmatter
+      // set layout in markdown frontmatter
       layout: {
         magazine: './src/routes/[...catchall]/magazine.svelte',
         _: './src/routes/[...catchall]/default.svelte' // default when no layout is specified
-      }
+      },
+      remarkPlugins: [],
+      rehypePlugins: []
     })
-    // Markdown in Svelte
+    // markdown in svelte
     // Ref: https://github.com/pngwn/MDsveX
   ],
 
   kit: {
-    // Cloudflare Pages adapter
+    // cloudflare Pages adapter
     // https://svelte.dev/docs/kit/adapter-cloudflare
     adapter: adapter({
-      // See below for an explanation of these options
       routes: {
         include: ['/*'],
         exclude: ['<all>']
