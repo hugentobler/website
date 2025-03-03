@@ -1,6 +1,6 @@
 import { error } from '@sveltejs/kit';
 
-import type { Frontmatter, MarkdownFile } from '$lib/types';
+import type { Frontmatter, MarkdocFile } from '$lib/types';
 
 // type guard for date, mdxvex exports date as iso date string
 const isValidDate = (date: string): boolean => {
@@ -26,9 +26,12 @@ export const get = async (slug: string) => {
     throw error(404, `Content ${slug} not found`);
   }
 
-  const file = markdownModules[path] as MarkdownFile;
-  validateDates(slug, [file.metadata.published, file.metadata.updated]);
-  return { content: file.default, frontmatter: file.metadata, slug };
+  // const file = markdownModules[path] as MarkdownFile;
+  const file = markdownModules[path] as MarkdocFile;
+  // validateDates(slug, [file.metadata.published, file.metadata.updated]);
+  // return { content: file.default, frontmatter: file.metadata, slug };
+  // console.log(file);
+  return { content: file.default, frontmatter: file.frontmatter, slug };
 };
 
 export const list = async () => {

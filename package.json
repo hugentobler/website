@@ -16,6 +16,7 @@
     "fonts:deploy": "node upload_fonts.js"
   },
   "devDependencies": {
+    "@markdoc/markdoc": "^0.5.1",
     "@sveltejs/adapter-cloudflare": "^5.0.1",
     "@sveltejs/enhanced-img": "^0.4.4",
     "@sveltejs/kit": "^2.16.1",

@@ -9,6 +9,8 @@ published: 2022-05-02
 updated: 2023-09-02
 ---
 
+# {% $markdoc.frontmatter.title %}
+
 Bowtie is a unique company. It has an important mission tied to its customers' everyday wellbeing.
 It is situated in a huge competitive sector that desperately needs innovation. And it is well
 positioned to succeed given its team, capital and traction.
