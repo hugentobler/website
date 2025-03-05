@@ -10,20 +10,23 @@ export default defineConfig({
   plugins: [
     enhancedImages(),
     {
-      name: 'process-markdown',
+      name: 'markdoc',
       transform(src, id) {
         if (!id.endsWith('.md')) return null;
 
+        // Parse the markdown file
         const ast = Markdoc.parse(src);
+        // Parse the frontmatter
         const frontmatter = yaml.parse(ast.attributes.frontmatter);
 
         const config = {
           variables: {
             markdoc: {
-              frontmatter // make parsed frontmatter accessible via $markdoc.frontmatter inside markdown files
+              frontmatter // Make parsed frontmatter accessible via $markdoc.frontmatter inside markdown files
             }
           }
         };
+        // Create renderable node tree
         const content = Markdoc.transform(ast, config);
 
         return {

@@ -6,18 +6,20 @@ Renders a dynamic layout if a valid layout name is defined in the frontmatter. O
 <script lang="ts">
   import type { Component } from 'svelte';
 
-  import DecoratedLink from '$lib/components/DecoratedLink.svelte';
+  import DecoratedLink from '$lib/components/decorated-link.svelte';
+  import { getNavbar } from '$lib/components/navbars.svelte';
   import type { MarkdocPageData } from '$lib/markdoc/types';
 
   import { page } from '$app/state';
 
-  import type { LayoutProps } from './$types';
   import Page from './+page.svelte';
 
-  let { children } = $props() as LayoutProps;
   // Access frontmatter from child page data
   const data = page.data as MarkdocPageData;
   const { frontmatter } = data;
+
+  // Get the correct navbar, fallsback to default
+  const navbar = getNavbar(frontmatter.layout);
 
   // Import the layout from the same folder as the current file
   // Rollup prefers specifying a filename pattern when importing from the same folder https://github.com/rollup/plugins/tree/master/packages/dynamic-import-vars#limitations
@@ -38,6 +40,7 @@ Renders a dynamic layout if a valid layout name is defined in the frontmatter. O
 
 <!--
 Default layout if no layout is defined in the frontmatter.
+Directly renders the page component with the default components.
 -->
 {#snippet DefaultLayout()}
   <span>I am the default layout!</span>
@@ -45,16 +48,32 @@ Default layout if no layout is defined in the frontmatter.
 {/snippet}
 
 <!--
-Renders the imported layout if it exists, or the default layout if it doesn't
+  Each child page may have it's own custom navbar
 -->
-{#await importLayout then DynamicLayout}
-  {#if DynamicLayout}
-    <DynamicLayout {data}>
-      {@render children()}
-    </DynamicLayout>
-  {:else}
+<nav
+  class="fixed inset-x-0 bottom-0 z-30 mx-auto grid h-(--navbar-height) max-w-[calc(var(--container-5xl)*2)] grid-cols-32"
+>
+  {@render navbar()}
+</nav>
+
+<!--
+  Each child page may have it's own custom layout
+  <main> is a container query parent
+-->
+<main
+  class="@container absolute inset-0 mx-auto h-[100svh] max-w-[calc(var(--container-5xl)*2)] bg-(--background)"
+>
+  <!--
+  Render the imported layout if it exists, or the default layout if it doesn't.
+  The dynamic layout is passed the page data but we let the layout extend the components.
+  -->
+  {#await importLayout then DynamicLayout}
+    {#if DynamicLayout}
+      <DynamicLayout {components} {data} />
+    {:else}
+      {@render DefaultLayout()}
+    {/if}
+  {:catch}
     {@render DefaultLayout()}
-  {/if}
-{:catch}
-  {@render DefaultLayout()}
-{/await}
+  {/await}
+</main>

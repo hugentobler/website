@@ -1,8 +1,8 @@
-import { get } from '$lib/markdown';
+import { single } from '$lib/markdoc/import';
 
 import type { PageLoad } from './$types';
 
 export const load: PageLoad = async ({ params }) => {
   // Try to import the markdown file with the catchall slug
-  return await get(params.catchall);
+  return await single(params.catchall);
 };

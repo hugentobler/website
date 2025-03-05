@@ -1,5 +1,4 @@
 <script lang="ts">
-  import Clock from '$lib/components/Clock.svelte';
 </script>
 
 <h1 class="text-2xl font-bold text-red-500">Welcome to Hugentobler</h1>

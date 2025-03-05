@@ -1,5 +1,7 @@
-import { list } from '$lib/markdown';
+import { all } from '$lib/markdoc/import';
 
-export const load = async () => {
-  return await list();
+import type { PageServerLoad } from './$types';
+
+export const load: PageServerLoad = async () => {
+  return await all();
 };

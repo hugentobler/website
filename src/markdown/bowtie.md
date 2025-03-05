@@ -6,7 +6,7 @@ description:
   positioned to succeed given its team, capital and traction.
 layout: magazine
 published: 2022-05-02
-updated: 2023-09-02
+updated: 2023-12-12
 ---
 
 # {% $markdoc.frontmatter.title %}

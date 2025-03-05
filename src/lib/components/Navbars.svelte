@@ -1,7 +1,7 @@
 <script module lang="ts">
   import type { Snippet } from 'svelte';
 
-  import Clock from '$lib/components/Clock.svelte';
+  import Clock from '$lib/components/clock.svelte';
   import { getNextTheme, toggleTheme } from '$lib/theme.svelte';
 
   // Map layout names to snippets
@@ -33,7 +33,7 @@
   >
     <a
       class="group flex h-full w-full items-center justify-center rounded-lg text-lg leading-0 text-(--foreground) uppercase font-stretch-expanded focus:inset-ring-2 focus:outline-none lg:text-xl"
-      href="/"
+      href="/content"
     >
       <span
         class="flex h-full translate-y-1 items-center group-hover:translate-x-px group-focus:translate-x-px"

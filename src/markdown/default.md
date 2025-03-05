@@ -5,7 +5,6 @@ description:
   It is situated in a huge competitive sector that desperately needs innovation. And it is well
   positioned to succeed given its team, capital and traction.
 published: 2022-05-02
-updated: 2023-09-02
 ---
 
 In the fast-paced world of [startup development](https://example.com/startup-dev), agility isn't

@@ -1,4 +1,4 @@
-import type { Component, Snippet } from 'svelte';
+import type { Component } from 'svelte';
 
 import type { Tag } from '@markdoc/markdoc';
 
@@ -25,8 +25,4 @@ export interface MarkdocPageData {
 export interface MarkdocPageProps {
   components?: Record<string, Component>;
   data: MarkdocPageData;
-}
-
-export interface MarkdocLayoutProps extends MarkdocPageProps {
-  children: Snippet;
 }
