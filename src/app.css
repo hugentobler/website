@@ -5,17 +5,25 @@
 @plugin "@tailwindcss/typography";
 @plugin "@tailwindcss/forms";
 
-/* Use data attribute to apply theme */
+/* apply theme using data attribute */
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
 @theme {
-  /* Font family utilities */
+  /* animation utilities */
+  --animate-fade-in: fade-in 300ms ease;
+  --animate-underline: underline 100ms ease-out;
+  --animate-underline-vertical: underline-vertical 100ms ease-out;
+  --animate-flip-in: flip-in 600ms;
+
+  /* breakpoint utilities */
+  --breakpoint-3xl: 120rem;
+  --breakpoint-4xl: 150rem;
+
+  /* font family utilities */
   --font-mono: Berkeley Mono Variable, Berkeley Mono, monospace;
   --font-sans: Univers, sans-serif;
 
-  /* Animation utilities */
-  --animate-fade-in: fade-in 300ms ease;
-
+  /* animation keyframes */
   @keyframes fade-in {
     from {
       opacity: 0;
@@ -24,30 +32,65 @@
       opacity: 1;
     }
   }
+
+  @keyframes flip-in {
+    from {
+      transform: rotateX(-36deg);
+    }
+    to {
+      transform: rotateX(0deg);
+    }
+  }
+
+  @keyframes underline {
+    from {
+      background-size: 0 1px;
+    }
+    to {
+      background-size: 100% 1px;
+    }
+  }
+
+  @keyframes underline-vertical {
+    from {
+      background-size: '0 0';
+    }
+    to {
+      background-size: '1px 100%';
+    }
+  }
 }
 
 :root {
-  /* Navbar - we provide this default to child layouts */
-  --navbar-height: calc(var(--spacing) * 8);
+  /* light theme variables */
 
-  /* Scrollbar variables */
-  --scrollbar-color-thumb: var(--color-orange-900);
-  --scrollbar-color-track: var(--color-orange-100);
+  /* navbar - we provide this default to child layouts */
+  --navbar-height: calc(var(--spacing) * 16);
+
+  /* page theme variables */
+  --background: var(--color-zinc-200);
+  --foreground: var(--color-teal-900);
+
+  --primary: var(--color-orange-500);
+  --primary-dark: var(--color-orange-400);
+
+  /* scrollbar variables */
+  --scrollbar-color-thumb: var(--foreground);
+  --scrollbar-color-track: var(--background);
   --scrollbar-width: auto;
   --scrollbar-width-legacy: var(--text-base);
 
-  /* Scroll timeline variables */
+  /* scroll timeline variables */
   --scroll-timeline: --scroll-timeline;
-
-  /* Page theme variables */
-  --background: var(--color-orange-100);
-  --background-dark: var(--color-orange-900);
-
-  --foreground: var(--color-black);
-  --foreground-dark: var(--color-white);
 }
 
-/* Default scrollbar styling */
+[data-theme='dark'] {
+  /* dark theme variables */
+  --background: var(--color-zinc-600);
+  --foreground: var(--color-sky-100);
+}
+
+/* default scrollbar styling */
 /* https://developer.chrome.com/docs/css-ui/scrollbar-styling */
 @supports (scrollbar-width: auto) {
   * {
@@ -56,7 +99,7 @@
   }
 }
 
-/* Fallback scrollbar styling */
+/* fallback scrollbar styling */
 @supports not (scrollbar-color: auto) {
   ::-webkit-scrollbar {
     -webkit-appearance: none;
@@ -79,7 +122,7 @@
   }
 }
 
-/* Scroll timeline utilities */
+/* scroll timeline utilities */
 @utility scroll-timeline-y {
   animation-timeline: scroll(); /* Modern */
   animation-timeline: --scroll-timeline; /* Legacy */

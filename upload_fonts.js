@@ -11,7 +11,9 @@ const __dirname = path.dirname(__filename);
 const sourceDir = path.join(__dirname, 'static/fonts');
 
 // Fonts R2 bucket name
-const bucketName = 'fonts-hvgentobler';
+// https://developers.cloudflare.com/workers/wrangler/commands/#r2-object-put
+const bucketName = 'hugentobler';
+const cacheControl = 'public, max-age=31536000, immutable';
 
 // Load env variable
 dotenv.config();
@@ -22,22 +24,27 @@ if (!process.env.CLOUDFLARE_API_TOKEN) {
   process.exit(1);
 }
 
+// Define allowed font extensions
+const allowedExtensions = ['.otf', '.ttf', '.woff2'];
+
 fs.readdir(sourceDir, (err, files) => {
   if (err) {
     console.error(`Error reading directory ${sourceDir}: ${err}`);
     return;
   }
 
-  files.forEach((file) => {
-    const filePath = path.join(sourceDir, file);
-    const command = `npx wrangler r2 object put ${bucketName}/${file} --file=${filePath}`;
+  files
+    .filter((file) => allowedExtensions.includes(path.extname(file).toLowerCase()))
+    .forEach((file) => {
+      const filePath = path.join(sourceDir, file);
+      const command = `npx wrangler r2 object put ${bucketName}/${file} --file=${filePath} --cache-control="${cacheControl}"`;
 
-    exec(command, (error) => {
-      if (error) {
-        console.error(`Error uploading ${file}:`, error);
-        return;
-      }
-      console.log(`Successfully uploaded ${file}`);
+      exec(command, (error) => {
+        if (error) {
+          console.error(`Error uploading ${file}:`, error);
+          return;
+        }
+        console.log(`Successfully uploaded ${file}`);
+      });
     });
-  });
 });

@@ -6,8 +6,10 @@ description:
   positioned to succeed given its team, capital and traction.
 layout: magazine
 published: 2022-05-02
-updated: 2023-09-02
+updated: 2023-12-12
 ---
+
+# {% $markdoc.frontmatter.title %}
 
 Bowtie is a unique company. It has an important mission tied to its customers' everyday wellbeing.
 It is situated in a huge competitive sector that desperately needs innovation. And it is well
@@ -70,7 +72,7 @@ crew. Software can’t solve every problem, but in this case Bowtie does have a 
 competitors. See Lemonade’s
 [automation index](https://www.lemonade.com/blog/two-years-transparency/).
 
-![It's easy to submit claims online!](/blog/it's-easy-to-submit-claims-online!.jpg)
+![It's easy to submit claims online!](it's-easy-to-submit-claims-online!.jpg)
 
 In the early days, our differentiator was transparency. Every detail about our products and pricing
 is free and open for website visitors to access. No annoying lead generation forms that gate
@@ -97,7 +99,7 @@ and we learned much from the experience. We also doubled down by building in-hou
 expertise by [opening a clinic downtown](https://bowtiejphealth.com/), in close partnership with JP
 Partners Medical.
 
-![Guests touring the Traditional Chinese Medicine office](/blog/guests-touring-the-traditional-chinese-medicine-office.jpg)
+![Guests touring the Traditional Chinese Medicine office](guests-touring-the-traditional-chinese-medicine-office.jpg)
 
 Our passion for improving our customers’ health and wellbeing, and paying for medical costs with
 easy and affordable health insurance; that’s what moves Bowtie forwards.
@@ -154,7 +156,7 @@ people. Or close enough.
 
 This in large part, is the product management function.
 
-![End-of-year team hackathon in December 2021](/blog/end-of-year-team-hackathon-in-december-2021.jpg)
+![End-of-year team hackathon in December 2021](end-of-year-team-hackathon-in-december-2021.jpg)
 
 Here’s how we set it up at Bowtie:
 

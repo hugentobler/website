@@ -22,6 +22,17 @@
         ? 'dark'
         : 'light';
   </script>
+
+  <!-- Preconnect to CDN -->
+  <link rel="preconnect" href="https://cdn.hugentobler.xyz" crossorigin="anonymous" />
 </svelte:head>
 
 {@render children()}
+
+<style lang="postcss">
+  @reference "../app.css";
+
+  :global(body) {
+    @apply bg-(--background) text-(--foreground) antialiased;
+  }
+</style>

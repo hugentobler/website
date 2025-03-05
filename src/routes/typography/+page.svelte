@@ -1,4 +1,5 @@
 <h1 class="mb-4 font-mono text-4xl font-bold">The Quick Brown Fox</h1>
+<h1 class="mb-4 font-mono text-4xl font-bold slashed-zero">0123456789===</h1>
 
 <h2 class="mb-3 font-mono text-3xl font-light">Jumps Over The Lazy Dog</h2>
 
