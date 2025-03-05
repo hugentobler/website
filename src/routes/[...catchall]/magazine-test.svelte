@@ -1,9 +1,13 @@
 <script lang="ts" module>
-  /* import and export custom components for mdsvex */
   import DecoratedLink from '$lib/components/DecoratedLink.svelte';
+  import Image from '$lib/markdoc/Image.svelte';
 
-  /* named html tag gets replaced with custom component */
-  export { DecoratedLink as a }; // eslint-disable-line
+  import Page from './+page.svelte';
+
+  const components = {
+    a: DecoratedLink,
+    img: Image
+  };
 </script>
 
 <script lang="ts">
@@ -14,8 +18,9 @@
   import ScrollIndicator from '$lib/components/ScrollIndicator.svelte';
   import type { MarkdownLayoutProps } from '$lib/types';
 
-  let { children, title, updated } = $props() as MarkdownLayoutProps;
-  const updatedDate = new SvelteDate(updated).toISOString().split('T')[0];
+  let { pageData, children, title, updated } = $props() as MarkdownLayoutProps;
+  // const updatedDate = new SvelteDate(updated).toISOString().split('T')[0];
+  const updatedDate = 'hello';
 
   // watch article element scrolling
   let article: HTMLElement;
@@ -62,7 +67,7 @@
   <div
     class="relative col-span-26 col-start-5 first-letter:float-left first-letter:mt-1 first-letter:mr-1 first-letter:-mb-6 first-letter:text-8xl first-letter:leading-none first-letter:font-stretch-ultra-condensed lg:ml-12"
   >
-    {@render children()}
+    <Page data={pageData} {children} {components} />
     <div id="bottom" class="absolute bottom-0"></div>
   </div>
   <!-- <footer></footer> -->

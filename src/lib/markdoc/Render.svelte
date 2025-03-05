@@ -24,13 +24,19 @@ Renders a Markdoc tree into Svelte components and HTML elements. Handles both cu
 
   import type { RenderableTreeNode, Tag } from '@markdoc/markdoc';
 
-  // The children prop contains the Markdoc render tree
-  // Each node can be either a Tag (like h1, p, blockquote) or a string
-  export let children: RenderableTreeNode[];
+  import Render from './render.svelte';
 
-  // Map of custom components to use instead of default HTML elements
-  // e.g. { img: CustomImageComponent }
-  export let components: Record<string, Component>;
+  let {
+    children,
+    components
+  }: {
+    // The children prop contains the Markdoc render tree
+    // Each node can be either a Tag (like h1, p, blockquote) or a string
+    children: RenderableTreeNode[];
+    // Map of custom components to use instead of default HTML elements
+    // e.g. { img: CustomImageComponent }
+    components: Record<string, Component>;
+  } = $props();
 
   // Defines the shape of a processed node ready for rendering
   type RenderedNode = {
@@ -70,18 +76,24 @@ Renders a Markdoc tree into Svelte components and HTML elements. Handles both cu
 {#each children as child}
   {@const rendered = renderNode(child)}
   {#if typeof rendered === 'string'}
+    <!-- Render text nodes directly -->
     {rendered}
   {:else if rendered.isHtmlElement}
+    <!-- Render HTML elements using svelte:element -->
     <svelte:element this={rendered.component as string} {...rendered.props}>
       {#if rendered.children?.length}
-        <svelte:self children={rendered.children} {components} />
+        <!-- Recursively render nested children -->
+        <Render children={rendered.children} {components} />
       {/if}
     </svelte:element>
   {:else}
-    <svelte:component this={rendered.component as Component} {...rendered.props}>
+    <!-- Render custom components -->
+    {@const Component = rendered.component as Component}
+    <Component {...rendered.props}>
       {#if rendered.children?.length}
-        <svelte:self children={rendered.children} {components} />
+        <!-- Recursively render nested children -->
+        <Render children={rendered.children} {components} />
       {/if}
-    </svelte:component>
+    </Component>
   {/if}
 {/each}
