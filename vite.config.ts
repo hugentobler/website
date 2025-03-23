@@ -8,7 +8,6 @@ import yaml from 'yaml';
 
 export default defineConfig({
   plugins: [
-    enhancedImages(),
     {
       name: 'markdoc',
       transform(src, id) {
@@ -39,6 +38,7 @@ export default defineConfig({
         };
       }
     },
+    enhancedImages(),
     sveltekit(),
     tailwindcss()
   ]

@@ -7,6 +7,8 @@ description:
 published: 2022-05-02
 ---
 
+# {% $markdoc.frontmatter.title %}
+
 In the fast-paced world of [startup development](https://example.com/startup-dev), agility isn't
 just a methodology—it's a survival imperative. Over the course of twelve months, our team has
 navigated the complex landscape of product development, learning invaluable lessons about
