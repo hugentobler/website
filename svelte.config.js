@@ -3,7 +3,7 @@ import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
-  extensions: ['.svelte'],
+  extensions: ['.svelte', '.md'],
   // File extensions that should be treated as Svelte files
 
   preprocess: [

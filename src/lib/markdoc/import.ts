@@ -24,30 +24,36 @@ export const single = async (slug: string) => {
     throw error(404, `Content ${slug} not found`);
   }
 
-  const file = markdownModules[path] as MarkdocFile;
-  validateDates(slug, [file.frontmatter.published ?? '', file.frontmatter.updated ?? '']);
+  // const file = markdownModules[path] as MarkdocFile;
+  // validateDates(slug, [file.frontmatter.published ?? '', file.frontmatter.updated ?? '']);
 
-  return { content: file.default, frontmatter: file.frontmatter, slug } as MarkdocPageData;
+  // return { content: file.default, frontmatter: file.frontmatter, slug } as MarkdocPageData;
+
+  const file = markdownModules[path];
+  return {
+    component: file.default,
+    slug
+  };
 };
 
 // Import a list of all markdown files
-export const all = async () => {
-  const frontmatters: Frontmatter[] = [];
+// export const all = async () => {
+//   const frontmatters: Frontmatter[] = [];
 
-  for (const path in markdownModules) {
-    const file = markdownModules[path] as MarkdocFile;
-    const slug = path.split('/').at(-1)?.replace('.md', '');
-    if (!slug) continue;
+//   for (const path in markdownModules) {
+//     const file = markdownModules[path] as MarkdocFile;
+//     const slug = path.split('/').at(-1)?.replace('.md', '');
+//     if (!slug) continue;
 
-    validateDates(slug, [file.frontmatter.published ?? '', file.frontmatter.updated ?? '']);
+//     validateDates(slug, [file.frontmatter.published ?? '', file.frontmatter.updated ?? '']);
 
-    const frontmatter = {
-      ...file.frontmatter,
-      slug
-    } satisfies Frontmatter;
+//     const frontmatter = {
+//       ...file.frontmatter,
+//       slug
+//     } satisfies Frontmatter;
 
-    frontmatters.push(frontmatter);
-  }
+//     frontmatters.push(frontmatter);
+//   }
 
-  return { frontmatters };
-};
+//   return { frontmatters };
+// };
