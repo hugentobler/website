@@ -13,11 +13,13 @@ export default defineConfig({
       transform(src, id) {
         if (!id.endsWith('.md')) return null;
 
-        // Parse the markdown file
+        // Parse the markdown file into a Markdoc AST
         const ast = Markdoc.parse(src);
+
         // Parse the frontmatter
         const frontmatter = yaml.parse(ast.attributes.frontmatter);
 
+        // Transform the AST to a Markdoc "renderable tree"
         const config = {
           variables: {
             markdoc: {
@@ -25,9 +27,9 @@ export default defineConfig({
             }
           }
         };
-        // Create renderable node tree
         const content = Markdoc.transform(ast, config);
 
+        // Return it to Vite
         return {
           code: `
             export const frontmatter = ${JSON.stringify(frontmatter)};
