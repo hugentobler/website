@@ -1,13 +1,11 @@
 ---
-title: Twelve months of agile startup product development
+title: Default
 description:
   Bowtie is a unique company. It has an important mission tied to its customers' everyday wellbeing.
   It is situated in a huge competitive sector that desperately needs innovation. And it is well
   positioned to succeed given its team, capital and traction.
 published: 2022-05-02
 ---
-
-# {% $markdoc.frontmatter.title %}
 
 In the fast-paced world of [startup development](https://example.com/startup-dev), agility isn't
 just a methodology—it's a survival imperative. Over the course of twelve months, our team has

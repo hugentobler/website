@@ -1,11 +1,11 @@
 <script lang="ts">
-  import Render from '$lib/markdoc/render.svelte';
-  import type { MarkdocPageProps } from '$lib/markdoc/types';
-
+  // import Render from '$lib/markdoc/render.svelte';
+  // import type { MarkdocPageProps } from '$lib/markdoc/types';
   // let { components = {}, data }: MarkdocPageProps = $props();
   // const { frontmatter, component } = data;
   const { data } = $props();
-  const { component, slug } = data;
+  const { content } = data;
+  // const { component, slug } = data;
 </script>
 
 <svelte:head>
@@ -14,4 +14,4 @@
 </svelte:head>
 
 <!-- <Render children={content.children} {components} /> -->
-<svelte:component this={component} />
+<svelte:component this={content} />
