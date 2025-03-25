@@ -1,12 +1,15 @@
 import adapter from '@sveltejs/adapter-cloudflare';
+import type { Config } from '@sveltejs/kit';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 
-/** @type {import('@sveltejs/kit').Config} */
-const config = {
-  extensions: ['.svelte', '.md'],
-  // File extensions that should be treated as Svelte files
+import markdoc from './markdoc-plugin';
+
+const config: Config = {
+  // File extensions to treat as Svelte files
+  extensions: ['.svelte'],
 
   preprocess: [
+    markdoc(),
     // Ref: https://svelte.dev/docs/svelte/svelte-compiler#preprocess
     vitePreprocess()
     // TypeScript, PostCSS etc as needed by Tailwind in Svelte
@@ -24,7 +27,6 @@ const config = {
       platformProxy: {
         configPath: 'wrangler.toml',
         environment: undefined,
-        experimentalJsonConfig: false,
         persist: false
       }
     })

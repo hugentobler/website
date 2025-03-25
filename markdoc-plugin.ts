@@ -1,22 +1,25 @@
+import type { PreprocessorGroup } from 'svelte/compiler';
+
 import Markdoc from '@markdoc/markdoc';
 import type { Plugin } from 'vite';
 import yaml from 'yaml';
 
-export const markdoc = (): Plugin => {
-  const extensions = ['.md'];
-
+const markdoc = (): PreprocessorGroup => {
   return {
     name: 'markdoc',
-    enforce: 'pre',
-    transform(src, id) {
-      if (!extensions.find((ext) => id.endsWith(ext))) return undefined;
-
-      return {
-        code: '<script lang="ts"></script>\n<h1>Hello World</h1>\n'
-      };
+    markup: async ({ content, filename }) => {
+      console.log('>>> markdoc markup called with:', filename);
+      if (filename?.endsWith('.md')) {
+        console.log('markdoc intercepted');
+        return {
+          code: '<script lang="ts"></script>\n<h1>Hello World</h1>\n'
+        };
+      }
     }
   };
 };
+
+export default markdoc;
 
 /**
  * Convert Markdoc markdown into a Svelte component string.

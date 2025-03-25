@@ -4,18 +4,18 @@ import type { Frontmatter, MarkdocFile, MarkdocPageData } from './types';
 
 // Eagerly import all markdown files
 // Vite will preprocess the markdown files, see vite.config.ts
-const markdownModules = import.meta.glob('/src/markdown/*.md', { eager: true });
+// const markdownModules = import.meta.glob('/src/markdown/*.md', { eager: true });
 
-const validateDates = (slug: string, dates: string[]) => {
-  for (const date of dates) {
-    if (!date) continue;
+// const validateDates = (slug: string, dates: string[]) => {
+//   for (const date of dates) {
+//     if (!date) continue;
 
-    const parsed = new Date(date);
-    if (isNaN(parsed.getTime())) {
-      throw error(422, `Invalid date in ${slug}: ${date}`);
-    }
-  }
-};
+//     const parsed = new Date(date);
+//     if (isNaN(parsed.getTime())) {
+//       throw error(422, `Invalid date in ${slug}: ${date}`);
+//     }
+//   }
+// };
 
 // Import a single markdown file
 export const single = async (slug: string) => {
