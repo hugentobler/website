@@ -2,7 +2,7 @@ import adapter from '@sveltejs/adapter-cloudflare';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 import { markdoc } from 'markdoc-svelte';
 
-import { image } from './markdoc/nodes/image.js';
+import image from './markdoc/nodes/image.js';
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
@@ -17,7 +17,7 @@ const config = {
     // Process Markdown files with Markdoc
     markdoc({
       nodes: {
-        image
+        image: image
       }
     })
   ],

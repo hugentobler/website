@@ -9,6 +9,7 @@ export default {
   tabWidth: 2,
   trailingComma: 'none',
   useTabs: false,
+  proseWrap: 'never',
   // sort-imports
   importOrder: [
     // 1. Svelte core imports
@@ -48,10 +49,9 @@ export default {
       }
     },
     {
-      files: '*.md',
+      files: '**/*.md',
       options: {
-        parser: 'markdown',
-        proseWrap: 'always'
+        proseWrap: 'never'
       }
     }
   ]

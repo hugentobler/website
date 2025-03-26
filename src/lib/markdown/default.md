@@ -14,6 +14,8 @@ adaptation, resilience, and the critical importance of user-centered design. Thr
 iterations and pivots, we've maintained our focus on delivering value while remaining flexible
 enough to respond to changing market conditions and user needs.
 
+{% hello="CustomComponent" %} ![It's easy to submit!](it's-easy-to-submit-claims-online!.jpg)
+
 The journey has been marked by both triumphs and challenges, each contributing to our growth as a
 team and organization. We've discovered that successful
 [product development](https://example.com/product-dev) isn't just about following a prescribed set
