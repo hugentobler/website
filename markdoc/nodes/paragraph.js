@@ -5,11 +5,11 @@ import Markdoc from '@markdoc/markdoc';
  */
 const paragraph = {
   attributes: {
-    ...Markdoc.nodes.paragraph.attributes,
-    custom: {
-      type: String,
-      required: false
-    }
+    ...Markdoc.nodes.paragraph.attributes
+    // render: {
+    //   type: String,
+    //   required: false
+    // }
   },
   /**
    * Transform function for the paragraph node

@@ -19,8 +19,8 @@ const config = {
     // Process Markdown files with Markdoc
     markdoc({
       nodes: {
-        paragraph,
-        link
+        paragraph
+        // link
       },
       tags: {
         decoratedLink

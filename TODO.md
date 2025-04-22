@@ -1,0 +1,2 @@
+- It doesn't look like Attributes can be used on Nodes that may be nested inside paragraph. E.g. links or images. So I don't think we can use Attributes to customise these Nodes. However, we can use Tags.
+- Next step: implement decorated-link and enhanced-img tags for Link and Image. It's still readable afterall.

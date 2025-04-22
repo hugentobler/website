@@ -4,9 +4,12 @@ description: Bowtie is a unique company. It has an important mission tied to its
 published: 2022-05-02
 ---
 
-In the fast-paced world of [startup development](https://example.com/startup-dev), {% decoratedLink %}[startup development](https://example.com/startup-dev){% /decoratedLink %} agility isn't just a methodology—it's a survival imperative. Over the course of twelve months, our team has navigated the complex landscape of product development, learning invaluable lessons about adaptation, resilience, and the critical importance of user-centered design. Through countless iterations and pivots, we've maintained our focus on delivering value while remaining flexible enough to respond to changing market conditions and user needs.
+In the fast-paced world of
+[startup development](https://example.com/startup-dev) {% render="DecoratedLink" %}
+,
+{% decoratedLink %}[startup development](https://example.com/startup-dev){% /decoratedLink %} agility isn't just a methodology—it's a survival imperative. Over the course of twelve months, our team has navigated the complex landscape of product development, learning invaluable lessons about adaptation, resilience, and the critical importance of user-centered design. Through countless iterations and pivots, we've maintained our focus on delivering value while remaining flexible enough to respond to changing market conditions and user needs.
 
-![It's easy to submit!](it's-easy-to-submit-claims-online!.jpg) {% custom="CustomComponent" %}
+![It's easy to submit!](it's-easy-to-submit-claims-online!.jpg)
 
 The journey has been marked by both triumphs and challenges, each contributing to our growth as a team and organization. We've discovered that successful [product development](https://example.com/product-dev) isn't just about following a prescribed set of steps—it's about creating an environment where innovation can flourish while maintaining the discipline to execute effectively. Our approach has evolved from rigid sprint planning to a more fluid, responsive process that better serves our unique context and objectives. This evolution has enabled us to move faster and make more informed decisions, ultimately leading to better outcomes for our users.
 

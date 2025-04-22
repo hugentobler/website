@@ -5,7 +5,11 @@ import Markdoc from '@markdoc/markdoc';
  */
 const link = {
   attributes: {
-    ...Markdoc.nodes.link.attributes
+    ...Markdoc.nodes.link.attributes,
+    render: {
+      type: String,
+      required: false
+    }
   },
   /**
    * Transform function for the paragraph node
