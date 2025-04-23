@@ -3,9 +3,9 @@ import Markdoc from '@markdoc/markdoc';
 /**
  * @type {import('@markdoc/markdoc').Schema}
  */
-const link = {
+const paragraph = {
   attributes: {
-    ...Markdoc.nodes.link.attributes,
+    ...Markdoc.nodes.paragraph.attributes,
     render: {
       type: String,
       required: false
@@ -20,8 +20,8 @@ const link = {
   transform(node, config) {
     const attributes = node.transformAttributes(config);
     const children = node.transformChildren(config);
-    return new Markdoc.Tag('a', { ...attributes }, children);
+    return new Markdoc.Tag('p', { ...attributes }, children);
   }
 };
 
-export default link;
+export default paragraph;

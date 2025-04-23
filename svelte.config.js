@@ -2,9 +2,9 @@ import adapter from '@sveltejs/adapter-cloudflare';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 import { markdoc } from 'markdoc-svelte';
 
-import link from './markdoc/nodes/link.js';
-import paragraph from './markdoc/nodes/paragraph.js';
-import decoratedLink from './markdoc/tags/decorated-link.js';
+import link from './src/markdoc/nodes/link.js';
+import paragraph from './src/markdoc/nodes/paragraph.js';
+import underline from './src/markdoc/tags/underline.js';
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
@@ -19,12 +19,14 @@ const config = {
     // Process Markdown files with Markdoc
     markdoc({
       nodes: {
-        paragraph
         // link
       },
       tags: {
-        decoratedLink
-      }
+        underline
+      },
+      linkify: true,
+      validationLevel: 'warning',
+      schema: './src/markdoc'
     })
   ],
 

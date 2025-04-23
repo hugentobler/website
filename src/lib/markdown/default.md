@@ -4,10 +4,9 @@ description: Bowtie is a unique company. It has an important mission tied to its
 published: 2022-05-02
 ---
 
-In the fast-paced world of
-[startup development](https://example.com/startup-dev) {% render="DecoratedLink" %}
-,
-{% decoratedLink %}[startup development](https://example.com/startup-dev){% /decoratedLink %} agility isn't just a methodology—it's a survival imperative. Over the course of twelve months, our team has navigated the complex landscape of product development, learning invaluable lessons about adaptation, resilience, and the critical importance of user-centered design. Through countless iterations and pivots, we've maintained our focus on delivering value while remaining flexible enough to respond to changing market conditions and user needs.
+In the fast-paced world of [startup development](https://example.com/startup-dev), {% underline %}[startup development](https://example.com/startup-dev){% /underline %} agility isn't just a methodology—it's a survival imperative. Over the course of twelve months, our team has navigated the complex landscape of product development, learning invaluable lessons about adaptation, resilience, and the critical importance of user-centered design. Through countless iterations and pivots, we've maintained our focus on delivering value while remaining flexible enough to respond to changing market conditions and user needs.
+
+{% underline %}Not a link{% /underline %}
 
 ![It's easy to submit!](it's-easy-to-submit-claims-online!.jpg)
 

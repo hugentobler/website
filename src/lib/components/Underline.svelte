@@ -1,15 +1,12 @@
 <script lang="ts">
-  import type { HTMLAnchorAttributes } from 'svelte/elements';
-
-  let { children, ...rest }: HTMLAnchorAttributes = $props();
+  let { children } = $props();
 </script>
 
-<a
+<span
   class="focus:ring-offset-background bg-gradient-to-r from-(--foreground)/50 to-(--foreground)/50 bg-[length:100%_1px] bg-[left_bottom] bg-no-repeat no-underline! hover:animate-underline hover:from-(--foreground) hover:to-(--foreground) focus:ring focus:ring-(--foreground) focus:ring-offset-2 focus:ring-offset-(--background) focus:outline-none"
-  {...rest}
 >
-  {@render children?.()}
-</a>
+  {@render children()}
+</span>
 
 <!-- reference code below from past project, eg vertical underline -->
 

@@ -4,14 +4,14 @@
   // let { components = {}, data }: MarkdocPageProps = $props();
   // const { frontmatter, component } = data;
   const { data } = $props();
-  const { content } = data;
   // const { component, slug } = data;
 </script>
 
 <svelte:head>
-  <!-- <title>{frontmatter.title}</title>
-  <meta name="description" content={frontmatter.description} /> -->
+  <title>{data.frontmatter.title} - {data.frontmatter.description}</title>
+  <meta name="description" content={data.frontmatter.description} />
 </svelte:head>
 
 <!-- <Render children={content.children} {components} /> -->
-<svelte:component this={content} />
+<!-- <svelte:component this={content} /> -->
+<data.content />

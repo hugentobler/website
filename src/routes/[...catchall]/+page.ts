@@ -16,8 +16,6 @@ export const load: PageLoad = async ({ params }) => {
   //   console.error(error);
   // }
 
-  // return await importSingle(params.catchall);
-
   // try {
   //   const markdown = await import(`../../markdown/${params.catchall}.md`);
 
