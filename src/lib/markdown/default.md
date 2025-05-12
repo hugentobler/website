@@ -3,8 +3,53 @@ title: Default
 description: Bowtie is a unique company. It has an important mission tied to its customers' everyday wellbeing. It is situated in a huge competitive sector that desperately needs innovation. And it is well positioned to succeed given its team, capital and traction.
 published: 2022-05-02
 ---
+{% table %}
+* Foo
+* Bar
+* Baz
+---
+*
+  ```
+  puts "Some code here."
+  ```
+*
+  {% if %}
+  * Bulleted list in table
+  * Second item in bulleted list
+  {% /if %}
+* Text in a table
+---
+*
+  A "loose" list with
 
-In the fast-paced world of [startup development](https://example.com/startup-dev), {% underline %}[startup development](https://example.com/startup-dev){% /underline %} agility isn't just a methodology—it's a survival imperative. Over the course of twelve months, our team has navigated the complex landscape of product development, learning invaluable lessons about adaptation, resilience, and the critical importance of user-centered design. Through countless iterations and pivots, we've maintained our focus on delivering value while remaining flexible enough to respond to changing market conditions and user needs.
+  multiple line items
+* Test 2
+* Test 3
+---
+* Test 1
+* A cell that spans two columns {% colspan=2 %}
+{% /table %}
+
+
+{% uppercase("Good morning") %} {% $name %} hello!
+
+<!-- This is a markdown comment -->
+
+{% if equals($name, "Christopher") %}
+The variable $name is equal to the string "Christopher".
+{% /if %}
+
+https://google.com
+
+Frontmatter published: {% $frontmatter.published %}
+
+{% partial file="header.md" /%}
+
+{% partial file="footer.md" /%}
+
+{% partial file="flower.md" /%}
+
+In the fast-paced world of [startup development](/content), {% underline %}[startup development](https://example.com/startup-dev){% /underline %} agility isn't just a methodology—it's a survival imperative. Over the course of twelve months, our team has navigated the complex landscape of product development, learning invaluable lessons about adaptation, resilience, and the critical importance of user-centered design. Through countless iterations and pivots, we've maintained our focus on delivering value while remaining flexible enough to respond to changing market conditions and user needs.
 
 {% underline %}Not a link{% /underline %}
 
