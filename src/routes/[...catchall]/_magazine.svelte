@@ -3,21 +3,17 @@
 
   import { SvelteDate } from 'svelte/reactivity';
 
-  import Image from '$lib/components/markdown-image.svelte';
-  import ScrollIndicator from '$lib/components/scroll-indicator.svelte';
-  import type { MarkdocPageProps } from '$lib/markdoc/types';
+  import type { MarkdocModule } from 'markdoc-svelte';
+
+  import ScrollIndicator from '$lib/components/ScrollIndicator.svelte';
 
   import Page from './+page.svelte';
 
-  let { components, data } = $props() as MarkdocPageProps;
-  let { frontmatter } = data;
-  const updatedDate = new SvelteDate(frontmatter.updated).toISOString().split('T')[0];
-
-  // Extend the default components for this dynamic layout
-  components = {
-    ...components,
-    img: Image
-  };
+  let { data } = $props<{ data: { markdown: MarkdocModule } }>();
+  let { frontmatter } = data.markdown;
+  const updatedDate = frontmatter?.updated
+    ? new SvelteDate(frontmatter.updated).toISOString().split('T')[0]
+    : '';
 
   // Watch article element scrolling
   let article: HTMLElement;
@@ -52,8 +48,10 @@
   <div id="top" class="absolute top-0"></div>
   <ScrollIndicator class="scroll-indicator top-0 animate-fade-in" direction="up" href="#top" />
   <div class="col-span-26 col-start-5 pt-16 lg:ml-12 lg:h-full lg:pt-0">
-    <h1>{frontmatter.title}</h1>
-    <span class="hidden font-mono font-medium font-stretch-condensed lg:block">{updatedDate}</span>
+    <h1>{frontmatter?.title ?? 'Untitled'}</h1>
+    <span class="hidden font-mono text-sm tracking-widest font-stretch-ultra-expanded lg:block"
+      >{updatedDate}</span
+    >
   </div>
   <div class="col-start-2 row-start-3 flex translate-y-1 lg:hidden">
     <span
@@ -64,7 +62,7 @@
   <div
     class="relative col-span-26 col-start-5 first-letter:float-left first-letter:mt-1 first-letter:mr-1 first-letter:-mb-6 first-letter:text-8xl first-letter:leading-none first-letter:font-stretch-ultra-condensed lg:ml-12"
   >
-    <Page {components} {data} />
+    <Page {data} />
     <div id="bottom" class="absolute bottom-0"></div>
   </div>
   <!-- <footer></footer> -->
@@ -110,8 +108,8 @@
     @apply prose-h1:text-5xl;
     @apply prose-h2:text-4xl;
     @apply prose-h3:text-3xl;
-    @apply prose-p:max-w-[64ch] prose-p:text-base prose-p:first:mt-0;
-    @apply prose-ol:list-outside prose-ol:ps-0 prose-ol:marker:text-[0.8em] prose-ol:marker:text-current prose-ol:marker:font-stretch-expanded prose-ul:list-outside prose-ul:list-['+_'] prose-ul:ps-0 prose-ul:marker:pr-2 prose-ul:marker:text-[0.8em] prose-ul:marker:text-current prose-ul:marker:font-stretch-expanded prose-li:ps-0;
+    @apply prose-p:max-w-[64ch] prose-p:text-base prose-p:text-(--foreground) prose-p:first:mt-0;
+    @apply prose-ol:list-outside prose-ol:ps-0 prose-ol:marker:text-[0.8em] prose-ol:marker:text-current prose-ol:marker:font-stretch-expanded prose-ul:list-outside prose-ul:list-['+_'] prose-ul:ps-0 prose-ul:marker:pr-2 prose-ul:marker:text-[0.8em] prose-ul:marker:text-current prose-ul:marker:font-stretch-expanded prose-li:ps-0 prose-li:text-(--foreground);
     @apply prose-a:text-(--foreground);
     @apply prose-blockquote:-ml-5 prose-blockquote:border-s-2 prose-blockquote:border-s-(--primary) prose-blockquote:ps-5 prose-blockquote:text-(--foreground) prose-blockquote:[&_p]:text-xl/6 prose-blockquote:[&_p]:tracking-tight;
     orphans: 1;

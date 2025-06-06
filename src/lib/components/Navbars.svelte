@@ -1,7 +1,7 @@
 <script module lang="ts">
   import type { Snippet } from 'svelte';
 
-  import Clock from '$lib/components/clock.svelte';
+  import Clock from '$lib/components/Clock.svelte';
   import { getNextTheme, toggleTheme } from '$lib/theme.svelte';
 
   // Map layout names to snippets

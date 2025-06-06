@@ -1,16 +1,21 @@
 import adapter from '@sveltejs/adapter-cloudflare';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
+import { markdocPreprocess } from 'markdoc-svelte';
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
-  extensions: ['.svelte'],
-  // File extensions that should be treated as Svelte files
+  // File extensions to treat as Svelte files
+  extensions: ['.svelte', '.md'],
 
   preprocess: [
+    // Process Markdown files with Markdoc
+    markdocPreprocess({
+      linkify: true
+    }),
     // Ref: https://svelte.dev/docs/svelte/svelte-compiler#preprocess
-    vitePreprocess()
     // TypeScript, PostCSS etc as needed by Tailwind in Svelte
     // Ref: https://github.com/sveltejs/vite-plugin-svelte/blob/main/docs/preprocess.md
+    vitePreprocess()
   ],
 
   kit: {
@@ -24,7 +29,6 @@ const config = {
       platformProxy: {
         configPath: 'wrangler.toml',
         environment: undefined,
-        experimentalJsonConfig: false,
         persist: false
       }
     })

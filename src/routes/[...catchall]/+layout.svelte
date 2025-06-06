@@ -6,36 +6,31 @@ Renders a dynamic layout if a valid layout name is defined in the frontmatter. O
 <script lang="ts">
   import type { Component } from 'svelte';
 
-  import DecoratedLink from '$lib/components/decorated-link.svelte';
-  import { getNavbar } from '$lib/components/navbars.svelte';
-  import type { MarkdocPageData } from '$lib/markdoc/types';
+  import type { MarkdocModule } from 'markdoc-svelte';
+
+  import { getNavbar } from '$lib/components/Navbars.svelte';
 
   import { page } from '$app/state';
 
   import Page from './+page.svelte';
 
   // Access frontmatter from child page data
-  const data = page.data as MarkdocPageData;
-  const { frontmatter } = data;
+  const data = page.data as { markdown: MarkdocModule };
+  const { frontmatter } = data.markdown;
 
   // Get the correct navbar, fallsback to default
-  const navbar = getNavbar(frontmatter.layout);
+  const navbar = getNavbar(frontmatter?.layout);
 
   // Import the layout from the same folder as the current file
   // Rollup prefers specifying a filename pattern when importing from the same folder https://github.com/rollup/plugins/tree/master/packages/dynamic-import-vars#limitations
-  let importLayout = frontmatter.layout
+  let importLayout = frontmatter?.layout
     ? import(`./_${frontmatter.layout}.svelte`)
         .then((m): Component => m.default)
         .catch((error) => {
-          console.error(`Error loading layout: "${frontmatter.layout}"`, error);
+          console.error(`Error loading layout: "${frontmatter?.layout}"`, error);
           return null;
         })
     : null;
-
-  // Set default components for all layouts
-  const components = {
-    a: DecoratedLink
-  };
 </script>
 
 <!--
@@ -44,7 +39,7 @@ Directly renders the page component with the default components.
 -->
 {#snippet DefaultLayout()}
   <span>I am the default layout!</span>
-  <Page {components} {data} />
+  <Page {data} />
 {/snippet}
 
 <!--
@@ -69,7 +64,7 @@ Directly renders the page component with the default components.
   -->
   {#await importLayout then DynamicLayout}
     {#if DynamicLayout}
-      <DynamicLayout {components} {data} />
+      <DynamicLayout {data} />
     {:else}
       {@render DefaultLayout()}
     {/if}
