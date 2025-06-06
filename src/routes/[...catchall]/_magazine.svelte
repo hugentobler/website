@@ -47,15 +47,18 @@
 <article bind:this={article} class="relative scroll-timeline-y lg:scroll-timeline-x">
   <div id="top" class="absolute top-0"></div>
   <ScrollIndicator class="scroll-indicator top-0 animate-fade-in" direction="up" href="#top" />
-  <div class="col-span-26 col-start-5 pt-16 lg:ml-12 lg:h-full lg:pt-0">
-    <h1>{frontmatter?.title ?? 'Untitled'}</h1>
-    <span class="hidden font-mono text-sm tracking-widest font-stretch-ultra-expanded lg:block"
+  <div class="col-span-26 col-start-5 pt-16 lg:h-full lg:pt-0">
+    <h1 class="!text-8xl uppercase !font-stretch-ultra-condensed">
+      {frontmatter?.title ?? 'Untitled'}
+    </h1>
+    <span
+      class="hidden font-mono text-sm font-medium tracking-[0.5em] font-stretch-ultra-expanded lg:block"
       >{updatedDate}</span
     >
   </div>
   <div class="col-start-2 row-start-3 flex translate-y-1 lg:hidden">
     <span
-      class="font-mono leading-none font-medium font-stretch-condensed [writing-mode:vertical-rl] lg:[writing-mode:unset]"
+      class="font-mono text-xs leading-none font-medium tracking-[0.5em] font-stretch-ultra-expanded [writing-mode:vertical-rl] lg:[writing-mode:unset]"
       >{updatedDate}</span
     >
   </div>
@@ -78,7 +81,7 @@
 
   article {
     /* grid */
-    --x-spacer: theme('spacing.4');
+    --x-spacer: theme('spacing.10');
     @apply grid grid-cols-32 lg:block;
     @apply lg:mx-(--x-spacer) lg:py-[calc(var(--x-spacer)*2)];
 

@@ -118,9 +118,10 @@
     style="--rotation: {(current * 360) /
       length}; --length: {length}; --radius: calc(var(--height) * 1.25 / sin(36deg) * -1);"
   >
-    {#each Array.from({ length }, (_, i) => i) as digit, i}
+    {#each Array.from({ length }, (_, i) => i) as digit, i (digit)}
       <span
-        class="absolute top-1/2 left-1/2 text-(length:--height) leading-none backface-hidden"
+        class="absolute top-1/2 left-1/2 text-(length:--height) leading-none
+        backface-hidden"
         style="--index: {i}; transform: translate(-50%, -50%) rotateX(calc(360deg/var(--length)*var(--index))) translateZ(calc(var(--radius) * -1));"
         >{digit}</span
       >
@@ -130,18 +131,18 @@
 
 <div
   class="clock relative grid h-[calc(var(--height)*2)] grid-flow-col content-center font-mono"
-  style="--height: var(--clock-height, 1.125rem); mask: linear-gradient(#0000 0.25rem, #000 calc(50% - 0.35rem) calc(50% + 0.35rem), #0000 calc(100% - 0.25rem));"
+  style="--height: var(--clock-height, 1.125rem); mask: linear-gradient(#0000 calc(var(--height) * 0.2), #000 calc(50% - calc(var(--height) * 0.3)) calc(50% + calc(var(--height) * 0.3)), #0000 calc(100% - calc(var(--height) * 0.2)));"
 >
   <!-- hours tens place -->
   {@render wheel(3, hoursTens)}
   <!-- hours ones place -->
   {@render wheel(10, hoursOnes)}
-  <span>:</span>
+  <span class="flex items-center text-(length:--height) leading-none">:</span>
   <!-- minutes tens place -->
   {@render wheel(6, minutesTens)}
   <!-- minutes ones place -->
   {@render wheel(10, minutesOnes)}
-  <span>:</span>
+  <span class="flex items-center text-(length:--height) leading-none">:</span>
   <!-- seconds tens place -->
   {@render wheel(6, secondsTens)}
   <!-- seconds ones place -->
