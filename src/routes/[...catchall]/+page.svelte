@@ -5,7 +5,7 @@
 </script>
 
 <svelte:head>
-  <title>{data.markdoc.frontmatter?.title ?? 'Undefined title'}</title>
+  <title>{data.markdown.frontmatter?.title ?? 'Undefined title'}</title>
 </svelte:head>
 
-<div class="prose"><data.markdoc.default /></div>
+<div class="prose"><data.markdown.default /></div>

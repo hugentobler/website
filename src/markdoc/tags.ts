@@ -1,4 +1,4 @@
-import type { Config } from '@markdoc/markdoc';
+import type { Config } from 'markdoc-svelte';
 
 const tags: Config['tags'] = {
   underline: {

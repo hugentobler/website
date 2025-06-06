@@ -1,3 +1,8 @@
+<script lang="ts">
+  import Clock from '/src/lib/components/clock.svelte';
+</script>
+
+<Clock />
 <h1 class="mb-4 font-mono text-4xl font-bold">The Quick Brown Fox</h1>
 <h1 class="mb-4 font-mono text-4xl font-bold slashed-zero">0123456789===</h1>
 

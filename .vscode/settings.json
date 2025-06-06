@@ -12,5 +12,9 @@
   // prettier
   "prettier.requireConfig": true,
   "prettier.documentSelectors": ["**/*.svelte"],
-  "css.validate": false
+  "css.validate": false,
+  "[markdown]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": false
+  }
 }

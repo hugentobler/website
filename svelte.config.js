@@ -1,6 +1,6 @@
 import adapter from '@sveltejs/adapter-cloudflare';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
-import { markdoc } from 'markdoc-svelte';
+import { markdocPreprocess } from 'markdoc-svelte';
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
@@ -9,16 +9,8 @@ const config = {
 
   preprocess: [
     // Process Markdown files with Markdoc
-    markdoc({
-      // nodes: {
-      //   link
-      // },
-      // tags: {
-      //   underline
-      // },
-      // allowComments: false,
-      linkify: true,
-      partialsDirectory: './src/lib/partials'
+    markdocPreprocess({
+      linkify: true
     }),
     // Ref: https://svelte.dev/docs/svelte/svelte-compiler#preprocess
     // TypeScript, PostCSS etc as needed by Tailwind in Svelte

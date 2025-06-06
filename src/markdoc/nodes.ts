@@ -1,8 +1,19 @@
-import type { Config } from '@markdoc/markdoc';
-import Markdoc from '@markdoc/markdoc';
+import type { Config } from 'markdoc-svelte';
+import { Markdoc } from 'markdoc-svelte';
 
 const nodes: Config['nodes'] = {
+  document: {
+    ...Markdoc.nodes.document,
+    render: '' // Disable default wrapping in <article>
+  },
+  image: {
+    render: 'EnhancedImage',
+    attributes: {
+      ...Markdoc.nodes.image.attributes
+    }
+  },
   link: {
+    render: 'DecoratedLink',
     attributes: {
       ...Markdoc.nodes.link.attributes
     },
@@ -17,18 +28,7 @@ const nodes: Config['nodes'] = {
       } catch {
         // If the URL is invalid, do nothing
       }
-      return new Markdoc.Tag('a', { ...attributes, target }, children);
-    }
-  },
-  paragraph: {
-    attributes: {
-      ...Markdoc.nodes.paragraph.attributes,
-      class: { type: String }
-    },
-    transform(node, config) {
-      const attributes = node.transformAttributes(config);
-      const children = node.transformChildren(config);
-      return new Markdoc.Tag('p', attributes, children);
+      return new Markdoc.Tag('DecoratedLink', { ...attributes, target }, children);
     }
   }
 };
