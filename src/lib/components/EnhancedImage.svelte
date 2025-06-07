@@ -18,7 +18,14 @@
 </script>
 
 {#if image}
-  <enhanced:img src={image} {alt} {...restProps} />
+  <figure>
+    <enhanced:img src={image} {alt} {...restProps} />
+    {#if alt}
+      <figcaption>
+        {alt}
+      </figcaption>
+    {/if}
+  </figure>
 {:else}
   <div class="text-red-500">Image not found: {src}</div>
 {/if}

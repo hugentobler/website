@@ -254,6 +254,15 @@
   font-display: swap;
   font-family: 'Univers';
   font-stretch: condensed;
+  font-style: oblique;
+  font-weight: 400;
+  src: url('https://cdn.hugentobler.xyz/uni-condensed-italic.woff2') format('woff2');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: 'Univers';
+  font-stretch: condensed;
   font-style: normal;
   font-weight: 300;
   src: url('https://cdn.hugentobler.xyz/uni-condensed-light.woff2') format('woff2');

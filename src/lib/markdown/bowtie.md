@@ -70,8 +70,6 @@ crew. Software can’t solve every problem, but in this case Bowtie does have a 
 competitors. See Lemonade’s
 [automation index](https://www.lemonade.com/blog/two-years-transparency/).
 
-![It's easy to submit claims online!](it's-easy-to-submit-claims-online!.jpg)
-
 In the early days, our differentiator was transparency. Every detail about our products and pricing
 is free and open for website visitors to access. No annoying lead generation forms that gate
 important information.
@@ -94,15 +92,16 @@ We launched a proof of concept in partnership with Gleneagles Hospital on the so
 Kong Island. Together we launched an
 [award-winning medical insurance rider](https://www.bowtie.com.hk/zh/insurance/vhis/gleneagles-wellness-package),
 and we learned much from the experience. We also doubled down by building in-house healthcare
-expertise by [opening a clinic downtown](https://bowtiejphealth.com/), in close partnership with JP
-Partners Medical.
-
-![Guests touring the Traditional Chinese Medicine office](guests-touring-the-traditional-chinese-medicine-office.jpg)
+expertise by [opening a clinic downtown](https://bowtiejphealth.com/), in close partnership with JP Partners Medical.
 
 Our passion for improving our customers’ health and wellbeing, and paying for medical costs with
 easy and affordable health insurance; that’s what moves Bowtie forwards.
 
 But how does our team put this direction into action?
+
+![It's easy to submit claims online!](it's-easy-to-submit-claims-online!.jpg)
+
+![Guests touring the Traditional Chinese Medicine office](guests-touring-the-traditional-chinese-medicine-office.jpg)
 
 ## Let the team take ownership
 
@@ -154,13 +153,13 @@ people. Or close enough.
 
 This in large part, is the product management function.
 
-![End-of-year team hackathon in December 2021](end-of-year-team-hackathon-in-december-2021.jpg)
-
 Here’s how we set it up at Bowtie:
 
 1. Small, nearly autonomous, cross-function teams; we just call them squads;
 2. A lightweight six-weeks agile development cycle;
 3. Goal-setting at the 'squad' level, with a living 'Now-Next-Later' roadmap.
+
+![End-of-year team hackathon in December 2021](end-of-year-team-hackathon-in-december-2021.jpg)
 
 ## Autonomous cross-function teams
 
@@ -243,7 +242,7 @@ We’ll cover how we split up squads in part 3 when we cover goal-setting. In th
 recruitment went into overdrive. Gradually, more engineers succeeded in passing our stringent
 recruitment process. The team started to grow.
 
-## Agile development without rigid frameworks
+## Agile development without rigid frameworks {% id="agile-development-without-rigid-frameworks"%}
 
 “The best architectures, requirements, and designs emerge from self-organising teams.” – principle
 eleven of the
