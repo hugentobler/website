@@ -46,7 +46,7 @@ Directly renders the page component with the default components.
   Each child page may have it's own custom navbar
 -->
 <nav
-  class="fixed inset-x-0 bottom-0 z-30 mx-auto grid h-(--navbar-height) max-w-[calc(var(--container-5xl)*2)] grid-cols-32"
+  class="fixed inset-x-1 bottom-0 z-30 mx-auto flex h-(--navbar-height) max-w-[calc(var(--container-5xl)*2)] gap-1 py-1"
 >
   {@render navbar()}
 </nav>

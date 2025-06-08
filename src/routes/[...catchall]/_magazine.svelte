@@ -106,6 +106,9 @@
 
     /* layout */
     height: calc(100svh - var(--navbar-height));
+    @media (width >= theme(--breakpoint-lg)) {
+      height: calc(100svh - var(--navbar-height) - var(--x-spacer) / 2);
+    }
     margin-bottom: var(--navbar-height);
 
     /* columns */
@@ -131,7 +134,7 @@
     @apply prose-h3:text-3xl prose-h3:tracking-normal prose-h3:uppercase prose-h3:font-stretch-ultra-condensed sm:prose-h3:text-4xl xl:prose-h3:text-5xl;
     @apply prose-p:text-base/7 prose-p:tracking-tight prose-p:text-(--foreground) prose-p:[orphans:2] prose-p:first:mt-0 lg:prose-p:max-w-[50ch] lg:prose-p:text-lg/7 2xl:prose-p:text-xl/8;
     @apply prose-em:font-stretch-condensed;
-    @apply prose-ol:list-outside prose-ol:ps-0 prose-ol:marker:text-[0.85em] prose-ol:marker:font-medium prose-ol:marker:text-current prose-ol:marker:font-stretch-expanded prose-ul:list-outside prose-ul:list-['+_'] prose-ul:ps-0 prose-ul:marker:pr-2 prose-ul:marker:text-[0.85em] prose-ul:marker:text-current prose-ul:marker:font-stretch-expanded prose-li:ps-0 prose-li:text-base/7 prose-li:text-(--foreground) lg:prose-li:text-lg/7 2xl:prose-li:text-xl/8;
+    @apply prose-ol:list-outside prose-ol:ps-0 prose-ol:marker:text-[0.85em] prose-ol:marker:font-medium prose-ol:marker:text-current prose-ol:marker:font-stretch-expanded prose-ul:list-outside prose-ul:list-['+_'] prose-ul:ps-0 prose-ul:marker:pr-2 prose-ul:marker:text-[0.85em] prose-ul:marker:text-current prose-ul:marker:font-stretch-expanded prose-li:ps-0 prose-li:text-base/7 prose-li:tracking-tight prose-li:text-(--foreground) lg:prose-li:text-lg/7 2xl:prose-li:text-xl/8;
     @apply prose-a:text-(--foreground);
     @apply prose-blockquote:-mr-4 prose-blockquote:-ml-10 prose-blockquote:break-inside-avoid-column prose-blockquote:rounded-lg prose-blockquote:border-s-3 prose-blockquote:border-s-(--foreground)/75 prose-blockquote:bg-(--foreground)/5 prose-blockquote:p-5 prose-blockquote:text-(--foreground) lg:prose-blockquote:-mx-5 prose-blockquote:[&_p]:m-0 prose-blockquote:[&_p]:text-2xl prose-blockquote:[&_p]:font-stretch-condensed sm:prose-blockquote:[&_p]:text-3xl xl:prose-blockquote:[&_p]:text-4xl;
     @apply prose-figure:-mr-4 prose-figure:-ml-10 prose-figure:break-inside-avoid-column prose-figure:rounded-lg prose-figure:bg-(--foreground)/5 prose-figure:p-5 lg:prose-figure:-mx-5;

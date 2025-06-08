@@ -130,7 +130,7 @@
 {/snippet}
 
 <div
-  class="clock relative grid h-[calc(var(--height)*2)] grid-flow-col content-center font-mono"
+  class="clock relative grid h-[calc(var(--height)*2)] grid-flow-col content-center gap-px font-mono"
   style="--height: var(--clock-height, 1.125rem); mask: linear-gradient(#0000 calc(var(--height) * 0.2), #000 calc(50% - calc(var(--height) * 0.3)) calc(50% + calc(var(--height) * 0.3)), #0000 calc(100% - calc(var(--height) * 0.2)));"
 >
   <!-- hours tens place -->
