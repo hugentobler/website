@@ -38,7 +38,6 @@ const nodes: Config['nodes'] = {
       ...Markdoc.nodes.link.attributes
     },
     transform(node, config) {
-      console.log(node.attributes);
       const attributes = node.transformAttributes(config);
       const children = node.transformChildren(config);
       // If the link is external, open in a new tab

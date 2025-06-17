@@ -9,8 +9,8 @@
   import type { PageProps } from './$types';
   import Page from './+page.svelte';
 
-  let { data } = $props() as PageProps;
-  let { frontmatter, headings } = data.markdown;
+  const { data } = $props() as PageProps;
+  const { frontmatter, headings } = data.markdown;
 
   // Filter h2 headings
   const filteredHeadings = headings?.filter((heading) => heading.level == 2) ?? [];
