@@ -16,9 +16,7 @@ export const load: PageLoad = async ({ params }) => {
   }
 };
 
-// Prerender and export entries
-export const prerender = true;
-
+// Export entries for static generation (prerendering enabled globally)
 export const entries: EntryGenerator = async () => {
   const content = await Promise.all(
     Object.values(markdownModules).map(async (importModule) => {

@@ -31,7 +31,13 @@ const config = {
         environment: undefined,
         persist: false
       }
-    })
+    }),
+
+    // Global prerender configuration
+    prerender: {
+      handleHttpError: 'warn',
+      handleMissingId: 'warn'
+    }
   }
 };
 
