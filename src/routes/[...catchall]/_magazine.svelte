@@ -14,6 +14,7 @@
 
   // Filter h2 headings
   const filteredHeadings = headings?.filter((heading) => heading.level == 2) ?? [];
+  console.log('filteredHeadings', filteredHeadings);
 
   const updatedDate = frontmatter?.updated
     ? new SvelteDate(frontmatter.updated).toISOString().split('T')[0]

@@ -20,7 +20,7 @@ tech startup. Kudos to the team.
 In part 1, we will cover Bowtie’s mission and desired culture. Then in parts 2 and 3, we will dive
 deeper into how we implement that culture, and what product development looks like.
 
-## Building insurance with a mission
+## Building insurance with a mission {% id="building-insurance-with-a-mission"%}
 
 Bowtie started out an insurance company. In the future, Bowtie will grow to become a health and
 wellness company.
@@ -103,7 +103,7 @@ But how does our team put this direction into action?
 
 ![Guests touring the Traditional Chinese Medicine office](guests-touring-the-traditional-chinese-medicine-office.jpg)
 
-## Let the team take ownership
+## Let the team take ownership {% id="let-the-team-takes-ownership"%}
 
 Bowtie’s ambitious mission, in a hyper competitive industry and market, stems from the experience
 and expertise of our founders and leadership team.
@@ -161,7 +161,7 @@ Here’s how we set it up at Bowtie:
 
 ![End-of-year team hackathon in December 2021](end-of-year-team-hackathon-in-december-2021.jpg)
 
-## Autonomous cross-function teams
+## Autonomous cross-function teams {% id="autonomous-cross-function-teams"%}
 
 When I joined Bowtie, our software team consisted of 8 engineers, 4 designers and 1 product manager.
 Everyone wore multiple hats. 2 engineers focused on infrastructure and developer operations, 1
@@ -461,7 +461,7 @@ that sales team wants gets built exactly as requested. But another way of lookin
 only ever building what’s absolutely needed and going to move the needle. This type of collaboration
 and compromise wouldn’t be possible without a huge amount of team-wide trust.
 
-## Goal-setting at the squad level, with a living Now-Next-Later roadmap
+## Goal-setting at the squad level, with a living Now-Next-Later roadmap {% id="goal-setting-at-the-squad-level"%}
 
 Our squad members are now enjoying a relatively high level of autonomy. At the start of each cycle,
 they pick up the Opportunities that have been bet, and they determine the most important problems to
@@ -528,7 +528,7 @@ sufficient amount of expectation setting on the timeline.
 
 With the company’s trust, the team can do their best work.
 
-## Minimum viable product management
+## Minimum viable product management {% id="minimum-viable-product-management"%}
 
 Product managers at Bowtie strive to be both highly visible and invisible at the same time.
 
