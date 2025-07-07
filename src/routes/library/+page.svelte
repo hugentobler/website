@@ -47,19 +47,19 @@
 
   <!-- Filter Controls -->
   <div>
-    <button on:click={() => setFilter('all')}>
+    <button onclick={() => setFilter('all')}>
       All ({data.items.length})
     </button>
     
     {#each contentTypes as type}
       {@const count = data.items.filter(item => item.type === type).length}
-      <button on:click={() => setFilter(type)}>
+      <button onclick={() => setFilter(type)}>
         {type.charAt(0).toUpperCase() + type.slice(1)}s ({count})
       </button>
     {/each}
 
     {#if currentFilter !== 'all'}
-      <button on:click={clearFilter}>
+      <button onclick={clearFilter}>
         Clear Filter
       </button>
     {/if}
