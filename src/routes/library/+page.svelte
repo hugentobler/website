@@ -82,9 +82,9 @@
             <td>
               {#if item.thumbnail}
                 {#if typeof item.thumbnail === 'string'}
-                  <img src={item.thumbnail} alt={item.title} width="40" />
+                  <img src={item.thumbnail} alt={item.title} width="160" />
                 {:else}
-                  <enhanced:img src={item.thumbnail} alt={item.title} sizes="40px" />
+                  <enhanced:img src={item.thumbnail} alt={item.title} sizes="160px" />
                 {/if}
               {/if}
               <strong>{item.title}</strong>
