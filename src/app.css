@@ -3,7 +3,7 @@
 @import './styles/fonts.css';
 
 @plugin "@tailwindcss/typography";
-@plugin "@tailwindcss/forms";
+/* @plugin "@tailwindcss/forms"; */
 
 /* apply theme using data attribute */
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
