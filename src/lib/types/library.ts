@@ -13,11 +13,6 @@ export type LibraryItem = {
   note: string; // Personal review/thoughts
 };
 
-// Data loading types
-export type LibraryData = {
-  items: LibraryItem[];
-  buildTime: string;
-};
-
 // Filter helpers
 export type FilterType = ContentType | 'all';
+export type DecadeFilterType = string | 'all'; // Decades as strings like "2020", "2010", etc.

@@ -1,34 +1,46 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { page } from '$app/state';
-
   import type { PageData } from './$types';
 
-  let { data }: { data: PageData } = $props();
+  const { data }: { data: PageData } = $props();
 
-  // Get filter from URL search params using Svelte 5 $derived rune
-  let currentFilter = $derived(page.url.searchParams.get('type') || 'all');
+  const currentTypeFilter = $derived(page.url.searchParams.get('type') || 'all');
+  const currentDecadeFilter = $derived(page.url.searchParams.get('decade') || 'all');
 
-  // Filter content based on current filter
-  let filteredContent = $derived(
-    currentFilter === 'all' ? data.items : data.items.filter((item) => item.type === currentFilter)
+  const contentTypes = $derived(Array.from(new Set(data.items.map((item) => item.type))));
+
+  const filteredContent = $derived(
+    data.items.filter((item) => {
+      const typeMatch = currentTypeFilter === 'all' || item.type === currentTypeFilter;
+      const decadeMatch = currentDecadeFilter === 'all' || 
+        Math.floor(new Date(item.published).getFullYear() / 10) * 10 === parseInt(currentDecadeFilter);
+      return typeMatch && decadeMatch;
+    })
   );
 
-  // Get unique content types for filter buttons
-  let contentTypes = $derived(Array.from(new Set(data.items.map((item) => item.type))));
+  const hasActiveFilters = $derived(currentTypeFilter !== 'all' || currentDecadeFilter !== 'all');
 
-  function setFilter(type: string) {
+  function setFilter(type?: string, decade?: string) {
     const url = new URL(page.url);
-    if (type === 'all') {
-      url.searchParams.delete('type');
-    } else {
-      url.searchParams.set('type', type);
+    
+    if (type !== undefined) {
+      if (type === 'all') {
+        url.searchParams.delete('type');
+      } else {
+        url.searchParams.set('type', type);
+      }
     }
+    
+    if (decade !== undefined) {
+      if (decade === 'all') {
+        url.searchParams.delete('decade');
+      } else {
+        url.searchParams.set('decade', decade);
+      }
+    }
+    
     goto(url, { keepFocus: true });
-  }
-
-  function clearFilter() {
-    setFilter('all');
   }
 </script>
 
@@ -36,35 +48,104 @@
   <title>Library</title>
 </svelte:head>
 
+<style>
+  .filter-section {
+    margin-bottom: 1rem;
+  }
+  
+  .filter-section strong {
+    display: inline-block;
+    margin-right: 0.5rem;
+    margin-bottom: 0.25rem;
+  }
+  
+  button.active {
+    font-weight: bold;
+    text-decoration: underline;
+  }
+  
+  .current-filters {
+    border: 1px solid #ccc;
+    padding: 1rem;
+    margin-bottom: 1rem;
+  }
+  
+  .current-filters h3 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1rem;
+  }
+  
+  .filter-tag {
+    display: inline-block;
+    border: 1px solid #999;
+    padding: 0.25rem 0.5rem;
+    margin-right: 0.5rem;
+    font-size: 0.9rem;
+  }
+  
+  .clear-filters {
+    margin-top: 0.5rem;
+  }
+</style>
+
 <div>
   <h1>Library</h1>
 
-  <p>
-    <strong>Last updated:</strong>
-    {new Date(data.buildTime).toLocaleString()}
-    (statically generated)
-  </p>
+  <!-- Current Filters -->
+  {#if hasActiveFilters}
+    <div class="current-filters">
+      <h3>Current Filters:</h3>
+      {#if currentTypeFilter !== 'all'}
+        <span class="filter-tag">
+          Type: {currentTypeFilter.charAt(0).toUpperCase() + currentTypeFilter.slice(1)}s
+        </span>
+      {/if}
+      {#if currentDecadeFilter !== 'all'}
+        <span class="filter-tag">
+          Decade: {currentDecadeFilter}s
+        </span>
+      {/if}
+      <div class="clear-filters">
+        <button onclick={() => setFilter('all', 'all')}>Clear All Filters</button>
+      </div>
+    </div>
+  {/if}
 
   <!-- Filter Controls -->
-  <div>
-    <button onclick={() => setFilter('all')}>
-      All ({data.items.length})
-    </button>
+  <div class="filter-controls">
+    <!-- Type Filters -->
+    <div class="filter-section">
+      <strong>Content Type:</strong>
+      {#each contentTypes as type}
+        {@const count = data.items.filter((item) => item.type === type).length}
+        <button 
+          onclick={() => setFilter(type)} 
+          class:active={currentTypeFilter === type}
+        >
+          {type.charAt(0).toUpperCase() + type.slice(1)}s ({count})
+        </button>
+      {/each}
+    </div>
 
-    {#each contentTypes as type}
-      {@const count = data.items.filter((item) => item.type === type).length}
-      <button onclick={() => setFilter(type)}>
-        {type.charAt(0).toUpperCase() + type.slice(1)}s ({count})
-      </button>
-    {/each}
-
-    {#if currentFilter !== 'all'}
-      <button onclick={clearFilter}> Clear Filter </button>
-    {/if}
+    <!-- Decade Filters -->
+    <div class="filter-section">
+      <strong>Decade:</strong>
+      {#each data.decades as decade}
+        {@const count = data.items.filter((item) => 
+          Math.floor(new Date(item.published).getFullYear() / 10) * 10 === decade
+        ).length}
+        <button 
+          onclick={() => setFilter(undefined, decade.toString())} 
+          class:active={currentDecadeFilter === decade.toString()}
+        >
+          {decade}s ({count})
+        </button>
+      {/each}
+    </div>
   </div>
 
   <!-- Content List -->
-  {#if filteredContent && filteredContent.length > 0}
+  {#if filteredContent.length > 0}
     <table>
       <thead>
         <tr>
