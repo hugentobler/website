@@ -1,17 +1,22 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { page } from "$app/state";
+  import { browser } from "$app/environment";
   import type { PageData } from "./$types";
 
   const { data }: { data: PageData } = $props();
 
-  // Parse URL params into arrays of filter values
+  // Parse URL params into arrays of filter values - only in browser
   const activeMediums = $derived(
-    page.url.searchParams.get("medium")?.split("-").filter(Boolean) || [],
+    (browser &&
+      page.url.searchParams.get("medium")?.split("-").filter(Boolean)) ||
+      [],
   );
 
   const activeYears = $derived(
-    page.url.searchParams.get("year")?.split("-").filter(Boolean) || [],
+    (browser &&
+      page.url.searchParams.get("year")?.split("-").filter(Boolean)) ||
+      [],
   );
 
   // Check if any filters are active
@@ -45,6 +50,8 @@
 
   // Add a filter (medium or year)
   function addFilter(filterType: "medium" | "year", value: string) {
+    if (!browser) return; // Guard against SSR
+
     const currentValues = filterType === "medium" ? activeMediums : activeYears;
     if (currentValues.includes(value)) return; // Already active
 
@@ -56,6 +63,8 @@
 
   // Clear all filters
   function clearAllFilters() {
+    if (!browser) return; // Guard against SSR
+
     const url = new URL(page.url);
     url.searchParams.delete("medium");
     url.searchParams.delete("year");
