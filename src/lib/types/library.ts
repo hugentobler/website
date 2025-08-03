@@ -1,18 +1,20 @@
-// Types for /library route data
-import type { Picture } from 'vite-imagetools';
+import type { Picture } from "vite-imagetools";
 
-export type ContentType = 'book' | 'webpage' | 'photograph';
+// Possible item types
+export const ITEM_TYPE = ["book", "webpage", "photograph"] as const;
+export type ItemType = (typeof ITEM_TYPE)[number];
 
-export type LibraryItem = {
+// Individual item
+export type Item = {
   id: string;
-  type: ContentType;
+  type: ItemType;
   title: string;
   published: string; // ISO date string - when content was published
   published_by: string; // Authors, creators, etc.
   thumbnail?: string | Picture; // External URL (books) or enhanced-img import Picture
-  note: string; // Personal review/thoughts
+  note: string; // Review, thoughts, description etc.
 };
 
-// Filter helpers
-export type FilterType = ContentType | 'all';
-export type DecadeFilterType = string | 'all'; // Decades as strings like "2020", "2010", etc.
+// Filters
+export type ItemTypeFilter = ItemType | "all";
+export type ItemDecadeFilter = string | "all";
