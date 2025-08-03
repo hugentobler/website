@@ -88,5 +88,7 @@ export const getHardcoverBooks = async () => {
     subtitle: activity.book.subtitle,
     releaseYear: activity.book.release_year,
     editionIsbns: activity.book.editions.map((edition) => edition.isbn_13),
+    reviewText:
+      activity.data.userBook.reviewSlate?.document.children[0].children[0].text,
   }));
 };

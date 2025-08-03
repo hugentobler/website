@@ -1,237 +1,223 @@
 <script lang="ts">
-    import { goto } from "$app/navigation";
-    import { page } from "$app/state";
-    import type { PageData } from "./$types";
+  import { goto } from "$app/navigation";
+  import { page } from "$app/state";
+  import type { PageData } from "./$types";
 
-    const { data }: { data: PageData } = $props();
+  const { data }: { data: PageData } = $props();
 
-    const currentContentTypeFilter = $derived(
-        page.url.searchParams.get("type") || "all",
-    );
-    const currentDecadeFilter = $derived(
-        page.url.searchParams.get("decade") || "all",
-    );
+  // Parse URL params into arrays of filter values
+  const activeMediums = $derived(
+    page.url.searchParams.get("medium")?.split("-").filter(Boolean) || [],
+  );
 
-    const filteredContent = $derived(
-        data.items.filter((item) => {
-            const typeMatch =
-                currentContentTypeFilter === "all" ||
-                item.type === currentContentTypeFilter;
-            const decadeMatch =
-                currentDecadeFilter === "all" ||
-                Math.floor(new Date(item.published).getFullYear() / 10) * 10 ===
-                    parseInt(currentDecadeFilter);
-            return typeMatch && decadeMatch;
-        }),
-    );
+  const activeYears = $derived(
+    page.url.searchParams.get("year")?.split("-").filter(Boolean) || [],
+  );
 
-    const hasActiveFilters = $derived(
-        currentContentTypeFilter !== "all" || currentDecadeFilter !== "all",
-    );
+  // Check if any filters are active
+  const hasActiveFilters = $derived(
+    activeMediums.length > 0 || activeYears.length > 0,
+  );
 
-    // Helper function to get count for each filter
-    function getContentTypeCount(type: string): number {
-        if (type === "all") return data.items.length;
-        return data.items.filter((item) => item.type === type).length;
-    }
+  // Filter items based on URL params
+  const filteredItems = $derived(
+    data.items.filter((item) => {
+      const mediumMatch =
+        activeMediums.length === 0 || activeMediums.includes(item.type);
 
-    function getDecadeCount(decade: string): number {
-        if (decade === "all") return data.items.length;
-        return data.items.filter(
-            (item) =>
-                Math.floor(new Date(item.published).getFullYear() / 10) * 10 ===
-                parseInt(decade),
-        ).length;
-    }
+      const yearMatch =
+        activeYears.length === 0 ||
+        activeYears.includes(item.decade.toString());
 
-    function setFilter(type?: string, decade?: string) {
-        const url = new URL(page.url);
+      return mediumMatch && yearMatch;
+    }),
+  );
 
-        if (type !== undefined) {
-            if (type === "all") {
-                url.searchParams.delete("type");
-            } else {
-                url.searchParams.set("type", type);
-            }
-        }
+  // Get count for a specific medium
+  function getMediumCount(medium: string): number {
+    return data.items.filter((item) => item.type === medium).length;
+  }
 
-        if (decade !== undefined) {
-            if (decade === "all") {
-                url.searchParams.delete("decade");
-            } else {
-                url.searchParams.set("decade", decade);
-            }
-        }
+  // Get count for a specific year
+  function getYearCount(year: string): number {
+    return data.items.filter((item) => item.decade.toString() === year).length;
+  }
 
-        goto(url, { keepFocus: true });
-    }
+  // Add a filter (medium or year)
+  function addFilter(filterType: "medium" | "year", value: string) {
+    const currentValues = filterType === "medium" ? activeMediums : activeYears;
+    if (currentValues.includes(value)) return; // Already active
+
+    const url = new URL(page.url);
+    const newValues = [...currentValues, value];
+    url.searchParams.set(filterType, newValues.join("-"));
+    goto(url, { keepFocus: true });
+  }
+
+  // Clear all filters
+  function clearAllFilters() {
+    const url = new URL(page.url);
+    url.searchParams.delete("medium");
+    url.searchParams.delete("year");
+    goto(url, { keepFocus: true });
+  }
 </script>
 
 <svelte:head>
-    <title>Library</title>
+  <title>Library</title>
 </svelte:head>
 
 <div>
-    <h1>Library</h1>
+  <h1>Library</h1>
 
-    <!-- Current Filters -->
-    {#if hasActiveFilters}
-        <div class="current-filters">
-            <h3>Current Filters:</h3>
-            {#if currentContentTypeFilter !== "all"}
-                <span class="filter-tag">
-                    Type: {currentContentTypeFilter.charAt(0).toUpperCase() +
-                        currentContentTypeFilter.slice(1)}s
-                </span>
-            {/if}
-            {#if currentDecadeFilter !== "all"}
-                <span class="filter-tag">
-                    Decade: {currentDecadeFilter}s
-                </span>
-            {/if}
-            <div class="clear-filters">
-                <button onclick={() => setFilter("all", "all")}
-                    >Clear All Filters</button
-                >
-            </div>
-        </div>
-    {/if}
+  <!-- Active Filters Display -->
+  {#if hasActiveFilters}
+    <div class="current-filters">
+      <h3>Current Filters:</h3>
+      {#if activeMediums.length > 0}
+        <span class="filter-tag">
+          Mediums: {activeMediums
+            .map((medium) => medium.charAt(0).toUpperCase() + medium.slice(1))
+            .join(", ")}
+        </span>
+      {/if}
+      {#if activeYears.length > 0}
+        <span class="filter-tag">
+          Years: {activeYears.map((year) => year + "s").join(", ")}
+        </span>
+      {/if}
+      <div class="clear-filters">
+        <button onclick={clearAllFilters}> Clear All Filters </button>
+      </div>
+    </div>
+  {/if}
 
-    <!-- Filter Controls -->
-    <div class="filter-controls">
-        <!-- Content Type Filters -->
-        <div class="filter-section">
-            <strong>Content Type:</strong>
-            <button
-                onclick={() => setFilter("all")}
-                class:active={currentContentTypeFilter === "all"}
-            >
-                All ({getContentTypeCount("all")})
-            </button>
-            {#each data.contentTypes as type}
-                {@const count = getContentTypeCount(type)}
-                <button
-                    onclick={() => setFilter(type)}
-                    class:active={currentContentTypeFilter === type}
-                    disabled={count === 0}
-                >
-                    {type.charAt(0).toUpperCase() + type.slice(1)}s ({count})
-                </button>
-            {/each}
-        </div>
-
-        <!-- Decade Filters -->
-        <div class="filter-section">
-            <strong>Decade:</strong>
-            <button
-                onclick={() => setFilter(undefined, "all")}
-                class:active={currentDecadeFilter === "all"}
-            >
-                All ({getDecadeCount("all")})
-            </button>
-            {#each data.decades as decade}
-                {@const count = getDecadeCount(decade.toString())}
-                <button
-                    onclick={() => setFilter(undefined, decade.toString())}
-                    class:active={currentDecadeFilter === decade.toString()}
-                >
-                    {decade}s ({count})
-                </button>
-            {/each}
-        </div>
+  <!-- Filter Controls -->
+  <div class="filter-controls">
+    <!-- Content Medium Filters -->
+    <div class="filter-section">
+      <strong>Medium:</strong>
+      {#each data.types as medium}
+        {@const count = getMediumCount(medium)}
+        {@const isActive = activeMediums.includes(medium)}
+        <button
+          onclick={() => addFilter("medium", medium)}
+          class:active={isActive}
+          disabled={count === 0 || isActive}
+        >
+          {medium.charAt(0).toUpperCase() + medium.slice(1)}s ({count})
+        </button>
+      {/each}
     </div>
 
-    <!-- Content List -->
-    {#if filteredContent.length > 0}
-        <table>
-            <thead>
-                <tr>
-                    <th>Type</th>
-                    <th>Title</th>
-                    <th>Published By</th>
-                    <th>Published</th>
-                    <th>Note</th>
-                </tr>
-            </thead>
-            <tbody>
-                {#each filteredContent as item}
-                    <tr>
-                        <td>{item.type}</td>
-                        <td>
-                            {#if item.thumbnail}
-                                {#if typeof item.thumbnail === "string"}
-                                    <img
-                                        src={item.thumbnail}
-                                        alt={item.title}
-                                        width="160"
-                                    />
-                                {:else}
-                                    <enhanced:img
-                                        src={item.thumbnail}
-                                        alt={item.title}
-                                        sizes="160px"
-                                    />
-                                {/if}
-                            {/if}
-                            <strong>{item.title}</strong>
-                        </td>
-                        <td>{item.published_by}</td>
-                        <td>{new Date(item.published).toLocaleDateString()}</td>
-                        <td>{item.note}</td>
-                    </tr>
-                {/each}
-            </tbody>
-        </table>
-    {:else}
-        <p>No content found for the selected filter.</p>
-    {/if}
+    <!-- Year Filters -->
+    <div class="filter-section">
+      <strong>Year:</strong>
+      {#each data.decades as year}
+        {@const yearStr = year.toString()}
+        {@const count = getYearCount(yearStr)}
+        {@const isActive = activeYears.includes(yearStr)}
+        <button
+          onclick={() => addFilter("year", yearStr)}
+          class:active={isActive}
+          disabled={isActive}
+        >
+          {year}s ({count})
+        </button>
+      {/each}
+    </div>
+  </div>
+
+  <!-- Content List -->
+  {#if filteredItems.length > 0}
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Title</th>
+          <th>Published By</th>
+          <th>Published</th>
+          <th>Note</th>
+        </tr>
+      </thead>
+      <tbody>
+        {#each filteredItems as item}
+          <tr>
+            <td>{item.type}</td>
+            <td>
+              {#if item.thumbnail}
+                {#if typeof item.thumbnail === "string"}
+                  <img src={item.thumbnail} alt={item.title} width="160" />
+                {:else}
+                  <enhanced:img
+                    src={item.thumbnail}
+                    alt={item.title}
+                    sizes="160px"
+                  />
+                {/if}
+              {/if}
+              <strong>{item.title}</strong>
+            </td>
+            <td>{item.published_by}</td>
+            <td>{new Date(item.published).toLocaleDateString()}</td>
+            <td>{item.note || ""}</td>
+          </tr>
+        {/each}
+      </tbody>
+    </table>
+  {:else}
+    <p>No content found for the selected filters.</p>
+  {/if}
 </div>
 
 <style>
-    .filter-section {
-        margin-bottom: 1rem;
-    }
+  /* Filter sections styling */
+  .filter-section {
+    margin-bottom: 1rem;
+  }
 
-    .filter-section strong {
-        display: inline-block;
-        margin-right: 0.5rem;
-        margin-bottom: 0.25rem;
-    }
+  .filter-section strong {
+    display: inline-block;
+    margin-right: 0.5rem;
+    margin-bottom: 0.25rem;
+  }
 
-    button.active {
-        font-weight: bold;
-        text-decoration: underline;
-    }
+  /* Button styling */
+  button.active {
+    font-weight: bold;
+    text-decoration: underline;
+  }
 
-    .current-filters {
-        border: 1px solid #ccc;
-        padding: 1rem;
-        margin-bottom: 1rem;
-    }
+  button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 
-    .current-filters h3 {
-        margin: 0 0 0.5rem 0;
-        font-size: 1rem;
-    }
+  button:disabled:hover {
+    text-decoration: none;
+  }
 
-    .filter-tag {
-        display: inline-block;
-        border: 1px solid #999;
-        padding: 0.25rem 0.5rem;
-        margin-right: 0.5rem;
-        font-size: 0.9rem;
-    }
+  /* Current filters display */
+  .current-filters {
+    border: 1px solid #ccc;
+    padding: 1rem;
+    margin-bottom: 1rem;
+  }
 
-    .clear-filters {
-        margin-top: 0.5rem;
-    }
+  .current-filters h3 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1rem;
+  }
 
-    button:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-    }
+  .filter-tag {
+    display: inline-block;
+    border: 1px solid #999;
+    padding: 0.25rem 0.5rem;
+    margin-right: 0.5rem;
+    font-size: 0.9rem;
+  }
 
-    button:disabled:hover {
-        text-decoration: none;
-    }
+  .clear-filters {
+    margin-top: 0.5rem;
+  }
 </style>
