@@ -3,10 +3,8 @@ import { HARDCOVER_API_BEARER_TOKEN } from "$env/static/private";
 
 const HARDCOVER_API = "https://api.hardcover.app/v1/graphql";
 
-export const getHardcoverBooks = async (): Promise<
-  HardcoverBooksResponse["data"]["me"]["activities"]
-> => {
-  const response = await fetch(HARDCOVER_API, {
+export const getHardcoverBooks = async () => {
+  const res = await fetch(HARDCOVER_API, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -42,45 +40,53 @@ export const getHardcoverBooks = async (): Promise<
     }),
   });
 
-  if (!response.ok) throw error(response.status, "Hardcover API failed");
+  if (!res.ok) throw error(res.status, "Hardcover HTTP error");
 
-  const result: HardcoverBooksResponse = await response.json();
-
-  console.log(JSON.stringify(result));
-
-  if (!result.data?.me?.[0]?.activities) {
-    throw error(500, "No book activities found");
-  }
-
-  return result.data.me[0].activities;
-};
-
-export interface HardcoverBooksResponse {
-  data: {
-    me: Array<{
-      activities: Array<{
-        data: {
-          userBook: {
-            id: number;
-            reviewSlate?: {
-              document: {
-                children: Array<{
+  const {
+    data,
+    errors,
+  }: {
+    data: {
+      me: Array<{
+        activities: Array<{
+          data: {
+            userBook: {
+              reviewSlate?: {
+                document: {
                   children: Array<{
-                    text: string;
+                    children: Array<{
+                      text: string;
+                    }>;
                   }>;
-                }>;
+                };
               };
             };
           };
-        };
-        book: {
-          title: string;
-          release_year: number;
-          editions: Array<{
-            isbn_13: string;
-          }>;
-        };
+          book: {
+            title: string;
+            subtitle: string | null;
+            release_year: number;
+            editions: Array<{
+              isbn_13: string;
+            }>;
+          };
+        }>;
       }>;
-    }>;
-  };
-}
+    };
+    errors: any;
+  } = await res.json();
+
+  if (!data || errors) {
+    throw error(500, {
+      message: "Hardcover GraphQL error",
+      json: errors,
+    });
+  }
+
+  return data.me[0].activities.map((activity) => ({
+    title: activity.book.title,
+    subtitle: activity.book.subtitle,
+    releaseYear: activity.book.release_year,
+    editionIsbns: activity.book.editions.map((edition) => edition.isbn_13),
+  }));
+};

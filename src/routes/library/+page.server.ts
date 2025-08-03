@@ -9,19 +9,19 @@ import { webpages } from "$lib/data/webpages.js";
 import type { Item } from "$lib/types/library.js";
 import { ITEM_TYPE } from "$lib/types/library.js";
 import type { PageServerLoad } from "./$types";
-
-import {
-  HardcoverBooksWithReviewQuery,
-  LiteralTokenQuery,
-  LiteralBookQuery,
-} from "./hardcover.server";
 import type {
+  Author,
   HardcoverBook,
   HardcoverBooksResponse,
   LiteralBook,
   LiteralBookResponse,
   LiteralTokenResponse,
-  Author,
+} from "./hardcover.server";
+import {
+  getHardcoverBooks,
+  HardcoverBooksWithReviewQuery,
+  LiteralBookQuery,
+  LiteralTokenQuery,
 } from "./hardcover.server";
 
 // Local type alias
@@ -140,6 +140,7 @@ const extractReviewText = (
 
 const getBooks = async (): Promise<LibraryItem[]> => {
   const hardcoverBooks = await getHardcoverBooks();
+  console.log(hardcoverBooks);
 
   if (hardcoverBooks.length === 0) {
     console.warn("No books returned from Hardcover API");
@@ -186,35 +187,30 @@ const getBooks = async (): Promise<LibraryItem[]> => {
 
 // DATA LOADING - Runs once during build, data gets baked into static HTML
 export const load: PageServerLoad = async () => {
-  try {
-    const books = await getBooks();
+  // try {
+  const books = await getBooks();
 
-    const allItems: LibraryItem[] = [
-      ...books,
-      ...webpages,
-      ...photographs,
-    ].sort(
-      (a, b) =>
-        new Date(b.published).getTime() - new Date(a.published).getTime(),
-    );
+  const allItems: LibraryItem[] = [...books, ...webpages, ...photographs].sort(
+    (a, b) => new Date(b.published).getTime() - new Date(a.published).getTime(),
+  );
 
-    // Generate available decades from the data
-    const decades = Array.from(
-      new Set(
-        allItems.map((item) => {
-          const year = new Date(item.published).getFullYear();
-          return Math.floor(year / 10) * 10; // Convert year to decade (e.g., 2023 -> 2020)
-        }),
-      ),
-    ).sort((a, b) => b - a); // Sort newest first
+  // Generate available decades from the data
+  const decades = Array.from(
+    new Set(
+      allItems.map((item) => {
+        const year = new Date(item.published).getFullYear();
+        return Math.floor(year / 10) * 10; // Convert year to decade (e.g., 2023 -> 2020)
+      }),
+    ),
+  ).sort((a, b) => b - a); // Sort newest first
 
-    return {
-      items: allItems,
-      contentTypes: ITEM_TYPE,
-      decades,
-    };
-  } catch (err) {
-    console.error("Error loading library content:", err);
-    throw error(500, "Failed to load library content");
-  }
+  return {
+    items: allItems,
+    contentTypes: ITEM_TYPE,
+    decades,
+  };
+  // } catch (err) {
+  //   console.error("Error loading library content:", err);
+  //   throw error(500, "Failed to load library content");
+  // }
 };

@@ -5,7 +5,7 @@ declare global {
   namespace App {
     interface Error {
       message: string;
-      details?: string;
+      json?: Record<string, any>;
     }
     // interface Locals {}
     // interface PageData {}
