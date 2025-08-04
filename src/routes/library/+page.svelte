@@ -145,7 +145,7 @@
         </tr>
       </thead>
       <tbody>
-        {#each filteredItems as item}
+        {#each filteredItems as item (item.id)}
           <tr>
             <td>{item.type}</td>
             <td>

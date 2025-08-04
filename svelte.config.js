@@ -34,6 +34,10 @@ const config = {
       },
     }),
 
+    alias: {
+      $data: "src/data",
+    },
+
     // Global prerender configuration
     prerender: {
       handleHttpError: "warn",
