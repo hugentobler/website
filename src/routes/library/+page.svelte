@@ -73,39 +73,32 @@
 </script>
 
 <svelte:head>
-  <title>Library</title>
+  <title>bibliothèque</title>
 </svelte:head>
 
-<div>
-  <h1>Library</h1>
-
-  <!-- Active Filters Display -->
-  {#if hasActiveFilters}
-    <div class="current-filters">
-      <h3>Current Filters:</h3>
-      {#if activeMediums.length > 0}
-        <span class="filter-tag">
-          Mediums: {activeMediums
-            .map((medium) => medium.charAt(0).toUpperCase() + medium.slice(1))
-            .join(", ")}
+<div class="filters">
+  <div>
+    <h2>Filters</h2>
+    {#if hasActiveFilters}
+      <div>
+        <h3>Current Filters:</h3>
+        <span>
+          {[
+            ...activeMediums.map(
+              (medium) => medium.charAt(0).toUpperCase() + medium.slice(1),
+            ),
+            ...activeYears.map((year) => year + "s"),
+          ].join(", ")}
         </span>
-      {/if}
-      {#if activeYears.length > 0}
-        <span class="filter-tag">
-          Years: {activeYears.map((year) => year + "s").join(", ")}
-        </span>
-      {/if}
-      <div class="clear-filters">
-        <button onclick={clearAllFilters}> Clear All Filters </button>
+        <div>
+          <button onclick={clearAllFilters}>Clear Filters</button>
+        </div>
       </div>
-    </div>
-  {/if}
-
-  <!-- Filter Controls -->
-  <div class="filter-controls">
-    <!-- Content Medium Filters -->
-    <div class="filter-section">
-      <strong>Medium:</strong>
+    {/if}
+  </div>
+  <div>
+    <h2>Medium</h2>
+    <div class="filter-list">
       {#each data.types as medium}
         {@const count = getMediumCount(medium)}
         {@const isActive = activeMediums.includes(medium)}
@@ -118,10 +111,10 @@
         </button>
       {/each}
     </div>
-
-    <!-- Year Filters -->
-    <div class="filter-section">
-      <strong>Year:</strong>
+  </div>
+  <div>
+    <h2>Year</h2>
+    <div class="filter-list">
       {#each data.decades as year}
         {@const yearStr = year.toString()}
         {@const count = getYearCount(yearStr)}
@@ -136,7 +129,9 @@
       {/each}
     </div>
   </div>
+</div>
 
+<div>
   <!-- Content List -->
   {#if filteredItems.length > 0}
     <table>
@@ -179,54 +174,15 @@
   {/if}
 </div>
 
-<style>
-  /* Filter sections styling */
-  .filter-section {
-    margin-bottom: 1rem;
+<style lang="postcss">
+  @reference "../../app.css";
+
+  .filters {
+    @apply grid grid-cols-8 gap-4;
+    @apply border-b border-b-black;
   }
 
-  .filter-section strong {
-    display: inline-block;
-    margin-right: 0.5rem;
-    margin-bottom: 0.25rem;
-  }
-
-  /* Button styling */
-  button.active {
-    font-weight: bold;
-    text-decoration: underline;
-  }
-
-  button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-
-  button:disabled:hover {
-    text-decoration: none;
-  }
-
-  /* Current filters display */
-  .current-filters {
-    border: 1px solid #ccc;
-    padding: 1rem;
-    margin-bottom: 1rem;
-  }
-
-  .current-filters h3 {
-    margin: 0 0 0.5rem 0;
-    font-size: 1rem;
-  }
-
-  .filter-tag {
-    display: inline-block;
-    border: 1px solid #999;
-    padding: 0.25rem 0.5rem;
-    margin-right: 0.5rem;
-    font-size: 0.9rem;
-  }
-
-  .clear-filters {
-    margin-top: 0.5rem;
+  .filter-list {
+    @apply grid grid-rows-4;
   }
 </style>

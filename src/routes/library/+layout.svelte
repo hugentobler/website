@@ -4,7 +4,7 @@
   let { children }: LayoutProps = $props();
 </script>
 
-<nav class="grid grid-cols-[2fr_1fr_1fr] gap-4">
+<nav>
   <h1>My Library</h1>
   <ul>
     <li>Home</li>
@@ -22,6 +22,10 @@
   @reference "../../app.css";
 
   nav {
-    @apply border-b border-b-black;
+    @apply grid grid-cols-[2fr_1fr_1fr] gap-4;
+  }
+
+  main {
+    @apply border-y border-black;
   }
 </style>

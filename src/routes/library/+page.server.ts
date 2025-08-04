@@ -23,7 +23,7 @@ const getBooks = async () => {
     // Hardcover data
     const itemBook: Partial<Item> = {
       type: "book",
-      title: `${book.title}, ${book.subtitle}`,
+      title: `${book.title}${book.subtitle ? `, ${book.subtitle}` : ""}`,
       published: new Date(book.releaseYear, 0, 1).toISOString(),
       decade: Math.floor(book.releaseYear / 10) * 10,
       note: book.reviewText,
