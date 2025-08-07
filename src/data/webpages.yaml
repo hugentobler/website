@@ -1,3 +1,12 @@
+- title: The Rise of Worse is Better
+  published: 1989
+  published_by: Richard P. Gabriel
+
+- title: Clean Code Principles
+  published: 2008-08-01
+  published_by: Robert C. Martin
+  note: Testing YYYY-MM-DD date format parsing
+
 - title: The Art of Minimalist Design
   published: 2024-01-10T14:30:00Z
   published_by: Design Community

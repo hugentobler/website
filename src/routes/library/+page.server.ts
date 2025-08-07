@@ -65,7 +65,7 @@ export const load: PageServerLoad = async () => {
 
 	const items = [...books, ...webpages, ...photographs].sort(
 		// TODO - implement proper sorting based on when it was added to collection
-		(a, b) => new Date(b.published).getTime() - new Date(a.published).getTime(),
+		(a, b) => b.published.localeCompare(a.published),
 	);
 
 	// Generate available types and sort alphabetically

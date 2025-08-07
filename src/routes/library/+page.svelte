@@ -163,7 +163,7 @@
               <strong>{item.title}</strong>
             </td>
             <td>{item.published_by}</td>
-            <td>{new Date(item.published).toLocaleDateString()}</td>
+            <td>{new Date(item.published).getFullYear()}</td>
             <td>{item.note || ""}</td>
           </tr>
         {/each}

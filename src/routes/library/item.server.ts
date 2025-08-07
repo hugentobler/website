@@ -1,5 +1,12 @@
 import { error } from "@sveltejs/kit";
+import dayjs from "dayjs";
+import customParseFormat from "dayjs/plugin/customParseFormat";
+import utc from "dayjs/plugin/utc";
 import type { Picture } from "vite-imagetools";
+
+// Configure dayjs plugins
+dayjs.extend(utc);
+dayjs.extend(customParseFormat);
 
 // Possible item types
 export type ItemType = "book" | "webpage" | "photograph";
@@ -17,24 +24,72 @@ export type Item = {
 };
 
 /**
+ * Robust date parsing using day.js that handles multiple input formats
+ * Supports: YYYY, YYYY-MM-DD, full ISO strings, and more
+ * Always returns a valid Date object set to noon UTC to avoid timezone issues
+ */
+const parsePublishedDate = (dateInput: any): Date => {
+	if (!dateInput) {
+		throw new Error("Published date is required");
+	}
+
+	const dateStr = String(dateInput).trim();
+
+	// Try different parsing formats in order of specificity
+	const formats = [
+		"YYYY", // Year only
+		"YYYY-MM-DD", // Date only
+		"YYYY-MM-DDTHH:mm:ssZ", // ISO with Z
+		"YYYY-MM-DDTHH:mm:ss.SSSZ", // ISO with milliseconds
+		"YYYY-MM-DD HH:mm:ss", // Common format
+	];
+
+	// Try each format
+	for (const format of formats) {
+		const parsed = dayjs.utc(dateStr, format, true); // strict parsing
+		if (parsed.isValid()) {
+			// For year-only or date-only, set to noon UTC to avoid timezone issues
+			if (format === "YYYY" || format === "YYYY-MM-DD") {
+				return parsed.hour(12).minute(0).second(0).millisecond(0).toDate();
+			}
+			return parsed.toDate();
+		}
+	}
+
+	// Fallback to dayjs auto-parsing
+	const parsed = dayjs.utc(dateStr);
+	if (parsed.isValid()) {
+		return parsed.toDate();
+	}
+
+	throw new Error(`Invalid date format: ${dateStr}`);
+};
+
+/**
  * Factory function to create standardized Item objects
  */
 export const createItem = (
 	type: ItemType,
-	{ title, published_by, ...rest }: Record<string, any>
+	{ title, published_by, ...rest }: Record<string, any>,
 ): Item => {
-  const Title = title?.trim();
-  const PublishedBy = published_by?.trim();
+	const Title = title?.trim();
+	const PublishedBy = published_by?.trim();
 
-  // Validate required fields
+	// Validate required fields
 	if (!Title || !PublishedBy) {
-    throw new Error(`Item${Title ? "" : " title"}${PublishedBy ? "" : " published_by"} missing for ${type} (${Title ? Title + " " : ""}${PublishedBy ? PublishedBy + " " : ""}${JSON.stringify(rest)})`);
+		throw new Error(
+			`Item${Title ? "" : " title"}${PublishedBy ? "" : " published_by"} missing for ${type} (${Title ? Title + " " : ""}${PublishedBy ? PublishedBy + " " : ""}${JSON.stringify(rest)})`,
+		);
 	}
 
-	// Validate and parse date
-	const publishedDate = new Date(rest.published);
-	if (isNaN(publishedDate.getTime())) {
-    throw new Error(`Item published date invalid for ${type} (${title} by ${published_by})`);
+	// Parse and validate date using robust parser
+	let publishedDate: Date;
+	try {
+		publishedDate = parsePublishedDate(rest.published);
+	} catch (error) {
+		throw new Error(
+			`Item published date invalid for ${type} (${title} by ${published_by}): ${error instanceof Error ? error.message : String(error)}`,
+		);
 	}
 
 	return {

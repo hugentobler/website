@@ -37,58 +37,58 @@ export const getHardcoverBooks = async () => {
           }
         }
       `,
-    }),
-  });
+		}),
+	});
 
-  if (!res.ok) throw error(res.status, "Hardcover HTTP error");
+	if (!res.ok) throw error(res.status, "Hardcover HTTP error");
 
-  const {
-    data,
-    errors,
-  }: {
-    data: {
-      me: Array<{
-        activities: Array<{
-          data: {
-            userBook: {
-              reviewSlate?: {
-                document: {
-                  children: Array<{
-                    children: Array<{
-                      text: string;
-                    }>;
-                  }>;
-                };
-              };
-            };
-          };
-          book: {
-            title: string;
-            subtitle: string | null;
-            release_year: number;
-            editions: Array<{
-              isbn_13: string;
-            }>;
-          };
-        }>;
-      }>;
-    };
-    errors: any;
-  } = await res.json();
+	const {
+		data,
+		errors,
+	}: {
+		data: {
+			me: Array<{
+				activities: Array<{
+					data: {
+						userBook: {
+							reviewSlate?: {
+								document: {
+									children: Array<{
+										children: Array<{
+											text: string;
+										}>;
+									}>;
+								};
+							};
+						};
+					};
+					book: {
+						title: string;
+						subtitle: string | null;
+						release_year: number;
+						editions: Array<{
+							isbn_13: string;
+						}>;
+					};
+				}>;
+			}>;
+		};
+		errors: any;
+	} = await res.json();
 
-  if (!data || errors) {
-    throw error(500, {
-      message: "Hardcover GraphQL error",
-      json: errors,
-    });
-  }
+	if (!data || errors) {
+		throw error(500, {
+			message: "Hardcover GraphQL error",
+			json: errors,
+		});
+	}
 
-  return data.me[0].activities.map((activity) => ({
-    title: activity.book.title,
-    subtitle: activity.book.subtitle,
-    releaseYear: activity.book.release_year,
-    editionIsbns: activity.book.editions.map((edition) => edition.isbn_13),
-    reviewText:
-      activity.data.userBook.reviewSlate?.document.children[0].children[0].text,
-  }));
+	return data.me[0].activities.map((activity) => ({
+		title: activity.book.title,
+		subtitle: activity.book.subtitle,
+		releaseYear: activity.book.release_year,
+		editionIsbns: activity.book.editions.map((edition) => edition.isbn_13),
+		reviewText:
+			activity.data.userBook.reviewSlate?.document.children[0].children[0].text,
+	}));
 };
