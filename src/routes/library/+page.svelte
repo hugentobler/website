@@ -131,62 +131,113 @@
   </div>
 </div>
 
-<div class="library-grid">
+<div class="grid grid-cols-5 gap-8 mt-8">
   {#if filteredItems.length > 0}
     {#each filteredItems as item (item.id)}
-      <div class="library-item {item.type} border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow">
-        {#if item.type === 'book'}
-          <!-- Book: Show thumbnail -->
-          {#if item.thumbnail}
-            {#if typeof item.thumbnail === "string"}
-              <img src={item.thumbnail} alt={item.title} class="w-full h-48 object-cover" />
+      <article
+        class="group relative transition-all duration-150 flex flex-col gap-2"
+      >
+        <div class="font-mono text-sm font-bold tracking-tighter">
+          {new Date(item.published).getFullYear()}
+        </div>
+        <!-- Image container with hover overlay -->
+        <div class="relative">
+          {#if item.type === "book"}
+            {#if item.thumbnail}
+              {#if typeof item.thumbnail === "string"}
+                <img
+                  src={item.thumbnail}
+                  alt="{item.title} by {item.published_by}"
+                  class="w-full"
+                />
+              {:else}
+                <enhanced:img
+                  src={item.thumbnail}
+                  alt="{item.title} by {item.published_by}"
+                  sizes="300px"
+                  class="w-full h-full object-cover"
+                />
+              {/if}
             {:else}
-              <enhanced:img
-                src={item.thumbnail}
-                alt={item.title}
-                sizes="200px"
-                class="w-full h-48 object-cover"
-              />
+              <div
+                class="w-full h-full bg-gray-100 flex items-center justify-center text-gray-500"
+                aria-label="No image available for {item.title}"
+              >
+                <span class="text-center">
+                  <div class="text-sm font-medium">{item.title}</div>
+                  <div class="text-xs">by {item.published_by}</div>
+                </span>
+              </div>
             {/if}
-          {:else}
-            <div class="w-full h-48 bg-gray-100 flex items-center justify-center text-gray-500">No Image</div>
+          {:else if item.type === "webpage"}
+            <div
+              class="w-full h-full bg-white border border-gray-300 flex items-center justify-center p-6"
+            >
+              <div class="text-center text-black">
+                <h3 class="text-base font-bold mb-2 leading-tight">
+                  {item.title}
+                </h3>
+                <div class="text-xs text-gray-500">Website</div>
+              </div>
+            </div>
+          {:else if item.type === "photograph"}
+            {#if item.thumbnail}
+              {#if typeof item.thumbnail === "string"}
+                <img
+                  src={item.thumbnail}
+                  alt="{item.title} by {item.published_by}"
+                  class="w-full h-full object-cover"
+                />
+              {:else}
+                <enhanced:img
+                  src={item.thumbnail}
+                  alt="{item.title} by {item.published_by}"
+                  sizes="300px"
+                  class="w-full h-full object-cover"
+                />
+              {/if}
+            {:else}
+              <div
+                class="w-full h-full bg-gray-100 flex items-center justify-center text-gray-500"
+                aria-label="No image available for {item.title}"
+              >
+                <span class="text-center">
+                  <div class="text-sm font-medium">{item.title}</div>
+                  <div class="text-xs">by {item.published_by}</div>
+                </span>
+              </div>
+            {/if}
           {/if}
-        {:else if item.type === 'webpage'}
-          <!-- Webpage: White background with text overlay -->
-          <div class="w-full h-48 bg-white border border-gray-300 flex items-center justify-center p-4">
-            <div class="text-center text-black">
-              <h3 class="text-lg font-bold mb-2">{item.title}</h3>
-              <p class="text-sm text-gray-600 mb-1">{item.published_by}</p>
-              <span class="text-xs text-gray-500">{new Date(item.published).getFullYear()}</span>
+
+          <!-- Hover overlay with metadata -->
+          <div
+            class="absolute bottom-0 inset-x-0 bg-black bg-opacity-0 group-hover:bg-opacity-70 flex items-end opacity-0 group-hover:opacity-100"
+          >
+            <div class="text-white w-full">
+              <h3 class="text-sm">{item.title} by {item.published_by}</h3>
             </div>
           </div>
-        {:else if item.type === 'photograph'}
-          <!-- Image: Just show the image -->
-          {#if item.thumbnail}
-            {#if typeof item.thumbnail === "string"}
-              <img src={item.thumbnail} alt={item.title} class="w-full h-48 object-cover" />
-            {:else}
-              <enhanced:img
-                src={item.thumbnail}
-                alt={item.title}
-                sizes="200px"
-                class="w-full h-48 object-cover"
-              />
-            {/if}
-          {:else}
-            <div class="w-full h-48 bg-gray-100 flex items-center justify-center text-gray-500">No Image</div>
-          {/if}
+        </div>
+
+        <!-- Note displayed underneath if it exists -->
+        {#if item.note}
+          <div class="">
+            <p class="text-sm">
+              {item.note}
+            </p>
+          </div>
         {/if}
-        
-        <!-- Item metadata -->
-        <div class="p-4 flex-grow">
-          <h4 class="font-bold text-lg mb-2 line-clamp-2">{item.title}</h4>
-          <p class="text-sm text-gray-600 mb-2">{item.published_by} • {new Date(item.published).getFullYear()}</p>
+
+        <!-- Screen reader only content -->
+        <div class="sr-only">
+          <h3>{item.title} by {item.published_by}</h3>
+          <p>Published in {new Date(item.published).getFullYear()}</p>
+          <p>Type: {item.type}</p>
           {#if item.note}
-            <p class="text-xs text-gray-500 italic">{item.note}</p>
+            <p>Note: {item.note}</p>
           {/if}
         </div>
-      </div>
+      </article>
     {/each}
   {:else}
     <p>No content found for the selected filters.</p>
@@ -203,13 +254,5 @@
 
   .filter-list {
     @apply grid grid-rows-4;
-  }
-
-  .library-grid {
-    @apply grid grid-cols-4 gap-6 mt-8;
-  }
-
-  .library-item {
-    @apply flex flex-col;
   }
 </style>
