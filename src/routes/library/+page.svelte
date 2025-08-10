@@ -131,44 +131,63 @@
   </div>
 </div>
 
-<div>
-  <!-- Content List -->
+<div class="library-grid">
   {#if filteredItems.length > 0}
-    <table>
-      <thead>
-        <tr>
-          <th>Type</th>
-          <th>Title</th>
-          <th>Published By</th>
-          <th>Published</th>
-          <th>Note</th>
-        </tr>
-      </thead>
-      <tbody>
-        {#each filteredItems as item (item.id)}
-          <tr>
-            <td>{item.type}</td>
-            <td>
-              {#if item.thumbnail}
-                {#if typeof item.thumbnail === "string"}
-                  <img src={item.thumbnail} alt={item.title} width="160" />
-                {:else}
-                  <enhanced:img
-                    src={item.thumbnail}
-                    alt={item.title}
-                    sizes="160px"
-                  />
-                {/if}
-              {/if}
-              <strong>{item.title}</strong>
-            </td>
-            <td>{item.published_by}</td>
-            <td>{new Date(item.published).getFullYear()}</td>
-            <td>{item.note || ""}</td>
-          </tr>
-        {/each}
-      </tbody>
-    </table>
+    {#each filteredItems as item (item.id)}
+      <div class="library-item {item.type} border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow">
+        {#if item.type === 'book'}
+          <!-- Book: Show thumbnail -->
+          {#if item.thumbnail}
+            {#if typeof item.thumbnail === "string"}
+              <img src={item.thumbnail} alt={item.title} class="w-full h-48 object-cover" />
+            {:else}
+              <enhanced:img
+                src={item.thumbnail}
+                alt={item.title}
+                sizes="200px"
+                class="w-full h-48 object-cover"
+              />
+            {/if}
+          {:else}
+            <div class="w-full h-48 bg-gray-100 flex items-center justify-center text-gray-500">No Image</div>
+          {/if}
+        {:else if item.type === 'webpage'}
+          <!-- Webpage: White background with text overlay -->
+          <div class="w-full h-48 bg-white border border-gray-300 flex items-center justify-center p-4">
+            <div class="text-center text-black">
+              <h3 class="text-lg font-bold mb-2">{item.title}</h3>
+              <p class="text-sm text-gray-600 mb-1">{item.published_by}</p>
+              <span class="text-xs text-gray-500">{new Date(item.published).getFullYear()}</span>
+            </div>
+          </div>
+        {:else if item.type === 'photograph'}
+          <!-- Image: Just show the image -->
+          {#if item.thumbnail}
+            {#if typeof item.thumbnail === "string"}
+              <img src={item.thumbnail} alt={item.title} class="w-full h-48 object-cover" />
+            {:else}
+              <enhanced:img
+                src={item.thumbnail}
+                alt={item.title}
+                sizes="200px"
+                class="w-full h-48 object-cover"
+              />
+            {/if}
+          {:else}
+            <div class="w-full h-48 bg-gray-100 flex items-center justify-center text-gray-500">No Image</div>
+          {/if}
+        {/if}
+        
+        <!-- Item metadata -->
+        <div class="p-4 flex-grow">
+          <h4 class="font-bold text-lg mb-2 line-clamp-2">{item.title}</h4>
+          <p class="text-sm text-gray-600 mb-2">{item.published_by} • {new Date(item.published).getFullYear()}</p>
+          {#if item.note}
+            <p class="text-xs text-gray-500 italic">{item.note}</p>
+          {/if}
+        </div>
+      </div>
+    {/each}
   {:else}
     <p>No content found for the selected filters.</p>
   {/if}
@@ -184,5 +203,13 @@
 
   .filter-list {
     @apply grid grid-rows-4;
+  }
+
+  .library-grid {
+    @apply grid grid-cols-4 gap-6 mt-8;
+  }
+
+  .library-item {
+    @apply flex flex-col;
   }
 </style>
