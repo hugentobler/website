@@ -1,75 +1,66 @@
 <script lang="ts">
-  import { goto } from "$app/navigation";
-  import { page } from "$app/state";
-  import { browser } from "$app/environment";
-  import type { PageData } from "./$types";
+import { goto } from "$app/navigation";
+import { page } from "$app/state";
+import { browser } from "$app/environment";
+import type { PageData } from "./$types";
 
-  const { data }: { data: PageData } = $props();
+const { data }: { data: PageData } = $props();
 
-  // Parse URL params into arrays of filter values - only in browser
-  const activeMediums = $derived(
-    (browser &&
-      page.url.searchParams.get("medium")?.split("-").filter(Boolean)) ||
-      [],
-  );
+// Parse URL params into arrays of filter values - only in browser
+const activeMediums = $derived(
+	(browser && page.url.searchParams.get("medium")?.split("-").filter(Boolean)) || [],
+);
 
-  const activeYears = $derived(
-    (browser &&
-      page.url.searchParams.get("year")?.split("-").filter(Boolean)) ||
-      [],
-  );
+const activeYears = $derived(
+	(browser && page.url.searchParams.get("year")?.split("-").filter(Boolean)) || [],
+);
 
-  // Check if any filters are active
-  const hasActiveFilters = $derived(
-    activeMediums.length > 0 || activeYears.length > 0,
-  );
+// Check if any filters are active
+const hasActiveFilters = $derived(activeMediums.length > 0 || activeYears.length > 0);
 
-  // Filter items based on URL params
-  const filteredItems = $derived(
-    data.items.filter((item) => {
-      const mediumMatch =
-        activeMediums.length === 0 || activeMediums.includes(item.type);
+// Filter items based on URL params
+const filteredItems = $derived(
+	data.items.filter((item) => {
+		const mediumMatch = activeMediums.length === 0 || activeMediums.includes(item.type);
 
-      const yearMatch =
-        activeYears.length === 0 ||
-        activeYears.includes(item.decade.toString());
+		const yearMatch = activeYears.length === 0 || activeYears.includes(item.decade.toString());
 
-      return mediumMatch && yearMatch;
-    }),
-  );
+		return mediumMatch && yearMatch;
+	}),
+);
 
-  // Get count for a specific medium
-  function getMediumCount(medium: string): number {
-    return data.items.filter((item) => item.type === medium).length;
-  }
+// Get count for a specific medium
+function getMediumCount(medium: string): number {
+	return data.items.filter((item) => item.type === medium).length;
+}
 
-  // Get count for a specific year
-  function getYearCount(year: string): number {
-    return data.items.filter((item) => item.decade.toString() === year).length;
-  }
+// Get count for a specific year
+function getYearCount(year: string): number {
+	return data.items.filter((item) => item.decade.toString() === year).length;
+}
 
-  // Add a filter (medium or year)
-  function addFilter(filterType: "medium" | "year", value: string) {
-    if (!browser) return; // Guard against SSR
+// Add a filter (medium or year)
+function addFilter(filterType: "medium" | "year", value: string) {
+	if (!browser) return; // Guard against SSR
 
-    const currentValues = filterType === "medium" ? activeMediums : activeYears;
-    if (currentValues.includes(value)) return; // Already active
+	const currentValues = filterType === "medium" ? activeMediums : activeYears;
+	if (currentValues.includes(value)) return; // Already active
 
-    const url = new URL(page.url);
-    const newValues = [...currentValues, value];
-    url.searchParams.set(filterType, newValues.join("-"));
-    goto(url, { keepFocus: true });
-  }
+	const url = new URL(page.url);
+	const newValues = [...currentValues, value];
+	url.searchParams.set(filterType, newValues.join("-"));
+	goto(url, { keepFocus: true });
+}
 
-  // Clear all filters
-  function clearAllFilters() {
-    if (!browser) return; // Guard against SSR
+// Clear all filters
+function clearAllFilters() {
+	if (!browser) return; // Guard against SSR
 
-    const url = new URL(page.url);
-    url.searchParams.delete("medium");
-    url.searchParams.delete("year");
-    goto(url, { keepFocus: true });
-  }
+	const url = new URL(page.url);
+	url.searchParams.delete("medium");
+	url.searchParams.delete("year");
+	goto(url, { keepFocus: true });
+}
 </script>
 
 <svelte:head>

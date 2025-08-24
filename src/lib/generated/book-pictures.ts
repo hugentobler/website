@@ -2,13 +2,12 @@
 // Do not edit manually - changes will be overwritten
 // Generated on: 2025-08-11T01:54:16.384Z
 
-import book9780748117338 from '../images/book-9780748117338.jpg?enhanced';
-import book9781466850224 from '../images/book-9781466850224.jpg?enhanced';
-import book9798514063031 from '../images/book-9798514063031.jpg?enhanced';
+import book9780748117338 from "../images/book-9780748117338.jpg?enhanced";
+import book9781466850224 from "../images/book-9781466850224.jpg?enhanced";
+import book9798514063031 from "../images/book-9798514063031.jpg?enhanced";
 
 export const bookPictures: Record<string, any> = {
-  '9780748117338': book9780748117338,
-  '9781466850224': book9781466850224,
-  '9798514063031': book9798514063031,
+	"9780748117338": book9780748117338,
+	"9781466850224": book9781466850224,
+	"9798514063031": book9798514063031,
 };
-  

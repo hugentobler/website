@@ -9,17 +9,17 @@ let tokenCache: { token: string; expires: number } | null = null;
 const TOKEN_DURATION = 1000 * 60 * 15;
 
 const getLiteralToken = async () => {
-  // Use cached token if exists
-  if (tokenCache && tokenCache.expires > Date.now()) {
-    return { token: tokenCache.token };
-  }
+	// Use cached token if exists
+	if (tokenCache && tokenCache.expires > Date.now()) {
+		return { token: tokenCache.token };
+	}
 
-  // Otherwise, fetch a new token
-  const res = await fetch(LITERAL_API, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      query: `
+	// Otherwise, fetch a new token
+	const res = await fetch(LITERAL_API, {
+		method: "POST",
+		headers: { "Content-Type": "application/json" },
+		body: JSON.stringify({
+			query: `
         mutation login($email: String!, $password: String!) {
       		login(email: $email, password: $password) {
      			  token
@@ -27,53 +27,53 @@ const getLiteralToken = async () => {
       		}
        	}
       `,
-      variables: {
-        email: LITERAL_EMAIL,
-        password: LITERAL_PASSWORD,
-      },
-    }),
-  });
+			variables: {
+				email: LITERAL_EMAIL,
+				password: LITERAL_PASSWORD,
+			},
+		}),
+	});
 
-  if (!res.ok) throw error(res.status, "Literal HTTP error");
+	if (!res.ok) throw error(res.status, "Literal HTTP error");
 
-  const {
-    data,
-    errors,
-  }: {
-    data: {
-      login: {
-        token: string;
-      };
-    };
-    errors: any;
-  } = await res.json();
+	const {
+		data,
+		errors,
+	}: {
+		data: {
+			login: {
+				token: string;
+			};
+		};
+		errors: any;
+	} = await res.json();
 
-  if (!data || errors) {
-    throw error(500, {
-      message: "Literal GraphQL error",
-      json: errors,
-    });
-  }
+	if (!data || errors) {
+		throw error(500, {
+			message: "Literal GraphQL error",
+			json: errors,
+		});
+	}
 
-  tokenCache = {
-    token: data.login.token,
-    expires: Date.now() + TOKEN_DURATION,
-  };
+	tokenCache = {
+		token: data.login.token,
+		expires: Date.now() + TOKEN_DURATION,
+	};
 
-  return { token: data.login.token };
+	return { token: data.login.token };
 };
 
 export const getLiteralDataForIsbn = async (isbn13: string) => {
-  const { token } = await getLiteralToken();
+	const { token } = await getLiteralToken();
 
-  const res = await fetch(LITERAL_API, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify({
-      query: `
+	const res = await fetch(LITERAL_API, {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+			Authorization: `Bearer ${token}`,
+		},
+		body: JSON.stringify({
+			query: `
         query GetBookByIsbn($isbn13: String!) {
           book(where: { isbn13: $isbn13 }) {
             title
@@ -84,38 +84,38 @@ export const getLiteralDataForIsbn = async (isbn13: string) => {
           }
         }
       `,
-      variables: {
-        isbn13,
-      },
-    }),
-  });
+			variables: {
+				isbn13,
+			},
+		}),
+	});
 
-  if (!res.ok) throw error(res.status, "Literal HTTP error");
+	if (!res.ok) throw error(res.status, "Literal HTTP error");
 
-  const {
-    data,
-    errors,
-  }: {
-    data: {
-      book: {
-        title: string;
-        cover: string;
-        authors: Array<{
-          name: string;
-        }>;
-      } | null;
-    };
-    errors: any;
-  } = await res.json();
+	const {
+		data,
+		errors,
+	}: {
+		data: {
+			book: {
+				title: string;
+				cover: string;
+				authors: Array<{
+					name: string;
+				}>;
+			} | null;
+		};
+		errors: any;
+	} = await res.json();
 
-  if (!data || errors) {
-    throw error(500, {
-      message: "Literal GraphQL error",
-      json: errors,
-    });
-  }
+	if (!data || errors) {
+		throw error(500, {
+			message: "Literal GraphQL error",
+			json: errors,
+		});
+	}
 
-  return {
-    data: data.book,
-  };
+	return {
+		data: data.book,
+	};
 };

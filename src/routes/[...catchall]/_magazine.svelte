@@ -1,55 +1,54 @@
 <script lang="ts">
-  import { onMount } from "svelte";
+import { onMount } from "svelte";
 
-  import { SvelteDate } from "svelte/reactivity";
+import { SvelteDate } from "svelte/reactivity";
 
-  import DecoratedLink from "$lib/components/DecoratedLink.svelte";
-  import ScrollIndicator from "$lib/components/ScrollIndicator.svelte";
+import DecoratedLink from "$lib/components/DecoratedLink.svelte";
+import ScrollIndicator from "$lib/components/ScrollIndicator.svelte";
 
-  import type { PageProps } from "./$types";
-  import Page from "./+page.svelte";
+import type { PageProps } from "./$types";
+import Page from "./+page.svelte";
 
-  const { data } = $props() as PageProps;
-  const { frontmatter, headings } = data.markdown;
+const { data } = $props() as PageProps;
+const { frontmatter, headings } = data.markdown;
 
-  // Filter h2 headings
-  const filteredHeadings =
-    headings?.filter((heading) => heading.level == 2) ?? [];
-  console.log("filteredHeadings", filteredHeadings);
+// Filter h2 headings
+const filteredHeadings = headings?.filter((heading) => heading.level == 2) ?? [];
+console.log("filteredHeadings", filteredHeadings);
 
-  const updatedDate = frontmatter?.updated
-    ? new SvelteDate(frontmatter.updated).toISOString().split("T")[0]
-    : "";
+const updatedDate = frontmatter?.updated
+	? new SvelteDate(frontmatter.updated).toISOString().split("T")[0]
+	: "";
 
-  // Watch article element scrolling
-  let article: HTMLElement;
+// Watch article element scrolling
+let article: HTMLElement;
 
-  onMount(() => {
-    // Horizontal scroll listener
-    const handleWheel = (event: WheelEvent) => {
-      event.preventDefault();
-      article.scrollLeft += event.deltaY + event.deltaX;
-    };
+onMount(() => {
+	// Horizontal scroll listener
+	const handleWheel = (event: WheelEvent) => {
+		event.preventDefault();
+		article.scrollLeft += event.deltaY + event.deltaX;
+	};
 
-    // Observe article scroll style to add/remove horizontal scroll listener
-    const observer = new ResizeObserver(() => {
-      const overflowX = window.getComputedStyle(article).overflowX;
-      if (overflowX === "scroll") {
-        window.addEventListener("wheel", handleWheel, {
-          passive: false,
-        });
-      } else {
-        window.removeEventListener("wheel", handleWheel);
-      }
-    });
-    observer.observe(article);
+	// Observe article scroll style to add/remove horizontal scroll listener
+	const observer = new ResizeObserver(() => {
+		const overflowX = window.getComputedStyle(article).overflowX;
+		if (overflowX === "scroll") {
+			window.addEventListener("wheel", handleWheel, {
+				passive: false,
+			});
+		} else {
+			window.removeEventListener("wheel", handleWheel);
+		}
+	});
+	observer.observe(article);
 
-    // Cleanup
-    return () => {
-      window.removeEventListener("wheel", handleWheel);
-      observer.disconnect();
-    };
-  });
+	// Cleanup
+	return () => {
+		window.removeEventListener("wheel", handleWheel);
+		observer.disconnect();
+	};
+});
 </script>
 
 <article

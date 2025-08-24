@@ -8,11 +8,11 @@ export const getWebpages = () => {
 	if (!Array.isArray(rawData)) return [];
 
 	return rawData.flatMap((item) => {
-  try {
-    return [createItem("webpage", item)];
-  } catch (error) {
-    console.warn(error);
-    return []; // Skip invalid items
-  }
-});
-}
+		try {
+			return [createItem("webpage", item)];
+		} catch (error) {
+			console.warn(error);
+			return []; // Skip invalid items
+		}
+	});
+};

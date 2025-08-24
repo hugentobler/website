@@ -4,14 +4,14 @@ import { HARDCOVER_API_BEARER_TOKEN } from "$env/static/private";
 const HARDCOVER_API = "https://api.hardcover.app/v1/graphql";
 
 export const getHardcoverBooks = async () => {
-  const res = await fetch(HARDCOVER_API, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `${HARDCOVER_API_BEARER_TOKEN}`,
-    },
-    body: JSON.stringify({
-      query: `
+	const res = await fetch(HARDCOVER_API, {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+			Authorization: `${HARDCOVER_API_BEARER_TOKEN}`,
+		},
+		body: JSON.stringify({
+			query: `
         query {
           me {
             activities(
@@ -88,7 +88,6 @@ export const getHardcoverBooks = async () => {
 		subtitle: activity.book.subtitle,
 		releaseYear: activity.book.release_year,
 		editionIsbns: activity.book.editions.map((edition) => edition.isbn_13),
-		reviewText:
-			activity.data.userBook.reviewSlate?.document.children[0].children[0].text,
+		reviewText: activity.data.userBook.reviewSlate?.document.children[0].children[0].text,
 	}));
 };

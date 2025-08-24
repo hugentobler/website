@@ -12,19 +12,14 @@ let lastCacheCheck: Record<string, number> = {};
 // Load existing enhanced images and cache metadata
 const loadBookPictures = async () => {
 	try {
-		const { bookPictures: imported } = await import(
-			"$lib/generated/book-pictures.js"
-		);
+		const { bookPictures: imported } = await import("$lib/generated/book-pictures.js");
 		bookPictures = imported;
 		// console.log(
 		// 	`Library: Loaded ${Object.keys(bookPictures).length} book thumbnails`,
 		// );
 
 		// Load cache metadata
-		const metadataPath = join(
-			process.cwd(),
-			"src/lib/generated/book-cache.json",
-		);
+		const metadataPath = join(process.cwd(), "src/lib/generated/book-cache.json");
 		if (existsSync(metadataPath)) {
 			const metadata = JSON.parse(readFileSync(metadataPath, "utf-8"));
 			lastCacheCheck = metadata.lastCacheCheck || {};
@@ -45,10 +40,7 @@ loadBookPictures().catch(() => {
 });
 
 // Background image caching function
-const downloadImage = async (
-	url: string,
-	filePath: string,
-): Promise<boolean> => {
+const downloadImage = async (url: string, filePath: string): Promise<boolean> => {
 	try {
 		const response = await fetch(url);
 		if (!response.ok) throw new Error(`HTTP ${response.status}`);
@@ -64,9 +56,7 @@ const downloadImage = async (
 };
 
 // Smart cache function - only downloads new or stale images
-const cacheBookImages = async (
-	books: Array<{ isbn: string; url: string; title: string }>,
-) => {
+const cacheBookImages = async (books: Array<{ isbn: string; url: string; title: string }>) => {
 	if (books.length === 0) return;
 
 	const now = Date.now();
@@ -182,9 +172,7 @@ export const getBooks = async (): Promise<Item[]> => {
 		}
 
 		if (!literalData || !isbn) {
-			console.warn(
-				`No Literal data found for any ISBN for book: ${book.title}`,
-			);
+			console.warn(`No Literal data found for any ISBN for book: ${book.title}`);
 			return null; // Skip this book
 		}
 
@@ -202,9 +190,7 @@ export const getBooks = async (): Promise<Item[]> => {
 			return createItem("book", {
 				title: `${book.title}${book.subtitle ? `, ${book.subtitle}` : ""}`,
 				published: book.releaseYear.toString() + "-01-01",
-				published_by:
-					literalData.authors?.map((author) => author.name).join(", ") ||
-					"Unknown",
+				published_by: literalData.authors?.map((author) => author.name).join(", ") || "Unknown",
 				thumbnail,
 				note: book.reviewText,
 			});

@@ -1,11 +1,11 @@
 <script lang="ts">
-  import type { HTMLAnchorAttributes } from 'svelte/elements';
+import type { HTMLAnchorAttributes } from "svelte/elements";
 
-  let {
-    children,
-    class: className = '',
-    ...rest
-  }: HTMLAnchorAttributes & { class?: string } = $props();
+let {
+	children,
+	class: className = "",
+	...rest
+}: HTMLAnchorAttributes & { class?: string } = $props();
 </script>
 
 <a

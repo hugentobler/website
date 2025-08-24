@@ -15,14 +15,12 @@ export const load: PageServerLoad = async () => {
 	);
 
 	// Generate available types and sort alphabetically
-	const types = Array.from(new Set(items.map((item) => item.type))).sort(
-		(a, b) => a.localeCompare(b),
+	const types = Array.from(new Set(items.map((item) => item.type))).sort((a, b) =>
+		a.localeCompare(b),
 	);
 
 	// Generate available decades and sort ascending
-	const decades = Array.from(new Set(items.map((item) => item.decade))).sort(
-		(a, b) => a - b,
-	);
+	const decades = Array.from(new Set(items.map((item) => item.decade))).sort((a, b) => a - b);
 
 	return {
 		items,

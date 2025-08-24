@@ -1,8 +1,8 @@
 <script lang="ts">
-  import type { PageProps } from "./$types";
+import type { PageProps } from "./$types";
 
-  let { data }: PageProps = $props();
-  const { content } = data;
+let { data }: PageProps = $props();
+const { content } = data;
 </script>
 
 <h1>Posts</h1>

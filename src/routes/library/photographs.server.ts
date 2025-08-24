@@ -24,9 +24,7 @@ export const getPhotographs = () => {
 			const thumbnail = imageMap[item.image_key as keyof typeof imageMap];
 
 			if (!thumbnail) {
-				console.warn(
-					`No image found for key "${item.image_key}" in photograph "${item.id}"`,
-				);
+				console.warn(`No image found for key "${item.image_key}" in photograph "${item.id}"`);
 				return [];
 			}
 

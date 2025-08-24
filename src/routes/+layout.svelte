@@ -1,15 +1,15 @@
 <script lang="ts">
-  import { setupTheme } from '$lib/theme.svelte';
+import { setupTheme } from "$lib/theme.svelte";
 
-  import { browser } from '$app/environment';
+import { browser } from "$app/environment";
 
-  import '../app.css';
+import "../app.css";
 
-  let { children } = $props();
+let { children } = $props();
 
-  if (browser) {
-    setupTheme();
-  }
+if (browser) {
+	setupTheme();
+}
 </script>
 
 <svelte:head>
