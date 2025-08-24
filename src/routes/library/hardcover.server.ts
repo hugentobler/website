@@ -1,5 +1,5 @@
-import { error } from "@sveltejs/kit";
 import { HARDCOVER_API_BEARER_TOKEN } from "$env/static/private";
+import { handleApiResponse, handleGraphQLResponse } from "$lib/api-error-handler";
 
 const HARDCOVER_API = "https://api.hardcover.app/v1/graphql";
 
@@ -40,7 +40,10 @@ export const getHardcoverBooks = async () => {
 		}),
 	});
 
-	if (!res.ok) throw error(res.status, "Hardcover HTTP error");
+	await handleApiResponse(res, { 
+		serviceName: "Hardcover", 
+		operation: "getHardcoverBooks" 
+	});
 
 	const {
 		data,
@@ -76,12 +79,10 @@ export const getHardcoverBooks = async () => {
 		errors: any;
 	} = await res.json();
 
-	if (!data || errors) {
-		throw error(500, {
-			message: "Hardcover GraphQL error",
-			json: errors,
-		});
-	}
+	handleGraphQLResponse(data, errors, {
+		serviceName: "Hardcover",
+		operation: "getHardcoverBooks"
+	});
 
 	return data.me[0].activities.map((activity) => ({
 		title: activity.book.title,

@@ -1,5 +1,5 @@
-import { error } from "@sveltejs/kit";
 import { LITERAL_EMAIL, LITERAL_PASSWORD } from "$env/static/private";
+import { handleApiResponse, handleGraphQLResponse } from "$lib/api-error-handler";
 
 const LITERAL_API = "https://literal.club/graphql/";
 
@@ -23,9 +23,9 @@ const getLiteralToken = async () => {
         mutation login($email: String!, $password: String!) {
       		login(email: $email, password: $password) {
      			  token
-       			profile { id }
-      		}
-       	}
+        			profile { id }
+       		}
+        	}
       `,
 			variables: {
 				email: LITERAL_EMAIL,
@@ -34,7 +34,10 @@ const getLiteralToken = async () => {
 		}),
 	});
 
-	if (!res.ok) throw error(res.status, "Literal HTTP error");
+	await handleApiResponse(res, { 
+		serviceName: "Literal", 
+		operation: "getLiteralToken" 
+	});
 
 	const {
 		data,
@@ -48,12 +51,10 @@ const getLiteralToken = async () => {
 		errors: any;
 	} = await res.json();
 
-	if (!data || errors) {
-		throw error(500, {
-			message: "Literal GraphQL error",
-			json: errors,
-		});
-	}
+	handleGraphQLResponse(data, errors, {
+		serviceName: "Literal",
+		operation: "getLiteralToken"
+	});
 
 	tokenCache = {
 		token: data.login.token,
@@ -90,7 +91,10 @@ export const getLiteralDataForIsbn = async (isbn13: string) => {
 		}),
 	});
 
-	if (!res.ok) throw error(res.status, "Literal HTTP error");
+	await handleApiResponse(res, { 
+		serviceName: "Literal", 
+		operation: "getLiteralDataForIsbn" 
+	});
 
 	const {
 		data,
@@ -108,12 +112,10 @@ export const getLiteralDataForIsbn = async (isbn13: string) => {
 		errors: any;
 	} = await res.json();
 
-	if (!data || errors) {
-		throw error(500, {
-			message: "Literal GraphQL error",
-			json: errors,
-		});
-	}
+	handleGraphQLResponse(data, errors, {
+		serviceName: "Literal",
+		operation: "getLiteralDataForIsbn"
+	});
 
 	return {
 		data: data.book,
