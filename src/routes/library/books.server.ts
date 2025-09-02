@@ -1,12 +1,13 @@
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
-import { join } from "path";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
+import type { Picture } from "vite-imagetools";
 import { dev } from "$app/environment";
 import { getHardcoverBooks } from "./hardcover.server";
 import type { Item } from "./item.server";
 import { createItem } from "./item.server";
 import { getLiteralDataForIsbn } from "./literal.server";
 
-let bookPictures: Record<string, any> = {};
+let bookPictures: Record<string, Picture> = {};
 let lastCacheCheck: Record<string, number> = {};
 
 // Load existing enhanced images and cache metadata
@@ -14,9 +15,6 @@ const loadBookPictures = async () => {
 	try {
 		const { bookPictures: imported } = await import("$lib/generated/book-pictures.js");
 		bookPictures = imported;
-		// console.log(
-		// 	`Library: Loaded ${Object.keys(bookPictures).length} book thumbnails`,
-		// );
 
 		// Load cache metadata
 		const metadataPath = join(process.cwd(), "src/lib/generated/book-cache.json");
@@ -28,7 +26,6 @@ const loadBookPictures = async () => {
 		if (!dev) {
 			console.warn("Could not import book pictures, using fallback URLs");
 		}
-		// In dev, it's normal to not have enhanced images initially
 	}
 };
 
@@ -96,7 +93,7 @@ const cacheBookImages = async (books: Array<{ isbn: string; url: string; title: 
 		}
 	});
 
-	// Then download new/stale images
+	// Download new/stale images
 	for (const { isbn, url, title } of booksToCache) {
 		const fileName = `book-${isbn}.jpg`;
 		const filePath = join(imagesDir, fileName);
@@ -108,11 +105,11 @@ const cacheBookImages = async (books: Array<{ isbn: string; url: string; title: 
 		}
 	}
 
-	// Generate updated mappings file with header
+	// Generate updated mappings file with enhanced parameters
 	const imports = successful
 		.map(
 			({ isbn, fileName }) =>
-				`import book${isbn.replace(/\D/g, "")} from '../images/${fileName}?enhanced';`,
+				`// @ts-expect-error\nimport book${isbn.replace(/\D/g, "")} from '../images/${fileName}?enhanced&w=240&format=webp;jpg';`,
 		)
 		.join("\n");
 
@@ -124,22 +121,22 @@ const cacheBookImages = async (books: Array<{ isbn: string; url: string; title: 
 // Do not edit manually - changes will be overwritten
 // Generated on: ${new Date().toISOString()}
 
+import type { Picture } from "vite-imagetools";
+
 ${imports}
 
-export const bookPictures: Record<string, any> = {
+export const bookPictures: Record<string, Picture> = {
 ${exports}
 };
   `;
 
-	writeFileSync(join(generatedDir, "book-pictures.ts"), mappingsContent);
+	writeFileSync(join(generatedDir, "book-pictures.js"), mappingsContent);
 
 	// Save cache metadata
 	writeFileSync(
 		join(generatedDir, "book-cache.json"),
 		JSON.stringify({ lastCacheCheck, lastUpdated: now }, null, 2),
 	);
-
-	// console.log(`Library: Updated mappings for ${successful.length} book thumbnails`);
 };
 
 export const getBooks = async (): Promise<Item[]> => {
@@ -184,8 +181,8 @@ export const getBooks = async (): Promise<Item[]> => {
 				title: `${book.title}${book.subtitle ? `, ${book.subtitle}` : ""}`,
 			});
 
-			// Use enhanced image when available, otherwise URL
-			const thumbnail = bookPictures[isbn] || literalData.cover;
+			// Use enhanced image - all books should have cached enhanced images
+			const thumbnail = bookPictures[isbn];
 
 			return createItem("book", {
 				title: `${book.title}${book.subtitle ? `, ${book.subtitle}` : ""}`,
@@ -202,9 +199,9 @@ export const getBooks = async (): Promise<Item[]> => {
 
 	const books = (await Promise.all(bookPromises)).filter(Boolean) as Item[];
 
-	// Smart cache images in background (don't await - let it happen asynchronously)
+	// Cache images before returning books
 	if (booksToCache.length > 0) {
-		cacheBookImages(booksToCache).catch(console.error);
+		await cacheBookImages(booksToCache);
 	}
 
 	return books;

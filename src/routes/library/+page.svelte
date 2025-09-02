@@ -180,20 +180,11 @@
               >
                 <!-- Front face (book cover) -->
                 <div class="book-front relative z-10">
-                  {#if typeof item.thumbnail === "string"}
-                    <img
-                      src={item.thumbnail}
-                      alt="{item.title} by {item.published_by}"
-                      class="w-full h-auto object-cover block"
-                      loading="lazy"
-                    />
-                  {:else}
-                    <enhanced:img
-                      src={item.thumbnail}
-                      alt="{item.title} by {item.published_by}"
-                      class="w-full h-auto object-cover block"
-                    />
-                  {/if}
+                  <enhanced:img
+                    src={item.thumbnail}
+                    alt="{item.title} by {item.published_by}"
+                    class="w-full h-auto object-cover block"
+                  />
                 </div>
                 <!-- Right side (connecting to depth) with overlap -->
                 <div
