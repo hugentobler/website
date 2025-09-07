@@ -61,33 +61,35 @@
   }
 }
 
-:root {
-  /* light theme variables */
+@layer base {
+  :root {
+    /* light theme variables */
 
-  /* navbar - we provide this default to child layouts */
-  --navbar-height: calc(var(--spacing) * 16);
+    /* navbar - we provide this default to child layouts */
+    --navbar-height: calc(var(--spacing) * 16);
 
-  /* page theme variables */
-  --background: var(--color-zinc-200);
-  --foreground: var(--color-teal-900);
+    /* page theme variables */
+    --background: var(--color-zinc-200);
+    --foreground: var(--color-teal-900);
 
-  --primary: var(--color-orange-500);
-  --primary-dark: var(--color-orange-400);
+    --primary: var(--color-orange-500);
+    --primary-dark: var(--color-orange-400);
 
-  /* scrollbar variables */
-  --scrollbar-color-thumb: var(--foreground);
-  --scrollbar-color-track: var(--background);
-  --scrollbar-width: auto;
-  --scrollbar-width-legacy: var(--text-base);
+    /* scrollbar variables */
+    --scrollbar-color-thumb: var(--foreground);
+    --scrollbar-color-track: var(--background);
+    --scrollbar-width: auto;
+    --scrollbar-width-legacy: var(--text-base);
 
-  /* scroll timeline variables */
-  --scroll-timeline: --scroll-timeline;
-}
+    /* scroll timeline variables */
+    --scroll-timeline: --scroll-timeline;
+  }
 
-[data-theme='dark'] {
-  /* dark theme variables */
-  --background: var(--color-zinc-600);
-  --foreground: var(--color-sky-100);
+  [data-theme='dark'] {
+    /* dark theme variables */
+    --background: var(--color-zinc-600);
+    --foreground: var(--color-sky-100);
+  }
 }
 
 /* default scrollbar styling */
