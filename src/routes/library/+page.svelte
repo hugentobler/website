@@ -1,7 +1,7 @@
 <script lang="ts">
+  import { browser } from "$app/environment";
   import { goto } from "$app/navigation";
   import { page } from "$app/state";
-  import { browser } from "$app/environment";
   import type { PageData } from "./$types";
 
   const { data }: { data: PageData } = $props();
@@ -174,6 +174,7 @@
           <article class="group">
             <!-- Image or text fallback -->
             {#if item.type === "book" && item.thumbnail}
+              {@const thickness = item.thickness || 12}
               <div
                 class="relative book-3d-container"
                 style="transform-style: preserve-3d;"
@@ -189,12 +190,12 @@
                 <!-- Right side (connecting to depth) with overlap -->
                 <div
                   class="book-side-right absolute top-0 bg-gray-600 z-0"
-                  style="left: calc(100% - 1px); width: 13px; height: 100%; transform: skewY(45deg); transform-origin: left top;"
+                  style="left: calc(100% - 1px); width: {thickness}px; height: 100%; transform: skewY(45deg); transform-origin: left top;"
                 ></div>
                 <!-- Bottom side (connecting to depth) with overlap -->
                 <div
                   class="book-side-bottom absolute left-0 bg-gray-500 z-0"
-                  style="top: calc(100% - 1px); width: 100%; height: 13px; transform: skewX(45deg); transform-origin: left top;"
+                  style="top: calc(100% - 1px); width: 100%; height: {thickness}px; transform: skewX(45deg); transform-origin: left top;"
                 ></div>
               </div>
             {:else if item.type === "photograph" && item.thumbnail}

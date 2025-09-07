@@ -1,4 +1,3 @@
-import { error } from "@sveltejs/kit";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import utc from "dayjs/plugin/utc";
@@ -21,6 +20,7 @@ export type Item = {
 	decade: number; // Auto-generated from published
 	thumbnail?: string | Picture;
 	note?: string;
+	thickness?: number;
 };
 
 /**
@@ -66,6 +66,20 @@ const parsePublishedDate = (dateInput: any): Date => {
 };
 
 /**
+ * Calculate proportional book thickness based on page count
+ */
+const calculateBookThickness = (pages?: number): number => {
+	if (!pages) return 12; // Default thickness for books without page data
+
+	// More dramatic scaling: 100 pages = ~8px, 500 pages = ~35px, 1000+ pages = ~50px max
+	const minThickness = 3;
+	const maxThickness = 50;
+	const scaledThickness = (pages / 15) ** 0.7 * 3; // Power scaling for more dramatic effect
+
+	return Math.min(maxThickness, Math.max(minThickness, scaledThickness));
+};
+
+/**
  * Factory function to create standardized Item objects
  */
 export const createItem = (
@@ -101,5 +115,6 @@ export const createItem = (
 		decade: Math.floor(publishedDate.getFullYear() / 10) * 10,
 		thumbnail: rest.thumbnail,
 		note: rest.note?.trim(),
+		thickness: type === "book" ? calculateBookThickness(rest.pages) : undefined,
 	};
 };

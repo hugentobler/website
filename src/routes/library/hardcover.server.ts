@@ -21,16 +21,15 @@ export const getHardcoverBooks = async () => {
               event
               data
               book {
-                subtitle
                 title
+                subtitle
                 release_year
                 editions(
                   order_by: {release_date: desc}
-                  limit: 5
+                  limit: 3
                   where: {isbn_13: {_is_null: false}}
                 ) {
                   isbn_13
-                  release_date
                 }
               }
             }
@@ -40,9 +39,9 @@ export const getHardcoverBooks = async () => {
 		}),
 	});
 
-	await handleApiResponse(res, { 
-		serviceName: "Hardcover", 
-		operation: "getHardcoverBooks" 
+	await handleApiResponse(res, {
+		serviceName: "Hardcover",
+		operation: "getHardcoverBooks",
 	});
 
 	const {
@@ -54,6 +53,10 @@ export const getHardcoverBooks = async () => {
 				activities: Array<{
 					data: {
 						userBook: {
+							edition?: {
+								title: string;
+								pages: number;
+							};
 							reviewSlate?: {
 								document: {
 									children: Array<{
@@ -81,7 +84,7 @@ export const getHardcoverBooks = async () => {
 
 	handleGraphQLResponse(data, errors, {
 		serviceName: "Hardcover",
-		operation: "getHardcoverBooks"
+		operation: "getHardcoverBooks",
 	});
 
 	return data.me[0].activities.map((activity) => ({
@@ -90,5 +93,6 @@ export const getHardcoverBooks = async () => {
 		releaseYear: activity.book.release_year,
 		editionIsbns: activity.book.editions.map((edition) => edition.isbn_13),
 		reviewText: activity.data.userBook.reviewSlate?.document.children[0].children[0].text,
+		pages: activity.data.userBook.edition?.pages, // Keep for createItem processing
 	}));
 };
