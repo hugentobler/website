@@ -1,0 +1,45 @@
+@layer base {
+	:root {
+		/* sans-specific tokens */
+		--sans-text-xs: 13px;
+		--sans-leading-xs: calc(var(--rhythm) * 3);
+
+		--sans-text-sm: 15px;
+		--sans-leading-sm: calc(var(--rhythm) * 4);
+
+		--sans-text-base: 17px;
+		--sans-leading-base: calc(var(--rhythm) * 4);
+
+		--sans-text-md: 20px;
+		--sans-leading-md: calc(var(--rhythm) * 5);
+
+		--sans-text-lg: 24px;
+		--sans-leading-lg: calc(var(--rhythm) * 6);
+	}
+}
+
+/* face-explicit type utilities for Sans */
+@utility type-sans-xs {
+	font-size: var(--sans-text-xs);
+	line-height: var(--sans-leading-xs);
+}
+
+@utility type-sans-sm {
+	font-size: var(--sans-text-sm);
+	line-height: var(--sans-leading-sm);
+}
+
+@utility type-sans-base {
+	font-size: var(--sans-text-base);
+	line-height: var(--sans-leading-base);
+}
+
+@utility type-sans-md {
+	font-size: var(--sans-text-md);
+	line-height: var(--sans-leading-md);
+}
+
+@utility type-sans-lg {
+	font-size: var(--sans-text-lg);
+	line-height: var(--sans-leading-lg);
+}

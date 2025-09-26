@@ -1,0 +1,59 @@
+@layer base {
+	:root {
+		/* vertical rhythm unit */
+		--rhythm: 6px;
+
+		/* t-shirt size tokens */
+		--text-xs: 13px;
+		--leading-xs: calc(var(--rhythm) * 3);
+
+		--text-sm: 15px;
+		--leading-sm: calc(var(--rhythm) * 4);
+
+		--text-base: 17px;
+		--leading-base: calc(var(--rhythm) * 4);
+
+		--text-md: 20px;
+		--leading-md: calc(var(--rhythm) * 5);
+
+		--text-lg: 24px;
+		--leading-lg: calc(var(--rhythm) * 6);
+	}
+}
+
+/* type utilities */
+@utility type-xs {
+	font-size: var(--text-xs);
+	line-height: var(--leading-xs);
+}
+
+@utility type-sm {
+	font-size: var(--text-sm);
+	line-height: var(--leading-sm);
+}
+
+@utility type-base {
+	font-size: var(--text-base);
+	line-height: var(--leading-base);
+}
+
+@utility type-md {
+	font-size: var(--text-md);
+	line-height: var(--leading-md);
+}
+
+@utility type-lg {
+	font-size: var(--text-lg);
+	line-height: var(--leading-lg);
+}
+
+/* baseline grid overlay utility */
+@utility baseline-grid {
+	background-image: linear-gradient(
+		to bottom,
+		rgba(127 127 127 / 0.25) 1px,
+		transparent 1px
+	);
+	background-size: 100% var(--rhythm);
+	background-position: 0 0;
+}

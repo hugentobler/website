@@ -1,6 +1,11 @@
 @import 'tailwindcss';
 
 @import './styles/fonts.css';
+@import './styles/type-system.css';
+@import './styles/type-helpers.css';
+@import './styles/type-mono.css';
+@import './styles/type-sans.css';
+@import './styles/type-axes.css';
 
 @plugin "@tailwindcss/typography";
 /* @plugin "@tailwindcss/forms"; */
@@ -83,6 +88,8 @@
 
     /* scroll timeline variables */
     --scroll-timeline: --scroll-timeline;
+
+    /* type system moved to src/styles/type-system.css */
   }
 
   [data-theme='dark'] {
@@ -156,3 +163,5 @@
     opacity: 1;
   }
 }
+
+/* type utilities moved to src/styles/type-system.css */

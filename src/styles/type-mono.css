@@ -1,0 +1,45 @@
+@layer base {
+	:root {
+		/* mono-specific tokens (initial guesses) */
+		--mono-text-xs: 13px;
+		--mono-leading-xs: calc(var(--rhythm) * 3);
+
+		--mono-text-sm: 15px;
+		--mono-leading-sm: calc(var(--rhythm) * 4);
+
+		--mono-text-base: 16px;
+		--mono-leading-base: calc(var(--rhythm) * 4);
+
+		--mono-text-md: 19px;
+		--mono-leading-md: calc(var(--rhythm) * 5);
+
+		--mono-text-lg: 23px;
+		--mono-leading-lg: calc(var(--rhythm) * 6);
+	}
+}
+
+/* face-explicit type utilities for Mono */
+@utility type-mono-xs {
+	font-size: var(--mono-text-xs);
+	line-height: var(--mono-leading-xs);
+}
+
+@utility type-mono-sm {
+	font-size: var(--mono-text-sm);
+	line-height: var(--mono-leading-sm);
+}
+
+@utility type-mono-base {
+	font-size: var(--mono-text-base);
+	line-height: var(--mono-leading-base);
+}
+
+@utility type-mono-md {
+	font-size: var(--mono-text-md);
+	line-height: var(--mono-leading-md);
+}
+
+@utility type-mono-lg {
+	font-size: var(--mono-text-lg);
+	line-height: var(--mono-leading-lg);
+}
