@@ -1,0 +1,19 @@
+# Build outputs and dependencies
+.svelte-kit/
+build/
+dist/
+node_modules/
+
+# Lock files and logs
+*.lock
+*.log
+yarn.lock
+package-lock.json
+bun.lock
+
+# Let Biome handle these file types
+*.js
+*.ts
+*.json
+*.config.js
+*.config.ts

@@ -25,5 +25,6 @@
 @utility axes-sans {
 	font-weight: var(--sans-weight);
 	font-stretch: var(--sans-stretch);
+	font-style: var(--sans-style, normal);
 	letter-spacing: var(--sans-tracking);
 }
