@@ -3,7 +3,7 @@
 		/* Mono (variable) axes */
 		--mono-wght: 400; /* 100–900 */
 		--mono-stretch: 100%; /* 60%–100% */
-		--mono-slnt: 0deg; /* -16deg–0deg */
+		--mono-slnt: 0; /* -16–0 (slnt axis value) */
 		--mono-tracking: 0em; /* letter-spacing */
 
 		/* Sans (Univers) axes */
@@ -17,7 +17,8 @@
 @utility axes-mono {
 	font-weight: var(--mono-wght);
 	font-stretch: var(--mono-stretch);
-	font-style: oblique var(--mono-slnt);
+	/* Apply slant via the variable font axis */
+	font-variation-settings: "slnt" var(--mono-slnt);
 	letter-spacing: var(--mono-tracking);
 }
 
