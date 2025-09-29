@@ -1,34 +1,34 @@
 <script lang="ts">
-	import { Popover, Slider } from "bits-ui";
+	import { Popover, Slider, ToggleGroup } from "bits-ui";
 
 	// === Global ===
-	let fontMode = $state<"sans" | "mono">("sans");
+	let font = $state<"UNI" | "BM">("UNI");
 	let gridOn = $state<boolean>(true);
 	let gridClass = $derived(gridOn ? "baseline-grid-major" : "");
 	let rhythm = $state<number>(6);
 
-	// === Sans: Typography Tokens ===
-	let sansSize = $state<number>(17);
-	let sansUnits = $state<number>(4);
-	let sansLeading = $derived(rhythm * sansUnits);
+	// === UNI: Typography Tokens ===
+	let uniSize = $state<number>(17);
+	let uniUnits = $state<number>(4);
+	let uniLeading = $derived(rhythm * uniUnits);
 
-	// === Univers: Stretch ===
-	const sansStretchDefs = [
+	// === UNI: Stretch ===
+	const uniStretchDefs = [
 		{ value: "ultra-condensed", weights: [200, 300, 400] },
 		{ value: "condensed", weights: [300, 400, 600] },
 		{ value: "normal", weights: [300, 400, 600] },
 		{ value: "expanded", weights: [400] },
 	] as const;
-	type SansStretch = (typeof sansStretchDefs)[number]["value"];
-	let sansStretchIdx = $state<number>(2);
-	let sansStretch = $derived<SansStretch>(sansStretchDefs[sansStretchIdx].value);
-	const currentSansWeights = $derived<readonly number[]>(sansStretchDefs[sansStretchIdx].weights);
+	type UniStretch = (typeof uniStretchDefs)[number]["value"];
+	let uniStretchIdx = $state<number>(2);
+	let uniStretch = $derived<UniStretch>(uniStretchDefs[uniStretchIdx].value);
+	const currentUniWeights = $derived<readonly number[]>(uniStretchDefs[uniStretchIdx].weights);
 
-	// === Univers: Weights ===
-	const allSansWeights = $derived<readonly number[]>(
-		Array.from(new Set(sansStretchDefs.flatMap((d) => d.weights))).sort((a, b) => a - b)
+	// === UNI: Weights ===
+	const allUniWeights = $derived<readonly number[]>(
+		Array.from(new Set(uniStretchDefs.flatMap((d) => d.weights))).sort((a, b) => a - b)
 	);
-	let sansWeight = $state<number>(400);
+	let uniWeight = $state<number>(400);
 
 	// === Tracking ===
 	// Tailwind-like tracking steps
@@ -40,43 +40,43 @@
 		{ name: "wider", em: 0.05 },
 		{ name: "widest", em: 0.1 },
 	] as const;
-	let sansTrackingIdx = $state<number>(2);
+	let uniTrackingIdx = $state<number>(2);
 
-	let sansItalic = $state<boolean>(false);
+	let uniItalic = $state<boolean>(false);
 
-	// === Mono: Controls (Berkeley Mono Variable) ===
-	let monoSize = $state<number>(16);
-	let monoUnits = $state<number>(4);
-	let monoLeading = $derived(rhythm * monoUnits);
-	let monoWght = $state<number>(400);
-	let monoWdth = $state<number>(100); // percent 60..100
-	let monoSlnt = $state<number>(0); // deg -16..0
-	let monoTrackingIdx = $state<number>(2); // default to 'normal'
+	// === BM: Controls (Berkeley Mono Variable) ===
+	let bmSize = $state<number>(16);
+	let bmUnits = $state<number>(4);
+	let bmLeading = $derived(rhythm * bmUnits);
+	let bmWght = $state<number>(400);
+	let bmWdth = $state<number>(100); // percent 60..100
+	let bmSlnt = $state<number>(0); // -16..0
+	let bmTrackingIdx = $state<number>(2); // default to 'normal'
 
 	$effect(() => {
 		const r = document.documentElement;
 		r.style.setProperty("--rhythm", `${rhythm}px`);
 
 		// apply base tokens
-		r.style.setProperty("--sans-text-base", `${sansSize}px`);
-		r.style.setProperty("--sans-leading-base", `${sansLeading}px`);
-		r.style.setProperty("--mono-text-base", `${monoSize}px`);
-		r.style.setProperty("--mono-leading-base", `${monoLeading}px`);
+		r.style.setProperty("--sans-text-base", `${uniSize}px`);
+		r.style.setProperty("--sans-leading-base", `${uniLeading}px`);
+		r.style.setProperty("--mono-text-base", `${bmSize}px`);
+		r.style.setProperty("--mono-leading-base", `${bmLeading}px`);
 
 		// no clamping; allow any 100-step weight within min/max
 
 		// map tracking indices to em values
-		const sansTrackingEm = `${trackingDefs[Math.min(sansTrackingIdx, trackingDefs.length - 1)].em}em`;
-		const monoTrackingEm = `${trackingDefs[Math.min(monoTrackingIdx, trackingDefs.length - 1)].em}em`;
+		const sansTrackingEm = `${trackingDefs[Math.min(uniTrackingIdx, trackingDefs.length - 1)].em}em`;
+		const monoTrackingEm = `${trackingDefs[Math.min(bmTrackingIdx, trackingDefs.length - 1)].em}em`;
 
-		r.style.setProperty("--sans-weight", `${sansWeight}`);
-		r.style.setProperty("--sans-stretch", `${sansStretch}`);
-		r.style.setProperty("--sans-style", sansItalic ? "italic" : "normal");
+		r.style.setProperty("--sans-weight", `${uniWeight}`);
+		r.style.setProperty("--sans-stretch", `${uniStretch}`);
+		r.style.setProperty("--sans-style", uniItalic ? "italic" : "normal");
 		r.style.setProperty("--sans-tracking", sansTrackingEm);
 
-		r.style.setProperty("--mono-wght", `${monoWght}`);
-		r.style.setProperty("--mono-stretch", `${monoWdth}%`);
-		r.style.setProperty("--mono-slnt", `${monoSlnt}`);
+		r.style.setProperty("--mono-wght", `${bmWght}`);
+		r.style.setProperty("--mono-stretch", `${bmWdth}%`);
+		r.style.setProperty("--mono-slnt", `${bmSlnt}`);
 		r.style.setProperty("--mono-tracking", monoTrackingEm);
 	});
 
@@ -88,6 +88,16 @@
 	}
 </script>
 
+<!--
+  Slider snippet: vertical slider with optional tick and thumb labels.
+  Args:
+  - value: current numeric value
+  - setValue: updater called on change
+  - availableValues: range or set used for min/max
+  - steps: number | number[] (increment or discrete snaps)
+  - formatLabel?: (value) => string | undefined (tick labels)
+  - formatThumbLabel?: (value) => string | undefined (thumb label)
+-->
 
 {#snippet slider({
 	value,
@@ -95,14 +105,14 @@
 	availableValues,
 	steps,
 	formatLabel,
-    formatThumbLabel,
+	formatThumbLabel,
 }: {
 	value: number;
 	setValue: (v: number) => void;
 	availableValues: readonly number[];
 	steps?: number | number[];
 	formatLabel?: (value: number) => string | undefined;
-    formatThumbLabel?: (value: number) => string | undefined;
+	formatThumbLabel?: (value: number) => string | undefined;
 })}
 	{@const min = Math.min(...availableValues)}
 	{@const max = Math.max(...availableValues)}
@@ -130,7 +140,11 @@
 					class="border-border-input bg-(--background) hover:border-dark-40 focus-visible:ring-foreground dark:bg-foreground dark:shadow-card data-active:border-dark-40 z-5 focus-visible:outline-hidden data-active:scale-[0.98] block size-[25px] cursor-pointer rounded-full border shadow-sm transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
 				/>
 				{#if formatThumbLabel}
-					<Slider.ThumbLabel index={0} position="right" class="bg-muted text-foreground ml-5 rounded-md px-2 py-1 text-sm">
+					<Slider.ThumbLabel
+						index={0}
+						position="right"
+						class="bg-muted text-foreground ml-5 rounded-md px-2 py-1 text-sm"
+					>
 						{formatThumbLabel(value)}
 					</Slider.ThumbLabel>
 				{/if}
@@ -149,25 +163,98 @@
 				{/each}
 			{/snippet}
 		</Slider.Root>
-	</div>
+</div>
+{/snippet}
+
+{#snippet numberToggle({
+    value,
+    setValue,
+    min,
+    max,
+    step = 1,
+    label,
+    suffix = '',
+    info,
+    display,
+}: {
+    value: number;
+    setValue: (v: number) => void;
+    min: number;
+    max: number;
+    step?: number;
+    label: string;
+    suffix?: string;
+    info?: string;
+    display?: string;
+})}
+    {@const prev = Math.max(min, value - step)}
+    {@const next = Math.min(max, value + step)}
+    {@const getBind = () => String(value)}
+    {@const setBind = (v: string) => setValue(Number(v))}
+    <label class="flex items-center gap-3">
+        <span class="type-sans-sm">{label}</span>
+        {#if info}
+            <span class="type-sans-sm text-muted-foreground">{info}</span>
+        {/if}
+        <ToggleGroup.Root
+            bind:value={getBind, setBind}
+            type="single"
+            class="h-input rounded-card-sm border-border bg-background-alt shadow-mini flex items-center gap-x-0.5 border px-[4px] py-1"
+        >
+            <ToggleGroup.Item
+                aria-label={`decrease ${label}`}
+                value={String(prev)}
+                onclick={() => setValue(prev)}
+                class="rounded-9px bg-background-alt hover:bg-muted active:bg-dark-10 data-[state=on]:bg-muted data-[state=off]:text-foreground-alt data-[state=on]:text-foreground active:data-[state=on]:bg-dark-10 inline-flex px-3 h-10 items-center justify-center transition-all active:scale-[0.98] text-sm"
+            >
+                −
+            </ToggleGroup.Item>
+            <span
+                class="rounded-9px bg-background-alt inline-flex px-3 h-10 items-center justify-center text-sm"
+            >
+                {display ?? `${value}${suffix}`}
+            </span>
+            <ToggleGroup.Item
+                aria-label={`increase ${label}`}
+                value={String(next)}
+                onclick={() => setValue(next)}
+                class="rounded-9px bg-background-alt hover:bg-muted active:bg-dark-10 data-[state=on]:bg-muted data-[state=off]:text-foreground-alt data-[state=on]:text-foreground active:data-[state=on]:bg-dark-10 inline-flex px-3 h-10 items-center justify-center transition-all active:scale-[0.98] text-sm"
+            >
+                +
+            </ToggleGroup.Item>
+        </ToggleGroup.Root>
+    </label>
 {/snippet}
 
 <section class="space-y-6 p-6">
-	<div class="fixed top-6 right-6 z-50">
+	<div class="fixed bottom-6 right-6 z-50">
 		<Popover.Root open>
 			<Popover.Trigger class="type-sans-sm underline cursor-pointer">Settings</Popover.Trigger>
 			<Popover.Content side="top" class="bg-white p-6 w-[420px] max-h-[80vh] overflow-y-auto">
 				<!-- Global controls -->
 				<div class="flex flex-wrap items-end gap-4">
-					<label class="flex items-center gap-2">
+					<label class="flex items-center gap-3">
 						<span class="type-sans-sm">Font</span>
-						<select
-							bind:value={fontMode}
-							class="type-sans-sm border px-2 py-1 bg-white/80 dark:bg-black/30"
+						<ToggleGroup.Root
+							bind:value={font}
+							type="single"
+							class="h-input rounded-card-sm border-border bg-background-alt shadow-mini flex items-center gap-x-0.5 border px-[4px] py-1"
 						>
-							<option value="sans">Sans (Univers)</option>
-							<option value="mono">Mono (Berkeley Mono)</option>
-						</select>
+							<ToggleGroup.Item
+								aria-label="Univers"
+								value="UNI"
+								class="rounded-9px bg-background-alt hover:bg-muted active:bg-dark-10 data-[state=on]:bg-muted data-[state=off]:text-foreground-alt data-[state=on]:text-foreground active:data-[state=on]:bg-dark-10 inline-flex px-3 h-10 items-center justify-center transition-all active:scale-[0.98] text-sm"
+							>
+								Univers
+							</ToggleGroup.Item>
+							<ToggleGroup.Item
+								aria-label="Berkeley Mono"
+								value="BM"
+								class="rounded-9px bg-background-alt hover:bg-muted active:bg-dark-10 data-[state=on]:bg-muted data-[state=off]:text-foreground-alt data-[state=on]:text-foreground active:data-[state=on]:bg-dark-10 inline-flex px-3 h-10 items-center justify-center transition-all active:scale-[0.98] text-sm"
+							>
+								Berkeley Mono
+							</ToggleGroup.Item>
+						</ToggleGroup.Root>
 					</label>
 
 					<label class="flex items-center gap-2">
@@ -175,82 +262,64 @@
 						<span class="type-sans-sm">Show grid (minors + major)</span>
 					</label>
 
-					<label class="flex items-center gap-2">
-						<span class="type-sans-sm">Rhythm (px)</span>
-						<input
-							type="number"
-							min="1"
-							bind:value={rhythm}
-							class="type-sans-sm border px-2 py-1 w-20 bg-white/80 dark:bg-black/30"
-						/>
-						<div class="flex gap-1">
-							<button class="type-sans-sm px-2 py-1 border" onclick={() => (rhythm = dec(rhythm))}
-								>−1</button
-							>
-							<button class="type-sans-sm px-2 py-1 border" onclick={() => (rhythm = inc(rhythm))}
-								>+1</button
-							>
-						</div>
-					</label>
+            {@render numberToggle({
+                value: rhythm,
+                setValue: (v) => (rhythm = v),
+                min: 1,
+                max: 64,
+                step: 1,
+                label: 'Rhythm',
+                suffix: 'px'
+            })}
 				</div>
 
 				<!-- Per-font controls -->
-				{#if fontMode === "sans"}
+				{#if font === "UNI"}
 					<div class="flex flex-wrap items-end gap-4 mt-4">
-						<label class="flex items-center gap-2">
-							<span class="type-sans-sm">Base size (px)</span>
-							<input
-								type="number"
-								min="8"
-								bind:value={sansSize}
-								class="type-sans-sm border px-2 py-1 w-24 bg-white/80 dark:bg-black/30"
-							/>
-							<div class="flex gap-1">
-								<button
-									class="type-sans-sm px-2 py-1 border"
-									onclick={() => (sansSize = dec(sansSize))}>−1</button
-								>
-								<button
-									class="type-sans-sm px-2 py-1 border"
-									onclick={() => (sansSize = inc(sansSize))}>+1</button
-								>
-							</div>
-						</label>
-						<label class="flex items-center gap-2">
-							<span class="type-sans-sm">Leading (units)</span>
-							<input
-								type="number"
-								min="1"
-								bind:value={sansUnits}
-								class="type-sans-sm border px-2 py-1 w-20 bg-white/80 dark:bg-black/30"
-							/>
-						</label>
+                    {@render numberToggle({
+                        value: uniSize,
+                        setValue: (v) => (uniSize = v),
+                        min: 8,
+                        max: 64,
+                        step: 1,
+                        label: 'Base size',
+                        suffix: 'px'
+                    })}
+                    {@render numberToggle({
+                        value: uniUnits,
+                        setValue: (v) => (uniUnits = v),
+                        min: 1,
+                        max: 12,
+                        step: 1,
+                        label: 'Line height (units × rhythm)',
+                        display: `${uniLeading}px`
+                    })}
 
 						<div class="grid grid-cols-3 gap-4 w-full">
 							<!-- Stretch -->
 							<div class="grid grid-cols-[auto_1fr] gap-3 items-center">
 								{@render slider({
-									value: sansStretchIdx,
-									setValue: (v) => (sansStretchIdx = v),
-									availableValues: Array.from({ length: sansStretchDefs.length }, (_, i) => i),
-									formatLabel: (i) => sansStretchDefs[i]?.value,
+									value: uniStretchIdx,
+									setValue: (v) => (uniStretchIdx = v),
+									availableValues: Array.from({ length: uniStretchDefs.length }, (_, i) => i),
+									formatLabel: (i) => uniStretchDefs[i]?.value,
 								})}
 							</div>
 							<!-- Weight (numeric values, step 100; hide labels when not available) -->
 							<div class="grid grid-cols-[auto_1fr] gap-3 items-center">
 								{@render slider({
-									value: sansWeight,
-									setValue: (v) => (sansWeight = v),
-									availableValues: allSansWeights,
-									formatLabel: (w) => (currentSansWeights.includes(w) ? String(w) : undefined),
+									value: uniWeight,
+									setValue: (v) => (uniWeight = v),
+									availableValues: allUniWeights,
+									formatLabel: (w) => (currentUniWeights.includes(w) ? String(w) : undefined),
 									steps: 100,
 								})}
 							</div>
 							<!-- Tracking (Tailwind steps) -->
 							<div class="grid grid-cols-[auto_1fr] gap-3 items-center">
 								{@render slider({
-									value: sansTrackingIdx,
-									setValue: (v) => (sansTrackingIdx = v),
+									value: uniTrackingIdx,
+									setValue: (v) => (uniTrackingIdx = v),
 									availableValues: Array.from({ length: trackingDefs.length }, (_, i) => i),
 									formatLabel: (i) => trackingDefs[i]?.name,
 								})}
@@ -258,7 +327,7 @@
 						</div>
 
 						<label class="flex items-center gap-2">
-							<input type="checkbox" bind:checked={sansItalic} />
+							<input type="checkbox" bind:checked={uniItalic} />
 							<span class="type-sans-sm">Italic (if available)</span>
 						</label>
 					</div>
@@ -269,73 +338,71 @@
 							<input
 								type="number"
 								min="8"
-								bind:value={monoSize}
+								bind:value={bmSize}
 								class="type-sans-sm border px-2 py-1 w-24 bg-white/80 dark:bg-black/30"
 							/>
 							<div class="flex gap-1">
-								<button
-									class="type-sans-sm px-2 py-1 border"
-									onclick={() => (monoSize = dec(monoSize))}>−1</button
+								<button class="type-sans-sm px-2 py-1 border" onclick={() => (bmSize = dec(bmSize))}
+									>−1</button
 								>
-								<button
-									class="type-sans-sm px-2 py-1 border"
-									onclick={() => (monoSize = inc(monoSize))}>+1</button
+								<button class="type-sans-sm px-2 py-1 border" onclick={() => (bmSize = inc(bmSize))}
+									>+1</button
 								>
 							</div>
 						</label>
-						<label class="flex items-center gap-2">
-							<span class="type-sans-sm">Leading (units)</span>
-							<input
-								type="number"
-								min="1"
-								bind:value={monoUnits}
-								class="type-sans-sm border px-2 py-1 w-20 bg-white/80 dark:bg-black/30"
-							/>
-						</label>
+                    {@render numberToggle({
+                        value: bmUnits,
+                        setValue: (v) => (bmUnits = v),
+                        min: 1,
+                        max: 12,
+                        step: 1,
+                        label: 'Line height (units × rhythm)',
+                        display: `${bmLeading}px`
+                    })}
 
 						<div class="grid grid-cols-4 gap-4 w-full">
 							<!-- Mono weight -->
 							<div class="grid grid-cols-[auto_1fr] gap-3 items-center">
-					{@render slider({
-						value: monoWght,
-						setValue: (v) => (monoWght = v),
-						availableValues: [100, 900],
-						steps: 10,
-						formatThumbLabel: (v) => `wght: ${v}`,
-						formatLabel: (v) => (v % 150 === 0 ? String(v) : undefined),
-					})}
-					</div>
-					<!-- Mono width -->
-					<div class="grid grid-cols-[auto_1fr] gap-3 items-center">
-					{@render slider({
-						value: monoWdth,
-						setValue: (v) => (monoWdth = v),
-						availableValues: [60, 100],
-						steps: 1,
-						formatThumbLabel: (v) => `wdth: ${v}%`,
-						formatLabel: (v) => (v % 10 === 0 ? `${v}%` : undefined),
-					})}
-					</div>
-					<!-- Mono slant -->
-					<div class="grid grid-cols-[auto_1fr] gap-3 items-center">
-					{@render slider({
-						value: monoSlnt,
-						setValue: (v) => (monoSlnt = v),
-						availableValues: [-16, 0],
-						steps: 1,
-						formatThumbLabel: (v) => `slnt: ${v}°`,
-						formatLabel: (v) => (v % 4 === 0 ? `${v}°` : undefined),
-					})}
-					</div>
-					<!-- Mono tracking (Tailwind steps) -->
-					<div class="grid grid-cols-[auto_1fr] gap-3 items-center">
-						{@render slider({
-							value: monoTrackingIdx,
-							setValue: (v) => (monoTrackingIdx = v),
-							availableValues: Array.from({ length: trackingDefs.length }, (_, i) => i),
-							formatLabel: (i) => trackingDefs[i]?.name,
-						})}
-					</div>
+								{@render slider({
+									value: bmWght,
+									setValue: (v) => (bmWght = v),
+									availableValues: [100, 900],
+									steps: 10,
+									formatThumbLabel: (v) => `wght: ${v}`,
+									formatLabel: (v) => (v % 150 === 0 ? String(v) : undefined),
+								})}
+							</div>
+							<!-- Mono width -->
+							<div class="grid grid-cols-[auto_1fr] gap-3 items-center">
+								{@render slider({
+									value: bmWdth,
+									setValue: (v) => (bmWdth = v),
+									availableValues: [60, 100],
+									steps: 1,
+									formatThumbLabel: (v) => `wdth: ${v}%`,
+									formatLabel: (v) => (v % 10 === 0 ? `${v}%` : undefined),
+								})}
+							</div>
+							<!-- Mono slant -->
+							<div class="grid grid-cols-[auto_1fr] gap-3 items-center">
+								{@render slider({
+									value: bmSlnt,
+									setValue: (v) => (bmSlnt = v),
+									availableValues: [-16, 0],
+									steps: 1,
+									formatThumbLabel: (v) => `slnt: ${v}°`,
+									formatLabel: (v) => (v % 4 === 0 ? `${v}°` : undefined),
+								})}
+							</div>
+							<!-- Mono tracking (Tailwind steps) -->
+							<div class="grid grid-cols-[auto_1fr] gap-3 items-center">
+								{@render slider({
+									value: bmTrackingIdx,
+									setValue: (v) => (bmTrackingIdx = v),
+									availableValues: Array.from({ length: trackingDefs.length }, (_, i) => i),
+									formatLabel: (i) => trackingDefs[i]?.name,
+								})}
+							</div>
 						</div>
 					</div>
 				{/if}
@@ -348,11 +415,11 @@
 		<p class="type-sans-sm font-sans">Focused test page for vertical sliders and rhythm.</p>
 	</header>
 
-	{#if fontMode === "sans"}
+	{#if font === "UNI"}
 		<article class="space-y-4">
 			<p
 				class={`type-sans-base font-sans axes-sans ${gridClass}`}
-				style={`--leading-units: ${sansUnits}`}
+				style={`--leading-units: ${uniUnits}`}
 			>
 				Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut
 				labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
@@ -360,7 +427,7 @@
 			</p>
 			<p
 				class={`type-sans-base font-sans axes-sans ${gridClass}`}
-				style={`--leading-units: ${sansUnits}; margin-top: calc(var(--rhythm) * 2)`}
+				style={`--leading-units: ${uniUnits}; margin-top: calc(var(--rhythm) * 2)`}
 			>
 				Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
 				pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt
@@ -371,7 +438,7 @@
 		<article class="space-y-4">
 			<p
 				class={`type-mono-base font-mono axes-mono ${gridClass}`}
-				style={`--leading-units: ${monoUnits}`}
+				style={`--leading-units: ${bmUnits}`}
 			>
 				Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut
 				labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
@@ -379,7 +446,7 @@
 			</p>
 			<p
 				class={`type-mono-base font-mono axes-mono ${gridClass}`}
-				style={`--leading-units: ${monoUnits}; margin-top: calc(var(--rhythm) * 2)`}
+				style={`--leading-units: ${bmUnits}; margin-top: calc(var(--rhythm) * 2)`}
 			>
 				Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
 				pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt
