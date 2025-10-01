@@ -100,35 +100,38 @@
 -->
 
 {#snippet slider({
-	value,
-	setValue,
-	availableValues,
-	steps,
-	formatLabel,
-	formatThumbLabel,
+    value,
+    setValue,
+    availableValues,
+    steps,
+    formatLabel,
+    formatThumbLabel,
+    disabled,
 }: {
-	value: number;
-	setValue: (v: number) => void;
-	availableValues: readonly number[];
-	steps?: number | number[];
-	formatLabel?: (value: number) => string | undefined;
-	formatThumbLabel?: (value: number) => string | undefined;
+    value: number;
+    setValue: (v: number) => void;
+    availableValues: readonly number[];
+    steps?: number | number[];
+    formatLabel?: (value: number) => string | undefined;
+    formatThumbLabel?: (value: number) => string | undefined;
+    disabled?: boolean;
 })}
 	{@const min = Math.min(...availableValues)}
 	{@const max = Math.max(...availableValues)}
 	{@const step = 1}
 	<div class="h-60 justify-center flex">
-		<Slider.Root
-			type="single"
-			orientation="vertical"
-			{value}
-			{min}
-			{max}
-			step={steps ?? step}
-			class="relative flex h-full touch-none select-none flex-col items-center"
-			trackPadding={3}
-			onValueChange={(value) => setValue(value)}
-		>
+        <Slider.Root
+            type="single"
+            orientation="vertical"
+            {value}
+            {min}
+            {max}
+            step={steps ?? step}
+            class="relative flex h-full touch-none select-none flex-col items-center"
+            trackPadding={3}
+            onValueChange={(value) => setValue(value)}
+            disabled={disabled}
+        >
 			{#snippet children({ tickItems })}
 				<span
 					class="bg-(--background) relative h-full w-2 cursor-pointer overflow-hidden rounded-full"
@@ -230,183 +233,106 @@
 	<div class="fixed bottom-6 right-6 z-50">
 		<Popover.Root open>
 			<Popover.Trigger class="type-sans-sm underline cursor-pointer">Settings</Popover.Trigger>
-			<Popover.Content side="top" class="bg-white p-6 w-[420px] max-h-[80vh] overflow-y-auto">
-				<!-- Global controls -->
-				<div class="flex flex-wrap items-end gap-4">
-					<label class="flex items-center gap-3">
-						<span class="type-sans-sm">Font</span>
-						<ToggleGroup.Root
-							bind:value={font}
-							type="single"
-							class="h-input rounded-card-sm border-border bg-background-alt shadow-mini flex items-center gap-x-0.5 border px-[4px] py-1"
-						>
-							<ToggleGroup.Item
-								aria-label="Univers"
-								value="UNI"
-								class="rounded-9px bg-background-alt hover:bg-muted active:bg-dark-10 data-[state=on]:bg-muted data-[state=off]:text-foreground-alt data-[state=on]:text-foreground active:data-[state=on]:bg-dark-10 inline-flex px-3 h-10 items-center justify-center transition-all active:scale-[0.98] text-sm"
-							>
-								Univers
-							</ToggleGroup.Item>
-							<ToggleGroup.Item
-								aria-label="Berkeley Mono"
-								value="BM"
-								class="rounded-9px bg-background-alt hover:bg-muted active:bg-dark-10 data-[state=on]:bg-muted data-[state=off]:text-foreground-alt data-[state=on]:text-foreground active:data-[state=on]:bg-dark-10 inline-flex px-3 h-10 items-center justify-center transition-all active:scale-[0.98] text-sm"
-							>
-								Berkeley Mono
-							</ToggleGroup.Item>
-						</ToggleGroup.Root>
-					</label>
+            <Popover.Content side="top" class="bg-white p-6 max-h-[80vh] overflow-y-auto">
+                <div class="grid grid-cols-[auto_1fr] items-start gap-6">
+                    <!-- First column: non-slider controls stacked -->
+                    <div class="grid gap-4 content-start">
+                        <label class="flex items-center gap-3">
+                            <span class="type-sans-sm">Font</span>
+                            <ToggleGroup.Root bind:value={font} type="single" class="h-input rounded-card-sm border-border bg-background-alt shadow-mini flex items-center gap-x-0.5 border px-[4px] py-1">
+                                <ToggleGroup.Item aria-label="Univers" value="UNI" class="rounded-9px bg-background-alt hover:bg-muted active:bg-dark-10 data-[state=on]:bg-muted data-[state=off]:text-foreground-alt data-[state=on]:text-foreground active:data-[state=on]:bg-dark-10 inline-flex px-3 h-10 items-center justify-center transition-all active:scale-[0.98] text-sm">Univers</ToggleGroup.Item>
+                                <ToggleGroup.Item aria-label="Berkeley Mono" value="BM" class="rounded-9px bg-background-alt hover:bg-muted active:bg-dark-10 data-[state=on]:bg-muted data-[state=off]:text-foreground-alt data-[state=on]:text-foreground active:data-[state=on]:bg-dark-10 inline-flex px-3 h-10 items-center justify-center transition-all active:scale-[0.98] text-sm">Berkeley Mono</ToggleGroup.Item>
+                            </ToggleGroup.Root>
+                        </label>
 
-					<label class="flex items-center gap-2">
-						<input type="checkbox" bind:checked={gridOn} />
-						<span class="type-sans-sm">Show grid (minors + major)</span>
-					</label>
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" bind:checked={gridOn} />
+                            <span class="type-sans-sm">Show grid (minors + major)</span>
+                        </label>
 
-            {@render numberToggle({
-                value: rhythm,
-                setValue: (v) => (rhythm = v),
-                min: 1,
-                max: 64,
-                step: 1,
-                label: 'Rhythm',
-                suffix: 'px'
-            })}
-				</div>
+                        {@render numberToggle({ value: rhythm, setValue: (v) => (rhythm = v), min: 1, max: 64, step: 1, label: 'Rhythm', suffix: 'px' })}
 
-				<!-- Per-font controls -->
-				{#if font === "UNI"}
-					<div class="flex flex-wrap items-end gap-4 mt-4">
-                    {@render numberToggle({
-                        value: uniSize,
-                        setValue: (v) => (uniSize = v),
-                        min: 8,
-                        max: 64,
-                        step: 1,
-                        label: 'Base size',
-                        suffix: 'px'
-                    })}
-                    {@render numberToggle({
-                        value: uniUnits,
-                        setValue: (v) => (uniUnits = v),
-                        min: 1,
-                        max: 12,
-                        step: 1,
-                        label: 'Line height (units × rhythm)',
-                        display: `${uniLeading}px`
-                    })}
+                        {#if font === "UNI"}
+                            {@render numberToggle({ value: uniSize, setValue: (v) => (uniSize = v), min: 8, max: 64, step: 1, label: 'Base size', suffix: 'px' })}
+                            {@render numberToggle({ value: uniUnits, setValue: (v) => (uniUnits = v), min: 1, max: 12, step: 1, label: 'Line height (units × rhythm)', display: `${uniLeading}px` })}
+                            <label class="flex items-center gap-2">
+                                <input type="checkbox" bind:checked={uniItalic} />
+                                <span class="type-sans-sm">Italic (if available)</span>
+                            </label>
+                        {:else}
+                            {@render numberToggle({ value: bmSize, setValue: (v) => (bmSize = v), min: 8, max: 64, step: 1, label: 'Base size', suffix: 'px' })}
+                            {@render numberToggle({ value: bmUnits, setValue: (v) => (bmUnits = v), min: 1, max: 12, step: 1, label: 'Line height (units × rhythm)', display: `${bmLeading}px` })}
+                        {/if}
+                    </div>
 
-						<div class="grid grid-cols-3 gap-4 w-full">
-							<!-- Stretch -->
-							<div class="grid grid-cols-[auto_1fr] gap-3 items-center">
-								{@render slider({
-									value: uniStretchIdx,
-									setValue: (v) => (uniStretchIdx = v),
-									availableValues: Array.from({ length: uniStretchDefs.length }, (_, i) => i),
-									formatLabel: (i) => uniStretchDefs[i]?.value,
-								})}
-							</div>
-							<!-- Weight (numeric values, step 100; hide labels when not available) -->
-							<div class="grid grid-cols-[auto_1fr] gap-3 items-center">
-								{@render slider({
-									value: uniWeight,
-									setValue: (v) => (uniWeight = v),
-									availableValues: allUniWeights,
-									formatLabel: (w) => (currentUniWeights.includes(w) ? String(w) : undefined),
-									steps: 100,
-								})}
-							</div>
-							<!-- Tracking (Tailwind steps) -->
-							<div class="grid grid-cols-[auto_1fr] gap-3 items-center">
-								{@render slider({
-									value: uniTrackingIdx,
-									setValue: (v) => (uniTrackingIdx = v),
-									availableValues: Array.from({ length: trackingDefs.length }, (_, i) => i),
-									formatLabel: (i) => trackingDefs[i]?.name,
-								})}
-							</div>
-						</div>
-
-						<label class="flex items-center gap-2">
-							<input type="checkbox" bind:checked={uniItalic} />
-							<span class="type-sans-sm">Italic (if available)</span>
-						</label>
-					</div>
-				{:else}
-					<div class="flex flex-wrap items-end gap-4 mt-4">
-						<label class="flex items-center gap-2">
-							<span class="type-sans-sm">Base size (px)</span>
-							<input
-								type="number"
-								min="8"
-								bind:value={bmSize}
-								class="type-sans-sm border px-2 py-1 w-24 bg-white/80 dark:bg-black/30"
-							/>
-							<div class="flex gap-1">
-								<button class="type-sans-sm px-2 py-1 border" onclick={() => (bmSize = dec(bmSize))}
-									>−1</button
-								>
-								<button class="type-sans-sm px-2 py-1 border" onclick={() => (bmSize = inc(bmSize))}
-									>+1</button
-								>
-							</div>
-						</label>
-                    {@render numberToggle({
-                        value: bmUnits,
-                        setValue: (v) => (bmUnits = v),
-                        min: 1,
-                        max: 12,
-                        step: 1,
-                        label: 'Line height (units × rhythm)',
-                        display: `${bmLeading}px`
-                    })}
-
-						<div class="grid grid-cols-4 gap-4 w-full">
-							<!-- Mono weight -->
-							<div class="grid grid-cols-[auto_1fr] gap-3 items-center">
-								{@render slider({
-									value: bmWght,
-									setValue: (v) => (bmWght = v),
-									availableValues: [100, 900],
-									steps: 10,
-									formatThumbLabel: (v) => `wght: ${v}`,
-									formatLabel: (v) => (v % 150 === 0 ? String(v) : undefined),
-								})}
-							</div>
-							<!-- Mono width -->
-							<div class="grid grid-cols-[auto_1fr] gap-3 items-center">
-								{@render slider({
-									value: bmWdth,
-									setValue: (v) => (bmWdth = v),
-									availableValues: [60, 100],
-									steps: 1,
-									formatThumbLabel: (v) => `wdth: ${v}%`,
-									formatLabel: (v) => (v % 10 === 0 ? `${v}%` : undefined),
-								})}
-							</div>
-							<!-- Mono slant -->
-							<div class="grid grid-cols-[auto_1fr] gap-3 items-center">
-								{@render slider({
-									value: bmSlnt,
-									setValue: (v) => (bmSlnt = v),
-									availableValues: [-16, 0],
-									steps: 1,
-									formatThumbLabel: (v) => `slnt: ${v}°`,
-									formatLabel: (v) => (v % 4 === 0 ? `${v}°` : undefined),
-								})}
-							</div>
-							<!-- Mono tracking (Tailwind steps) -->
-							<div class="grid grid-cols-[auto_1fr] gap-3 items-center">
-								{@render slider({
-									value: bmTrackingIdx,
-									setValue: (v) => (bmTrackingIdx = v),
-									availableValues: Array.from({ length: trackingDefs.length }, (_, i) => i),
-									formatLabel: (i) => trackingDefs[i]?.name,
-								})}
-							</div>
-						</div>
-					</div>
-				{/if}
-			</Popover.Content>
+                    <!-- Slider columns: unified across fonts (weight, stretch/width, slant, tracking) -->
+                    <div class="grid grid-cols-4 items-start gap-6">
+                        <!-- Weight -->
+                        <div class="[grid-row:1/-1] min-w-[180px]">
+                            <div class="type-sans-sm text-muted-foreground mb-1">Weight</div>
+                            <div class="grid grid-cols-[auto_1fr] gap-3 items-center">
+                                {@render slider({
+                                    value: font === 'UNI' ? uniWeight : bmWght,
+                                    setValue: (v) => (font === 'UNI' ? (uniWeight = v) : (bmWght = v)),
+                                    availableValues: font === 'UNI' ? allUniWeights : ([100, 900] as const),
+                                    steps: font === 'UNI' ? 100 : 10,
+                                    formatThumbLabel: font === 'UNI' ? undefined : (v) => `wght: ${v}`,
+                                    formatLabel:
+                                        font === 'UNI'
+                                            ? (w) => (currentUniWeights.includes(w) ? String(w) : undefined)
+                                            : (v) => (v % 150 === 0 ? String(v) : undefined),
+                                })}
+                            </div>
+                        </div>
+                        <!-- Stretch (UNI) / Width (BM) -->
+                        <div class="[grid-row:1/-1] min-w-[180px]">
+                            <div class="type-sans-sm text-muted-foreground mb-1">{font === 'UNI' ? 'Stretch' : 'Width'}</div>
+                            <div class="grid grid-cols-[auto_1fr] gap-3 items-center">
+                                {@render slider({
+                                    value: font === 'UNI' ? uniStretchIdx : bmWdth,
+                                    setValue: (v) => (font === 'UNI' ? (uniStretchIdx = v) : (bmWdth = v)),
+                                    availableValues:
+                                        font === 'UNI'
+                                            ? Array.from({ length: uniStretchDefs.length }, (_, i) => i)
+                                            : ([60, 100] as const),
+                                    steps: font === 'UNI' ? undefined : 1,
+                                    formatLabel:
+                                        font === 'UNI'
+                                            ? (i) => uniStretchDefs[i]?.value
+                                            : (v) => (v % 10 === 0 ? `${v}%` : undefined),
+                                })}
+                            </div>
+                        </div>
+                        <!-- Slant (BM only) -->
+                        <div class="[grid-row:1/-1] min-w-[180px]">
+                            <div class="type-sans-sm text-muted-foreground mb-1">Slant</div>
+                            <div class="grid grid-cols-[auto_1fr] gap-3 items-center">
+                                {@render slider({
+                                    value: bmSlnt,
+                                    setValue: (v) => (bmSlnt = v),
+                                    availableValues: [-16, 0],
+                                    steps: 1,
+                                    formatThumbLabel: (v) => `slnt: ${v}°`,
+                                    formatLabel: (v) => (v % 4 === 0 ? `${v}°` : undefined),
+                                    disabled: font === 'UNI',
+                                })}
+                            </div>
+                        </div>
+                        <!-- Tracking -->
+                        <div class="[grid-row:1/-1] min-w-[180px]">
+                            <div class="type-sans-sm text-muted-foreground mb-1">Tracking</div>
+                            <div class="grid grid-cols-[auto_1fr] gap-3 items-center">
+                                {@render slider({
+                                    value: font === 'UNI' ? uniTrackingIdx : bmTrackingIdx,
+                                    setValue: (v) => (font === 'UNI' ? (uniTrackingIdx = v) : (bmTrackingIdx = v)),
+                                    availableValues: Array.from({ length: trackingDefs.length }, (_, i) => i),
+                                    formatLabel: (i) => trackingDefs[i]?.name,
+                                })}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </Popover.Content>
 		</Popover.Root>
 	</div>
 
