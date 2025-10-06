@@ -14,7 +14,7 @@
 }
 
 /* Apply axes to Mono containers */
-@utility axes-mono {
+@utility bm-axes {
 	font-weight: var(--mono-wght);
 	font-stretch: var(--mono-stretch);
 	/* Apply slant via the variable font axis */
@@ -23,7 +23,7 @@
 }
 
 /* Apply axes to Sans containers */
-@utility axes-sans {
+@utility uni-axes {
 	font-weight: var(--sans-weight);
 	font-stretch: var(--sans-stretch);
 	font-style: var(--sans-style, normal);

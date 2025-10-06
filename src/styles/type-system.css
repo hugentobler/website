@@ -1,23 +1,23 @@
 @layer base {
 	:root {
-		/* vertical rhythm unit */
-		--rhythm: 6px;
+        /* vertical rhythm unit */
+        --type-rhythm: 6px;
 
 		/* t-shirt size tokens */
 		--text-xs: 13px;
-		--leading-xs: calc(var(--rhythm) * 3);
+        --leading-xs: calc(var(--type-rhythm) * 3);
 
 		--text-sm: 15px;
-		--leading-sm: calc(var(--rhythm) * 4);
+        --leading-sm: calc(var(--type-rhythm) * 4);
 
 		--text-base: 17px;
-		--leading-base: calc(var(--rhythm) * 4);
+        --leading-base: calc(var(--type-rhythm) * 4);
 
 		--text-md: 20px;
-		--leading-md: calc(var(--rhythm) * 5);
+        --leading-md: calc(var(--type-rhythm) * 5);
 
 		--text-lg: 24px;
-		--leading-lg: calc(var(--rhythm) * 6);
+        --leading-lg: calc(var(--type-rhythm) * 6);
 	}
 }
 
@@ -54,6 +54,6 @@
 		rgba(127 127 127 / 0.25) 1px,
 		transparent 1px
 	);
-	background-size: 100% var(--rhythm);
+    background-size: 100% var(--type-rhythm);
 	background-position: 0 0;
 }

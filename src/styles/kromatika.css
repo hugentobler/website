@@ -1,0 +1,17 @@
+/* source: https://oxbowui.com/documentation/foundations/colors */
+
+@layer base {
+  :root {
+    /* Charcoal */
+    --color-charcoal-50:  oklch(0.973 0.002 247.8);
+    --color-charcoal-100: oklch(0.930 0.003 247.9);
+    --color-charcoal-200: oklch(0.863 0.006 255.5);
+    --color-charcoal-300: oklch(0.787 0.011 256.7);
+    --color-charcoal-400: oklch(0.702 0.016 264.5);
+    --color-charcoal-500: oklch(0.612 0.018 262.7);
+    --color-charcoal-600: oklch(0.519 0.021 261.3);
+    --color-charcoal-700: oklch(0.427 0.021 264.3);
+    --color-charcoal-800: oklch(0.339 0.019 260.7);
+    --color-charcoal-900: oklch(0.256 0.018 266.3);
+  }
+}

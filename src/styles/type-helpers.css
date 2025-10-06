@@ -14,9 +14,9 @@
 		var(--baseline-band) 0,
 		var(--baseline-band) 1px,
 		transparent 1px,
-		transparent var(--rhythm)
+        transparent var(--type-rhythm)
 	);
-	background-size: 100% var(--rhythm);
+    background-size: 100% var(--type-rhythm);
 	background-position: 0 0;
 }
 
@@ -28,16 +28,16 @@
 			var(--baseline-band) 0,
 			var(--baseline-band) 1px,
 			transparent 1px,
-			transparent var(--rhythm)
+            transparent var(--type-rhythm)
 		),
 		repeating-linear-gradient(
 			to bottom,
 			transparent 0,
-			transparent calc(var(--rhythm) * 2 - 1px),
-			var(--baseline-color) calc(var(--rhythm) * 2 - 1px),
-			var(--baseline-color) calc(var(--rhythm) * 2)
+            transparent calc(var(--type-rhythm) * 2 - 1px),
+            var(--baseline-color) calc(var(--type-rhythm) * 2 - 1px),
+            var(--baseline-color) calc(var(--type-rhythm) * 2)
 		);
-	background-size: 100% var(--rhythm), 100% calc(var(--rhythm) * 2);
+    background-size: 100% var(--type-rhythm), 100% calc(var(--type-rhythm) * 2);
 	background-position: 0 0, 0 0;
 }
 
@@ -49,16 +49,16 @@
 			var(--baseline-band) 0,
 			var(--baseline-band) 1px,
 			transparent 1px,
-			transparent var(--rhythm)
+            transparent var(--type-rhythm)
 		),
 		repeating-linear-gradient(
 			to bottom,
 			transparent 0,
-			transparent calc(var(--rhythm) * 4 - 1px),
-			var(--baseline-color) calc(var(--rhythm) * 4 - 1px),
-			var(--baseline-color) calc(var(--rhythm) * 4)
+            transparent calc(var(--type-rhythm) * 4 - 1px),
+            var(--baseline-color) calc(var(--type-rhythm) * 4 - 1px),
+            var(--baseline-color) calc(var(--type-rhythm) * 4)
 		);
-	background-size: 100% var(--rhythm), 100% calc(var(--rhythm) * 4);
+    background-size: 100% var(--type-rhythm), 100% calc(var(--type-rhythm) * 4);
 	background-position: 0 0, 0 0;
 }
 
@@ -70,15 +70,15 @@
 			var(--baseline-band) 0,
 			var(--baseline-band) 1px,
 			transparent 1px,
-			transparent var(--rhythm)
+            transparent var(--type-rhythm)
 		),
 		repeating-linear-gradient(
 			to bottom,
 			transparent 0,
-			transparent calc(var(--rhythm) * var(--leading-units) - 1px),
-			var(--baseline-color) calc(var(--rhythm) * var(--leading-units) - 1px),
-			var(--baseline-color) calc(var(--rhythm) * var(--leading-units))
+            transparent calc(var(--type-rhythm) * var(--leading-units) - 1px),
+            var(--baseline-color) calc(var(--type-rhythm) * var(--leading-units) - 1px),
+            var(--baseline-color) calc(var(--type-rhythm) * var(--leading-units))
 		);
-	background-size: 100% var(--rhythm), 100% calc(var(--rhythm) * var(--leading-units));
+    background-size: 100% var(--type-rhythm), 100% calc(var(--type-rhythm) * var(--leading-units));
 	background-position: 0 0, 0 0;
 }

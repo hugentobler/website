@@ -2,44 +2,49 @@
 	:root {
 		/* sans-specific tokens */
 		--sans-text-xs: 13px;
-		--sans-leading-xs: calc(var(--rhythm) * 3);
+    --sans-leading-xs-units: 3;
+    --sans-leading-xs: calc(var(--type-rhythm) * var(--sans-leading-xs-units));
 
 		--sans-text-sm: 15px;
-		--sans-leading-sm: calc(var(--rhythm) * 4);
+    --sans-leading-sm-units: 4;
+    --sans-leading-sm: calc(var(--type-rhythm) * var(--sans-leading-sm-units));
 
 		--sans-text-base: 17px;
-		--sans-leading-base: calc(var(--rhythm) * 4);
+    --sans-leading-base-units: 4;
+    --sans-leading-base: calc(var(--type-rhythm) * var(--sans-leading-base-units));
 
 		--sans-text-md: 20px;
-		--sans-leading-md: calc(var(--rhythm) * 5);
+    --sans-leading-md-units: 5;
+    --sans-leading-md: calc(var(--type-rhythm) * var(--sans-leading-md-units));
 
 		--sans-text-lg: 24px;
-		--sans-leading-lg: calc(var(--rhythm) * 6);
+    --sans-leading-lg-units: 6;
+    --sans-leading-lg: calc(var(--type-rhythm) * var(--sans-leading-lg-units));
 	}
 }
 
-/* face-explicit type utilities for Sans */
-@utility type-sans-xs {
+/* Univers (UNI) face utilities */
+@utility uni-type-xs {
 	font-size: var(--sans-text-xs);
 	line-height: var(--sans-leading-xs);
 }
 
-@utility type-sans-sm {
+@utility uni-type-sm {
 	font-size: var(--sans-text-sm);
 	line-height: var(--sans-leading-sm);
 }
 
-@utility type-sans-base {
+@utility uni-type-base {
 	font-size: var(--sans-text-base);
 	line-height: var(--sans-leading-base);
 }
 
-@utility type-sans-md {
+@utility uni-type-md {
 	font-size: var(--sans-text-md);
 	line-height: var(--sans-leading-md);
 }
 
-@utility type-sans-lg {
+@utility uni-type-lg {
 	font-size: var(--sans-text-lg);
 	line-height: var(--sans-leading-lg);
 }

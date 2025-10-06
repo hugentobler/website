@@ -1,4 +1,6 @@
 <script lang="ts">
+import { ToggleGroupItem, ToggleGroupRoot } from "$lib/components/ui/toggle-group";
+import { FONTS } from "$lib/typography/config";
 let fontMode = $state<'sans' | 'mono'>('sans');
 let gridOn = $state<boolean>(true);
 let gridClass = $derived(gridOn ? 'baseline-grid-major' : '');
@@ -26,12 +28,12 @@ let paraUnits = $state<number>(2);
 
 $effect(() => {
 	const r = document.documentElement;
-	r.style.setProperty('--rhythm', `${rhythm}px`);
+	r.style.setProperty('--type-rhythm', `${rhythm}px`);
 	// apply base tokens
 	r.style.setProperty('--sans-text-base', `${sansSize}px`);
-	r.style.setProperty('--sans-leading-base', `${sansLeading}px`);
+	r.style.setProperty('--sans-leading-base-units', `${sansUnits}`);
 	r.style.setProperty('--mono-text-base', `${monoSize}px`);
-	r.style.setProperty('--mono-leading-base', `${monoLeading}px`);
+	r.style.setProperty('--mono-leading-base-units', `${monoUnits}`);
 	// axes
 	r.style.setProperty('--sans-weight', `${sansWeight}`);
 	r.style.setProperty('--sans-stretch', `${sansStretch}`);
@@ -44,6 +46,12 @@ $effect(() => {
 
 function inc(val: number, by = 1) { return val + by; }
 function dec(val: number, by = 1) { return Math.max(0, val - by); }
+
+const fontEntries = Object.entries(FONTS).map(([key, label]) => ({
+	key,
+	label,
+	mode: key === 'UNI' ? 'sans' : 'mono',
+}));
 </script>
 
 <section class="space-y-6 p-6 bg-white/70 dark:bg-black/30">
@@ -56,6 +64,20 @@ function dec(val: number, by = 1) { return Math.max(0, val - by); }
 				<option value="mono">Mono (Berkeley Mono)</option>
 			</select>
 		</label>
+
+			<ToggleGroupRoot
+				bind:value={fontMode}
+				type="single"
+			>
+				{#each fontEntries as f}
+					<ToggleGroupItem
+						aria-label={`toggle ${f.label}`}
+						value={f.mode}
+					>
+						{f.label}
+					</ToggleGroupItem>
+				{/each}
+			</ToggleGroupRoot>
 
 		<label class="flex items-center gap-2">
 			<input type="checkbox" bind:checked={gridOn} />
@@ -151,18 +173,18 @@ function dec(val: number, by = 1) { return Math.max(0, val - by); }
 	{/if}
 
 	<header>
-		<h1 class="type-sans-lg font-sans">Body Text Preview</h1>
-		<p class="type-sans-sm font-sans">Tune base size, leading, axes, rhythm, and spacing.</p>
+		<h1 class="uni-type-lg font-sans">Body Text Preview</h1>
+		<p class="uni-type-sm font-sans">Tune base size, leading, axes, rhythm, and spacing.</p>
 	</header>
 
 	{#if fontMode === 'sans'}
 		<article class="space-y-4">
-			<p class={`type-sans-base font-sans axes-sans ${gridClass}`} style={`--leading-units: ${sansUnits}`}>
+			<p class={`uni-type-base font-sans uni-axes ${gridClass}`} style={`--leading-units: ${sansUnits}`}>
 				Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt
 				ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
 				laboris nisi ut aliquip ex ea commodo consequat.
 			</p>
-			<p class={`type-sans-base font-sans axes-sans ${gridClass}`} style={`--leading-units: ${sansUnits}; margin-top: calc(var(--rhythm) * ${paraUnits})`}>
+			<p class={`uni-type-base font-sans uni-axes ${gridClass}`} style={`--leading-units: ${sansUnits}; margin-top: calc(var(--type-rhythm) * ${paraUnits})`}>
 				Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
 				pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt
 				mollit anim id est laborum.
@@ -170,12 +192,12 @@ function dec(val: number, by = 1) { return Math.max(0, val - by); }
 		</article>
 	{:else}
 		<article class="space-y-4">
-			<p class={`type-mono-base font-mono axes-mono ${gridClass}`} style={`--leading-units: ${monoUnits}`}>
+			<p class={`bm-type-base font-mono bm-axes ${gridClass}`} style={`--leading-units: ${monoUnits}`}>
 				Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt
 				ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
 				laboris nisi ut aliquip ex ea commodo consequat.
 			</p>
-			<p class={`type-mono-base font-mono axes-mono ${gridClass}`} style={`--leading-units: ${monoUnits}; margin-top: calc(var(--rhythm) * ${paraUnits})`}>
+			<p class={`bm-type-base font-mono bm-axes ${gridClass}`} style={`--leading-units: ${monoUnits}; margin-top: calc(var(--type-rhythm) * ${paraUnits})`}>
 				Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
 				pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt
 				mollit anim id est laborum.

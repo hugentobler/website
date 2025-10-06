@@ -1,17 +1,21 @@
 @import 'tailwindcss';
 
-@import './styles/fonts.css';
-@import './styles/type-system.css';
-@import './styles/type-helpers.css';
-@import './styles/type-mono.css';
-@import './styles/type-sans.css';
-@import './styles/type-axes.css';
+/* import color library */
+@import './kromatika.css';
 
-@plugin "@tailwindcss/typography";
+@import './fonts.css';
+@import './type-system.css';
+@import './type-helpers.css';
+@import './type-mono.css';
+@import './type-uni.css';
+@import './type-axes.css';
+
+@plugin '@tailwindcss/typography';
 /* @plugin "@tailwindcss/forms"; */
 
-/* apply theme using data attribute */
+/* override default dark mode utilities based on 'prefers-color-scheme' */
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+
 
 @theme {
   /* animation utilities */
@@ -23,6 +27,18 @@
   /* breakpoint utilities */
   --breakpoint-3xl: 120rem;
   --breakpoint-4xl: 150rem;
+
+  /* color utilities */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
 
   /* font family utilities */
   --font-mono: Berkeley Mono Variable, Berkeley Mono, monospace;
@@ -74,8 +90,18 @@
     --navbar-height: calc(var(--spacing) * 16);
 
     /* page theme variables */
+    /* TODO: remove duplicative colors */
     --background: var(--color-zinc-200);
     --foreground: var(--color-teal-900);
+    --card: var(--color-charcoal-50);
+    --card-foreground: var(--foreground);
+    --muted: var(--color-charcoal-200);
+    --muted-foreground: oklch(0.556 0 0);
+    --accent: var(--color-charcoal-800);
+    --accent-foreground: oklch(0.205 0 0);
+    --border: var(--color-charcoal-200);
+    --input: var(--color-red-400);
+
 
     --primary: var(--color-orange-500);
     --primary-dark: var(--color-orange-400);

@@ -2,44 +2,50 @@
 	:root {
 		/* mono-specific tokens (initial guesses) */
 		--mono-text-xs: 13px;
-		--mono-leading-xs: calc(var(--rhythm) * 3);
+        --mono-leading-xs-units: 3;
+        --mono-leading-xs: calc(var(--type-rhythm) * var(--mono-leading-xs-units));
 
 		--mono-text-sm: 15px;
-		--mono-leading-sm: calc(var(--rhythm) * 4);
+        --mono-leading-sm-units: 4;
+        --mono-leading-sm: calc(var(--type-rhythm) * var(--mono-leading-sm-units));
 
 		--mono-text-base: 16px;
-		--mono-leading-base: calc(var(--rhythm) * 4);
+    /* allow runtime-controlled unit multiplier */
+        --mono-leading-base-units: var(--mono-leading-base-units, 4);
+        --mono-leading-base: calc(var(--type-rhythm) * var(--mono-leading-base-units));
 
 		--mono-text-md: 19px;
-		--mono-leading-md: calc(var(--rhythm) * 5);
+        --mono-leading-md-units: 5;
+        --mono-leading-md: calc(var(--type-rhythm) * var(--mono-leading-md-units));
 
 		--mono-text-lg: 23px;
-		--mono-leading-lg: calc(var(--rhythm) * 6);
+        --mono-leading-lg-units: 6;
+        --mono-leading-lg: calc(var(--type-rhythm) * var(--mono-leading-lg-units));
 	}
 }
 
-/* face-explicit type utilities for Mono */
-@utility type-mono-xs {
+/* Berkeley Mono (BM) face utilities */
+@utility bm-type-xs {
 	font-size: var(--mono-text-xs);
 	line-height: var(--mono-leading-xs);
 }
 
-@utility type-mono-sm {
+@utility bm-type-sm {
 	font-size: var(--mono-text-sm);
 	line-height: var(--mono-leading-sm);
 }
 
-@utility type-mono-base {
+@utility bm-type-base {
 	font-size: var(--mono-text-base);
 	line-height: var(--mono-leading-base);
 }
 
-@utility type-mono-md {
+@utility bm-type-md {
 	font-size: var(--mono-text-md);
 	line-height: var(--mono-leading-md);
 }
 
-@utility type-mono-lg {
+@utility bm-type-lg {
 	font-size: var(--mono-text-lg);
 	line-height: var(--mono-leading-lg);
 }

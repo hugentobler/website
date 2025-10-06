@@ -1,0 +1,108 @@
+@layer base {
+	:root {}
+}
+
+/* Univers per-stretch utilities (xs, sm, base, md, lg) */
+@utility uni-normal-type-xs {
+	font-stretch: normal;
+	font-size: var(--uni-normal-text-xs);
+	line-height: calc(var(--type-rhythm) * var(--uni-normal-leading-xs));
+}
+@utility uni-normal-type-sm {
+	font-stretch: normal;
+	font-size: var(--uni-normal-text-sm);
+	line-height: calc(var(--type-rhythm) * var(--uni-normal-leading-sm));
+}
+@utility uni-normal-type-base {
+	font-stretch: normal;
+	font-size: var(--uni-normal-text-base);
+	line-height: calc(var(--type-rhythm) * var(--uni-normal-leading-base));
+}
+@utility uni-normal-type-md {
+	font-stretch: normal;
+	font-size: var(--uni-normal-text-md);
+	line-height: calc(var(--type-rhythm) * var(--uni-normal-leading-md));
+}
+@utility uni-normal-type-lg {
+	font-stretch: normal;
+	font-size: var(--uni-normal-text-lg);
+	line-height: calc(var(--type-rhythm) * var(--uni-normal-leading-lg));
+}
+
+@utility uni-condensed-type-xs {
+	font-stretch: condensed;
+	font-size: var(--uni-condensed-text-xs);
+	line-height: calc(var(--type-rhythm) * var(--uni-condensed-leading-xs));
+}
+@utility uni-condensed-type-sm {
+	font-stretch: condensed;
+	font-size: var(--uni-condensed-text-sm);
+	line-height: calc(var(--type-rhythm) * var(--uni-condensed-leading-sm));
+}
+@utility uni-condensed-type-base {
+	font-stretch: condensed;
+	font-size: var(--uni-condensed-text-base);
+	line-height: calc(var(--type-rhythm) * var(--uni-condensed-leading-base));
+}
+@utility uni-condensed-type-md {
+	font-stretch: condensed;
+	font-size: var(--uni-condensed-text-md);
+	line-height: calc(var(--type-rhythm) * var(--uni-condensed-leading-md));
+}
+@utility uni-condensed-type-lg {
+	font-stretch: condensed;
+	font-size: var(--uni-condensed-text-lg);
+	line-height: calc(var(--type-rhythm) * var(--uni-condensed-leading-lg));
+}
+
+@utility uni-ultra-condensed-type-xs {
+	font-stretch: ultra-condensed;
+	font-size: var(--uni-ultra-condensed-text-xs);
+	line-height: calc(var(--type-rhythm) * var(--uni-ultra-condensed-leading-xs));
+}
+@utility uni-ultra-condensed-type-sm {
+	font-stretch: ultra-condensed;
+	font-size: var(--uni-ultra-condensed-text-sm);
+	line-height: calc(var(--type-rhythm) * var(--uni-ultra-condensed-leading-sm));
+}
+@utility uni-ultra-condensed-type-base {
+	font-stretch: ultra-condensed;
+	font-size: var(--uni-ultra-condensed-text-base);
+	line-height: calc(var(--type-rhythm) * var(--uni-ultra-condensed-leading-base));
+}
+@utility uni-ultra-condensed-type-md {
+	font-stretch: ultra-condensed;
+	font-size: var(--uni-ultra-condensed-text-md);
+	line-height: calc(var(--type-rhythm) * var(--uni-ultra-condensed-leading-md));
+}
+@utility uni-ultra-condensed-type-lg {
+	font-stretch: ultra-condensed;
+	font-size: var(--uni-ultra-condensed-text-lg);
+	line-height: calc(var(--type-rhythm) * var(--uni-ultra-condensed-leading-lg));
+}
+
+@utility uni-expanded-type-xs {
+	font-stretch: expanded;
+	font-size: var(--uni-expanded-text-xs);
+	line-height: calc(var(--type-rhythm) * var(--uni-expanded-leading-xs));
+}
+@utility uni-expanded-type-sm {
+	font-stretch: expanded;
+	font-size: var(--uni-expanded-text-sm);
+	line-height: calc(var(--type-rhythm) * var(--uni-expanded-leading-sm));
+}
+@utility uni-expanded-type-base {
+	font-stretch: expanded;
+	font-size: var(--uni-expanded-text-base);
+	line-height: calc(var(--type-rhythm) * var(--uni-expanded-leading-base));
+}
+@utility uni-expanded-type-md {
+	font-stretch: expanded;
+	font-size: var(--uni-expanded-text-md);
+	line-height: calc(var(--type-rhythm) * var(--uni-expanded-leading-md));
+}
+@utility uni-expanded-type-lg {
+	font-stretch: expanded;
+	font-size: var(--uni-expanded-text-lg);
+	line-height: calc(var(--type-rhythm) * var(--uni-expanded-leading-lg));
+}
