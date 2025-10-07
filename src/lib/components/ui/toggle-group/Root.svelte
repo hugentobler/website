@@ -11,7 +11,6 @@
 
 	// Merge
 	const base = {
-		type: (incoming.type ?? "single") as "single" | "multiple",
 		class: baseClass,
 		onValueChange: (next: unknown) => {
 			value = next as never;
@@ -24,6 +23,6 @@
 	const { children: _children, ...rest } = merged;
 </script>
 
-<ToggleGroup.Root {...rest} {value}>
+<ToggleGroup.Root {...rest} {value} type={incoming.type as "single" | "multiple"}>
 	{@render children?.()}
 </ToggleGroup.Root>
