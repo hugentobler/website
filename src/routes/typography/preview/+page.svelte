@@ -27,8 +27,7 @@
 				</ToggleGroupRoot>
 				<!-- Minimal vertical slider -->
 				<div class="w-40">
-					<Slider type="single" bind:value={sliderValue} min={0} max={100} step={1} />
-					<div class="ml-4 text-sm">{sliderValue}</div>
+					<Slider type="single" bind:value={sliderValue} min={0} max={100} step={25} />
 				</div>
 
 				<!-- Example with ticks and labels (discrete step labels) -->

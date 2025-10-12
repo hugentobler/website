@@ -14,6 +14,8 @@
 <Slider.Root
 	bind:value
 	bind:ref
+	thumbPositioning="contain"
+	trackPadding={10}
 	{...restProps as any}
 	class={cn(
 		"relative flex touch-none items-center select-none",
@@ -36,13 +38,14 @@
 			<Slider.Thumb
 				{index}
 				class={cn(
-					"border-border hover:bg-muted bg-card shadow-border/50 focus-visible:ring-muted block size-6 cursor-grab rounded-full border shadow-xs transition-colors focus-visible:ring-1 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 data-active:scale-[0.98]"
+					"border-border hover:bg-muted bg-card shadow-border/50 focus-visible:ring-muted z-5 block size-6 cursor-grab rounded-full border shadow-xs transition-colors focus-visible:ring-1 focus-visible:outline-none active:cursor-grabbing disabled:pointer-events-none disabled:opacity-50 data-active:scale-[0.98]"
 				)}
 			/>
 			<Slider.ThumbLabel
 				{index}
-				position={orientation === "vertical" ? "right" : "top"}
-				class="bg-muted text-foreground rounded-md px-2 py-1 text-sm"
+				class={cn(
+					"bg-card text-foreground rounded-md px-2 py-px text-sm text-nowrap data-[position=bottom]:mt-4 data-[position=left]:mr-4 data-[position=right]:ml-4 data-[position=top]:mb-4"
+				)}
 			>
 				{value}
 			</Slider.ThumbLabel>
@@ -51,14 +54,14 @@
 		{#each tickItems as { index, value } (index)}
 			<Slider.Tick
 				{index}
-				class={orientation === "vertical"
-					? "dark:bg-background/20 bg-background z-1 h-2 w-[1px]"
-					: "dark:bg-background/20 bg-background z-1 h-[1px] w-2"}
+				class={cn("bg-background z-1", orientation === "vertical" ? "h-px w-2" : "h-2 w-px")}
 			/>
 			<Slider.TickLabel
 				{index}
-				position={orientation === "vertical" ? "right" : "top"}
-				class="text-muted-foreground data-bounded:text-foreground text-sm leading-none font-medium"
+				position={orientation === "vertical" ? "right" : "bottom"}
+				class={cn(
+					"text-foreground/66 data-bounded:text-foreground text-sm leading-none font-medium data-[position-left]:mr-3 data-[position-top]:mb-3 data-[position=bottom]:mt-3 data-[position=right]:ml-3"
+				)}
 			>
 				{value}
 			</Slider.TickLabel>
