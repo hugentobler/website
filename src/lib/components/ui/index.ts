@@ -1,2 +1,2 @@
-export { default as Slider } from "./slider/Slider.svelte";
-export { ToggleGroupItem, ToggleGroupRoot } from "./toggle-group";
+export { default as Slider } from "./Slider.svelte";
+export { default as ToggleGroup } from "./ToggleGroup.svelte";

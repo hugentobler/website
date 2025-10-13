@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { Popover, Slider } from "bits-ui";
-	import { ToggleGroupItem, ToggleGroupRoot } from "$lib/components/ui/toggle-group";
+	import { Popover } from "bits-ui";
+	import { Slider, ToggleGroup } from "$lib/components/ui";
 	import { getContext } from "svelte";
 	import type { TypographyConfig, UniStretch } from "$lib/typography/config";
 	import { trackingDefs } from "$lib/typography/config";

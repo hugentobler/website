@@ -1,5 +1,5 @@
 <script lang="ts">
-import { ToggleGroupItem, ToggleGroupRoot } from "$lib/components/ui/toggle-group";
+import { ToggleGroup } from "$lib/components/ui";
 import { FONTS } from "$lib/typography/config";
 let fontMode = $state<'sans' | 'mono'>('sans');
 let gridOn = $state<boolean>(true);
@@ -65,19 +65,11 @@ const fontEntries = Object.entries(FONTS).map(([key, label]) => ({
 			</select>
 		</label>
 
-			<ToggleGroupRoot
+			<ToggleGroup
 				bind:value={fontMode}
 				type="single"
-			>
-				{#each fontEntries as f}
-					<ToggleGroupItem
-						aria-label={`toggle ${f.label}`}
-						value={f.mode}
-					>
-						{f.label}
-					</ToggleGroupItem>
-				{/each}
-			</ToggleGroupRoot>
+				options={fontEntries.map((f) => ({ value: f.mode, label: f.label }))}
+			/>
 
 		<label class="flex items-center gap-2">
 			<input type="checkbox" bind:checked={gridOn} />

@@ -30,8 +30,7 @@
 			)}
 		>
 			<Slider.Range
-				class={cn("bg-foreground absolute", orientation === "vertical" ? "w-full" : "h-full")}
-			/>
+				class={cn("bg-foreground absolute", orientation === "vertical" ? "w-full" : "h-full")} />
 		</span>
 
 		{#each thumbItems as { index, value } (index)}
@@ -54,8 +53,7 @@
 		{#each tickItems as { index, value } (index)}
 			<Slider.Tick
 				{index}
-				class={cn("bg-background z-1", orientation === "vertical" ? "h-px w-2" : "h-2 w-px")}
-			/>
+				class={cn("bg-background z-1", orientation === "vertical" ? "h-px w-2" : "h-2 w-px")} />
 			<Slider.TickLabel
 				{index}
 				position={orientation === "vertical" ? "right" : "bottom"}
@@ -68,3 +66,4 @@
 		{/each}
 	{/snippet}
 </Slider.Root>
+
