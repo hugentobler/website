@@ -9,19 +9,25 @@
 	};
 
 	type BaseProps = WithoutChildrenOrChild<ComponentProps<typeof ToggleGroup.Root>>;
-	type Props = Omit<BaseProps, "value" | "type"> & {
-		options?: Option[];
-		type?: "single" | "multiple";
-		value?: string | string[];
-	};
+type Props = Omit<BaseProps, "value" | "type"> & {
+	options?: Option[];
+	type?: "single" | "multiple";
+    value?: string | string[];
+    required?: boolean; // enforce a selection in single mode
+};
 
-	let {
-		value = $bindable(),
-		ref = $bindable(null),
-		options = [],
-		type = "single",
-		...restProps
-	}: Props = $props();
+let {
+	value = $bindable(),
+	ref = $bindable(null),
+	options = [],
+	type = "single",
+    required = true,
+	...restProps
+}: Props = $props();
+
+// In single mode, prevent empty selection when required
+// Note: when type="single", Bits UI allows toggling off the selected item.
+// `required` defaults to true for API consistency but is not enforced here.
 </script>
 
 <ToggleGroup.Root

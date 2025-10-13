@@ -6,6 +6,8 @@ export const FONTS = {
 	BER: "Berkeley Mono",
 };
 
+export const UNI_STRETCH = ["ultra-condensed", "condensed", "normal", "expanded"];
+
 export type UniStretch = "ultra-condensed" | "condensed" | "normal" | "expanded";
 
 // Ordered stretches with allowed weights (single source of truth)
