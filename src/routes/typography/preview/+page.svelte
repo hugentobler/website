@@ -16,26 +16,23 @@
 	<Popover.Root open>
 		<Popover.Trigger>Trigger</Popover.Trigger>
 		<Popover.Content side="top" class="bg-white p-6">
-			<div class="grid grid-cols-[auto_1fr_1fr] gap-6">
+			<div class="grid grid-cols-3 grid-rows-[minmax(12rem,1fr)] gap-6">
 				<ToggleGroup
 					bind:value={fontSelected}
 					options={fonts.map(([value, label]) => ({ value, label }))}
 				/>
 				<!-- Minimal vertical slider -->
-				<div class="w-40">
-					<Slider type="single" bind:value={sliderValue} min={0} max={100} step={25} />
-				</div>
+				<!-- <div class="w-40"> -->
+				<Slider type="single" bind:value={sliderValue} min={0} max={100} step={25} />
+				<!-- </div> -->
 
 				<!-- Example with ticks and labels (discrete step labels) -->
-				<div class="w-40">
-					<Slider
-						type="single"
-						step={[0, 25, 50, 75, 100]}
-						orientation="vertical"
-						bind:value={sliderValue}
-					/>
-					<div class="ml-4 text-sm">{sliderValue}</div>
-				</div>
+				<Slider
+					type="single"
+					step={[0, 25, 50, 75, 100]}
+					orientation="vertical"
+					bind:value={sliderValue}
+				/>
 			</div>
 		</Popover.Content>
 	</Popover.Root>

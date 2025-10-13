@@ -14,12 +14,13 @@
 <Slider.Root
 	bind:value
 	bind:ref
-	thumbPositioning="contain"
-	trackPadding={10}
+	direction="ltr"
+	thumbPositioning="exact"
+	trackPadding={3}
 	{...restProps as any}
 	class={cn(
-		"relative flex touch-none items-center select-none",
-		orientation === "vertical" ? "h-full flex-col" : "w-full"
+		"relative flex touch-none items-center place-self-center-safe select-none",
+		orientation === "vertical" ? "h-full w-fit flex-col" : "h-fit w-full"
 	)}
 >
 	{#snippet children({ thumbItems, tickItems })}
@@ -30,7 +31,8 @@
 			)}
 		>
 			<Slider.Range
-				class={cn("bg-foreground absolute", orientation === "vertical" ? "w-full" : "h-full")} />
+				class={cn("bg-foreground absolute", orientation === "vertical" ? "w-full" : "h-full")}
+			/>
 		</span>
 
 		{#each thumbItems as { index, value } (index)}
@@ -42,8 +44,11 @@
 			/>
 			<Slider.ThumbLabel
 				{index}
+				position={orientation === "vertical" ? "left" : "top"}
+				style={orientation === "vertical" ? "translate: 0 50% !important;" : undefined}
 				class={cn(
-					"bg-card text-foreground rounded-md px-2 py-px text-sm text-nowrap data-[position=bottom]:mt-4 data-[position=left]:mr-4 data-[position=right]:ml-4 data-[position=top]:mb-4"
+					"bg-card text-foreground rounded-md px-2 py-px text-sm text-nowrap data-[position=bottom]:mt-4 data-[position=left]:mr-4 data-[position=right]:ml-4 data-[position=top]:mb-4",
+					orientation === "vertical" ? "!translate-y-1/2 transform" : undefined
 				)}
 			>
 				{value}
@@ -53,7 +58,8 @@
 		{#each tickItems as { index, value } (index)}
 			<Slider.Tick
 				{index}
-				class={cn("bg-background z-1", orientation === "vertical" ? "h-px w-2" : "h-2 w-px")} />
+				class={cn("bg-background z-1", orientation === "vertical" ? "h-px w-2" : "h-2 w-px")}
+			/>
 			<Slider.TickLabel
 				{index}
 				position={orientation === "vertical" ? "right" : "bottom"}
@@ -66,4 +72,3 @@
 		{/each}
 	{/snippet}
 </Slider.Root>
-

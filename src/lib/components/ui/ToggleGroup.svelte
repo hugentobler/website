@@ -29,7 +29,7 @@
 	bind:ref
 	{...restProps as any}
 	{type}
-	class="bg-card border-border shadow-border/50 flex items-center gap-1 rounded border p-1 shadow-xs"
+	class="bg-card border-border shadow-border/50 flex h-fit w-fit items-center gap-1 rounded border p-1 shadow-xs"
 >
 	{#each options as opt (opt.value)}
 		<ToggleGroup.Item
