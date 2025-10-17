@@ -38,9 +38,8 @@
 	trackPadding={5}
 	{...restProps as any}
 	class={cn(
-		"relative flex touch-none items-center place-self-center-safe select-none",
-		// Disabled styling centralized on Root
-		"data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50 data-[disabled]:pointer-events-none",
+		"relative flex touch-none items-center select-none",
+		"data-[disabled]:pointer-events-none data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50",
 		orientation === "vertical" ? "h-full w-fit flex-col" : "h-fit w-full"
 	)}
 >
@@ -102,12 +101,12 @@
 				<Slider.TickLabel
 					{index}
 					position={orientation === "vertical" ? "right" : "bottom"}
-				class={cn(
-					"text-foreground/66 data-bounded:text-foreground text-sm leading-none font-medium data-[position-left]:mr-3 data-[position-top]:mb-3 data-[position=bottom]:mt-3 data-[position=right]:ml-3",
-					// Centralized disabled handling
-					"data-[disabled]:pointer-events-none data-[disabled]:cursor-not-allowed"
-				)}
-			>
+					class={cn(
+						"text-foreground/66 data-bounded:text-foreground text-sm leading-none font-medium data-[position-left]:mr-3 data-[position-top]:mb-3 data-[position=bottom]:mt-3 data-[position=right]:ml-3",
+						// Centralized disabled handling
+						"data-[disabled]:pointer-events-none data-[disabled]:cursor-not-allowed"
+					)}
+				>
 					{label}
 				</Slider.TickLabel>
 			{/if}
