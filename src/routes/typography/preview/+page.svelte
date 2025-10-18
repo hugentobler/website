@@ -1,6 +1,5 @@
 <script lang="ts">
-	import { Popover } from "bits-ui";
-	import { Checkbox, Slider, ToggleGroup } from "$lib/components/ui";
+	import { Checkbox, Popover, Slider, ToggleGroup } from "$lib/components/ui";
 	import {
 		BER_SLANT_RANGE,
 		BER_WEIGHT_RANGE,
@@ -47,94 +46,107 @@
 			);
 		}
 	});
+
+	// Custom anchor for popover
+	let anchorElement = $state<HTMLElement>();
 </script>
 
+<!-- Anchor element at bottom center -->
+<div class="fixed bottom-6 left-1/2 z-40 -translate-x-1/2">
+	<div
+		bind:this={anchorElement}
+		class="bg-muted text-foreground rounded-full px-4 py-2 text-sm font-medium shadow-md"
+	>
+		Anchor Point
+	</div>
+</div>
+
 <div class="fixed right-6 bottom-6 z-50">
-	<Popover.Root open>
-		<Popover.Trigger>Trigger</Popover.Trigger>
-		<Popover.Content side="top" class="bg-white p-6">
-			<div class="grid grid-cols-3 grid-rows-[auto_minmax(12rem,1fr)] gap-6">
-				<div>
-					<ToggleGroup
-						bind:value={activeFont}
-						options={fonts.map(([value, label]) => ({ value, label }))}
+	<Popover open side="top" customAnchor={anchorElement}>
+		{#snippet trigger()}
+			Trigger (opens above anchor)
+		{/snippet}
+		<div class="grid grid-cols-3 grid-rows-[auto_minmax(12rem,1fr)] gap-4">
+			<div>
+				<ToggleGroup
+					bind:value={activeFont}
+					options={fonts.map(([value, label]) => ({ value, label }))}
+				/>
+			</div>
+			{#if selectedFont === "UNI"}
+				<div class="row-start-2 flex flex-col items-center gap-2">
+					<p>Stretch</p>
+					<Slider
+						orientation="vertical"
+						bind:value={UniStretchIdx}
+						step={UNI_STRETCH.map((_, i) => i)}
+						tickLabels={UNI_STRETCH}
+						disabled={slidersDisabled}
+						hideThumbLabels
 					/>
 				</div>
-				{#if selectedFont === "UNI"}
-					<div class="row-start-2 flex flex-col items-center gap-2">
-						<p>Stretch</p>
-						<Slider
-							orientation="vertical"
-							bind:value={UniStretchIdx}
-							step={UNI_STRETCH.map((_, i) => i)}
-							tickLabels={UNI_STRETCH}
-							disabled={slidersDisabled}
-							hideThumbLabels
-						/>
-					</div>
-					<div class="row-start-2 flex flex-col items-center gap-2">
-						<p>Weight</p>
-						<Slider
-							orientation="vertical"
-							min={UNI_WEIGHTS[0]}
-							max={UNI_WEIGHTS[UNI_WEIGHTS.length - 1]}
-							step={[...UNI_WEIGHTS]}
-							bind:value={UniWeight}
-							tickLabels={UNI_WEIGHTS.map((w) => (allowedWeights.includes(w) ? w : undefined))}
-							disabled={slidersDisabled}
-							hideThumbLabels
-						/>
-					</div>
-					<div class="row-start-2 flex items-center gap-2">
-						<Checkbox bind:checked={UniItalic} label="Italic" />
-					</div>
-				{/if}
-				{#if selectedFont === "BER"}
-					{@const weightValues = rangeValues(BER_WEIGHT_RANGE)}
-					{@const slantValues = rangeValues(BER_SLANT_RANGE)}
-					<div class="row-start-2 flex flex-col items-center gap-2">
-						<p>Width</p>
-						<Slider
-							orientation="vertical"
-							bind:value={BerWidth}
-							min={BER_WIDTH_RANGE.min}
-							max={BER_WIDTH_RANGE.max}
-							step={BER_WIDTH_RANGE.step}
-							tickLabels={rangeValues(BER_WIDTH_RANGE)}
-							disabled={slidersDisabled}
-							hideThumbLabels
-						/>
-					</div>
-					<div class="row-start-2 flex flex-col items-center gap-2">
-						<p>Weight</p>
-						<Slider
-							orientation="vertical"
-							bind:value={BerWeight}
-							min={BER_WEIGHT_RANGE.min}
-							max={BER_WEIGHT_RANGE.max}
-							step={BER_WEIGHT_RANGE.step}
-							tickLabels={weightValues.map((w, i) =>
-								i === 0 || i === weightValues.length - 1 ? w : undefined
-							)}
-							disabled={slidersDisabled}
-						/>
-					</div>
-					<div class="row-start-2 flex flex-col items-center gap-2">
-						<p>Slant</p>
-						<Slider
-							orientation="vertical"
-							bind:value={BerSlant}
-							min={BER_SLANT_RANGE.min}
-							max={BER_SLANT_RANGE.max}
-							step={BER_SLANT_RANGE.step}
-							tickLabels={slantValues.map((w, i) =>
-								i === 0 || i === slantValues.length - 1 ? w : undefined
-							)}
-							disabled={slidersDisabled}
-						/>
-					</div>
-				{/if}
-			</div>
-		</Popover.Content>
-	</Popover.Root>
+				<div class="row-start-2 flex flex-col items-center gap-2">
+					<p>Weight</p>
+					<Slider
+						orientation="vertical"
+						min={UNI_WEIGHTS[0]}
+						max={UNI_WEIGHTS[UNI_WEIGHTS.length - 1]}
+						step={[...UNI_WEIGHTS]}
+						bind:value={UniWeight}
+						tickLabels={UNI_WEIGHTS.map((w) => (allowedWeights.includes(w) ? w : undefined))}
+						disabled={slidersDisabled}
+						hideThumbLabels
+					/>
+				</div>
+				<div class="row-start-2 flex items-center gap-2">
+					<Checkbox bind:checked={UniItalic} label="Italic" />
+				</div>
+			{/if}
+			{#if selectedFont === "BER"}
+				{@const weightValues = rangeValues(BER_WEIGHT_RANGE)}
+				{@const slantValues = rangeValues(BER_SLANT_RANGE)}
+				<div class="row-start-2 flex flex-col items-center gap-2">
+					<p>Width</p>
+					<Slider
+						orientation="vertical"
+						bind:value={BerWidth}
+						min={BER_WIDTH_RANGE.min}
+						max={BER_WIDTH_RANGE.max}
+						step={BER_WIDTH_RANGE.step}
+						tickLabels={rangeValues(BER_WIDTH_RANGE)}
+						disabled={slidersDisabled}
+						hideThumbLabels
+					/>
+				</div>
+				<div class="row-start-2 flex flex-col items-center gap-2">
+					<p>Weight</p>
+					<Slider
+						orientation="vertical"
+						bind:value={BerWeight}
+						min={BER_WEIGHT_RANGE.min}
+						max={BER_WEIGHT_RANGE.max}
+						step={BER_WEIGHT_RANGE.step}
+						tickLabels={weightValues.map((w, i) =>
+							i === 0 || i === weightValues.length - 1 ? w : undefined
+						)}
+						disabled={slidersDisabled}
+					/>
+				</div>
+				<div class="row-start-2 flex flex-col items-center gap-2">
+					<p>Slant</p>
+					<Slider
+						orientation="vertical"
+						bind:value={BerSlant}
+						min={BER_SLANT_RANGE.min}
+						max={BER_SLANT_RANGE.max}
+						step={BER_SLANT_RANGE.step}
+						tickLabels={slantValues.map((w, i) =>
+							i === 0 || i === slantValues.length - 1 ? w : undefined
+						)}
+						disabled={slidersDisabled}
+					/>
+				</div>
+			{/if}
+		</div>
+	</Popover>
 </div>

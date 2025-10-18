@@ -105,6 +105,8 @@
 
     --primary: var(--color-orange-500);
     --primary-dark: var(--color-orange-400);
+    --secondary: var(--color-charcoal-300);
+    --destructive: var(--color-red-500);
 
     /* scrollbar variables */
     --scrollbar-color-thumb: var(--foreground);
@@ -120,8 +122,25 @@
 
   [data-theme='dark'] {
     /* dark theme variables */
-    --background: var(--color-zinc-600);
+    --background: var(--color-zinc-800);
     --foreground: var(--color-sky-100);
+    --card: var(--color-zinc-700);
+    --card-foreground: var(--color-sky-100);
+    --muted: var(--color-zinc-600);
+    --muted-foreground: var(--color-sky-200);
+    --accent: var(--color-zinc-500);
+    --accent-foreground: var(--color-sky-50);
+    --border: var(--color-zinc-600);
+    --input: var(--color-red-300);
+
+    --primary: var(--color-orange-400);
+    --primary-dark: var(--color-orange-500);
+    --secondary: var(--color-zinc-400);
+    --destructive: var(--color-red-400);
+
+    /* scrollbar variables for dark mode */
+    --scrollbar-color-thumb: var(--foreground);
+    --scrollbar-color-track: var(--background);
   }
 }
 
