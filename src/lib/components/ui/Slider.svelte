@@ -98,20 +98,28 @@
 				)}
 			/>
 			{#if !hideThumbLabels}
+				{@const labelValue = String(thumbLabels?.[index] ?? value)}
 				<Slider.ThumbLabel
 					{index}
 					position={orientation === "vertical" ? "left" : "top"}
 					style={orientation === "vertical" ? "translate: 0 50% !important;" : undefined}
 					class={cn(
 						// Base styles
-						"bg-background text-foreground rounded-md px-2 py-px text-sm text-nowrap",
+						// TODO: Replace with better text sizing solution
+						"bg-background text-foreground border-border flex rounded-full border px-1 pt-0.5 text-xs leading-none text-nowrap tabular-nums",
 						// Positioning
-						"data-[position=bottom]:mt-4 data-[position=left]:mr-4 data-[position=right]:ml-4 data-[position=top]:mb-4",
+						"data-[position=bottom]:mt-2.5 data-[position=left]:mr-2.5 data-[position=right]:ml-2.5 data-[position=top]:mb-2.5",
 						// Orientation
 						orientation === "vertical" ? "!translate-y-1/2 transform" : undefined
 					)}
 				>
-					{thumbLabels?.[index] ?? value}
+					{#each labelValue.split("") as char}
+						{#if /[0-9]/.test(char)}
+							{@render digitWheel(char)}
+						{:else}
+							{char}
+						{/if}
+					{/each}
 				</Slider.ThumbLabel>
 			{/if}
 		{/each}
@@ -136,9 +144,10 @@
 					position={orientation === "vertical" ? "right" : "bottom"}
 					class={cn(
 						// Base styles
-						"text-muted-foreground text-sm leading-none font-medium",
+						// TODO: Replace negative margin with better text sizing solution
+						"text-muted-foreground -my-[0.15em] block text-xs leading-none",
 						// Interactive states
-						"cursor-pointer",
+						"hover:text-foreground cursor-pointer",
 						// States
 						"data-bounded:text-foreground",
 						// Positioning
@@ -153,3 +162,21 @@
 		{/each}
 	{/snippet}
 </Slider.Root>
+
+{#snippet digitWheel(digit: string)}
+	<span class="relative inline-block h-3.5 w-[1ch] overflow-hidden tabular-nums perspective-normal">
+		<span
+			class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transition-transform duration-300 ease-out transform-3d"
+			style="transform: translate(-50%, -50%) rotateX(calc({Number(digit)} * -36deg));"
+		>
+			{#each Array.from({ length: 10 }, (_, i) => i) as num}
+				<span
+					class="absolute top-1/2 left-1/2 [backface-visibility:hidden]"
+					style="transform: translate(-50%, -50%) rotateX({num * 36}deg) translateZ(2em);"
+				>
+					{num}
+				</span>
+			{/each}
+		</span>
+	</span>
+{/snippet}
