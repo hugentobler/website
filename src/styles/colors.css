@@ -1,0 +1,86 @@
+/* ============================================================================
+   @theme - Color Utility Registration
+
+   These create Tailwind utility classes like bg-card, text-foreground, etc.
+   ============================================================================ */
+
+@theme {
+  /* Surface colors */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+
+  /* Muted colors */
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+
+  /* Interactive colors */
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+
+  /* Action colors */
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+
+  /* UI elements */
+  --color-border: var(--border);
+}
+
+/* ============================================================================
+   Light Theme - Default Color Values
+   ============================================================================ */
+
+@layer base {
+  :root {
+    /* semantic color system - light theme */
+    --background: var(--color-charcoal-50);
+    --foreground: var(--color-charcoal-900);
+
+    --card: var(--color-charcoal-100);
+    --card-foreground: var(--color-charcoal-900);
+
+    --muted: var(--color-charcoal-200);
+    --muted-foreground: var(--color-charcoal-600);
+
+    --accent: var(--color-haiti-600);
+    --accent-foreground: var(--color-charcoal-50);
+
+    --border: var(--color-charcoal-300);
+
+    --primary: var(--color-persianGreen-600);
+    --primary-foreground: var(--color-charcoal-50);
+
+    --destructive: var(--color-raspberry-600);
+    --destructive-foreground: var(--color-charcoal-50);
+  }
+
+  /* ============================================================================
+     Dark Theme - Override Color Values
+     ============================================================================ */
+
+  [data-theme='dark'] {
+    /* semantic color system - dark theme */
+    --background: var(--color-charcoal-900);
+    --foreground: var(--color-charcoal-50);
+
+    --card: var(--color-charcoal-800);
+    --card-foreground: var(--color-charcoal-50);
+
+    --muted: var(--color-charcoal-700);
+    --muted-foreground: var(--color-charcoal-300);
+
+    --accent: var(--color-haiti-400);
+    --accent-foreground: var(--color-charcoal-900);
+
+    --border: var(--color-charcoal-600);
+
+    --primary: var(--color-persianGreen-400);
+    --primary-foreground: var(--color-charcoal-900);
+
+    --destructive: var(--color-raspberry-500);
+    --destructive-foreground: var(--color-charcoal-900);
+  }
+}

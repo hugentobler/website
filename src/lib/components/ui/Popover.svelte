@@ -34,7 +34,7 @@
 		</Popover.Trigger>
 	{/if}
 	<Popover.Content
-		class="bg-card text-card-foreground border-border shadow-border/50 z-50 rounded-lg border p-4 shadow-md"
+		class="text-card-foreground border-border shadow-border/50 z-50 rounded-lg border p-4 shadow-md"
 		{...restProps as any}
 	>
 		{@render children?.()}

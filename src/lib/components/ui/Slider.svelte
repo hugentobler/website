@@ -1,3 +1,17 @@
+<!--
+	@component Slider
+
+	@see https://bits-ui.com/docs/components/slider
+
+	@prop {number | number[]} [value] - Current slider value(s)
+	@prop {"single" | "multiple"} [type="single"] - Single or multiple thumb mode
+	@prop {"horizontal" | "vertical"} [orientation="horizontal"] - Slider orientation
+	@prop {Array<string | number | undefined>} [tickLabels] - Labels for tick marks (sparse arrays supported with undefined entries)
+	@prop {Array<string | number>} [thumbLabels] - Custom labels for thumbs (defaults to value)
+	@prop {boolean} [hideThumbLabels=false] - Hide thumb value labels
+
+	All other Slider.Root props are supported and passed through.
+-->
 <script lang="ts">
 	import type { WithoutChildrenOrChild } from "bits-ui";
 	import { Slider } from "bits-ui";
@@ -10,7 +24,6 @@
 		type?: "single" | "multiple";
 		orientation?: "horizontal" | "vertical";
 		value?: number | number[];
-		// Allow sparse labels by index using undefined entries
 		tickLabels?: Array<Label | undefined>;
 		thumbLabels?: Label[];
 		hideThumbLabels?: boolean;
@@ -38,25 +51,31 @@
 	trackPadding={5}
 	{...restProps as any}
 	class={cn(
+		// Base styles
 		"relative flex touch-none items-center select-none",
-		"data-[disabled]:pointer-events-none data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50",
-		orientation === "vertical" ? "h-full w-fit flex-col" : "h-fit w-full"
+		// Orientation
+		orientation === "vertical" ? "h-full w-fit flex-col" : "h-fit w-full",
+		// Disabled state
+		"data-[disabled]:pointer-events-none data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50"
 	)}
 >
 	{#snippet children({ thumbItems, tickItems })}
 		<span
 			class={cn(
-				// Track wrapper without cursor/pointer handling; handled by Bits UI parts
-				"bg-card relative grow overflow-hidden rounded-full",
-				orientation === "vertical" ? "h-full w-2" : "h-2 w-full"
+				// Base styles
+				"bg-muted relative grow overflow-hidden rounded-xs",
+				// Orientation
+				orientation === "vertical" ? "h-full w-2.5" : "h-2.5 w-full"
 			)}
 		>
 			<Slider.Range
 				class={cn(
-					"bg-foreground absolute",
-					// Centralized disabled handling
-					"data-[disabled]:pointer-events-none data-[disabled]:cursor-not-allowed",
-					orientation === "vertical" ? "w-full" : "h-full"
+					// Base styles
+					"from-accent to-primary absolute transition-(--primary) duration-150",
+					// Gradient based on orientation
+					orientation === "vertical" ? "w-full bg-gradient-to-b" : "h-full bg-gradient-to-r",
+					// Disabled state
+					"data-[disabled]:pointer-events-none data-[disabled]:cursor-not-allowed"
 				)}
 			/>
 		</span>
@@ -65,8 +84,16 @@
 			<Slider.Thumb
 				{index}
 				class={cn(
-					"border-border hover:bg-muted bg-card shadow-border/50 focus-visible:ring-muted z-5 block size-6 cursor-grab rounded-full border shadow-xs transition-colors focus-visible:ring-1 focus-visible:outline-none active:cursor-grabbing disabled:pointer-events-none disabled:opacity-50 data-active:scale-[0.98]",
-					// Centralized disabled handling
+					// Base styles
+					"bg-background border-border shadow-border/50 z-5 block size-5 rounded-sm border shadow-xs transition-colors",
+					// Interactive states
+					"cursor-grab active:cursor-grabbing",
+					"hover:border-muted-foreground hover:bg-card",
+					"data-active:border-accent data-active:scale-[0.98]",
+					// Focus states
+					"focus-visible:ring-accent focus-visible:ring-offset-background focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none",
+					// Disabled state
+					"disabled:pointer-events-none disabled:opacity-50",
 					"data-[disabled]:pointer-events-none data-[disabled]:cursor-not-allowed"
 				)}
 			/>
@@ -76,7 +103,11 @@
 					position={orientation === "vertical" ? "left" : "top"}
 					style={orientation === "vertical" ? "translate: 0 50% !important;" : undefined}
 					class={cn(
-						"bg-card text-foreground rounded-md px-2 py-px text-sm text-nowrap data-[position=bottom]:mt-4 data-[position=left]:mr-4 data-[position=right]:ml-4 data-[position=top]:mb-4",
+						// Base styles
+						"bg-background text-foreground rounded-md px-2 py-px text-sm text-nowrap",
+						// Positioning
+						"data-[position=bottom]:mt-4 data-[position=left]:mr-4 data-[position=right]:ml-4 data-[position=top]:mb-4",
+						// Orientation
 						orientation === "vertical" ? "!translate-y-1/2 transform" : undefined
 					)}
 				>
@@ -91,10 +122,12 @@
 			<Slider.Tick
 				{index}
 				class={cn(
-					"bg-background z-1",
-					// Centralized disabled handling
-					"data-[disabled]:pointer-events-none data-[disabled]:cursor-not-allowed",
-					orientation === "vertical" ? "h-px w-2" : "h-2 w-px"
+					// Base styles
+					"bg-border z-1",
+					// Orientation
+					orientation === "vertical" ? "h-px w-1.5" : "h-1.5 w-px",
+					// Disabled state
+					"data-[disabled]:pointer-events-none data-[disabled]:cursor-not-allowed"
 				)}
 			/>
 			{#if label !== undefined}
@@ -102,8 +135,15 @@
 					{index}
 					position={orientation === "vertical" ? "right" : "bottom"}
 					class={cn(
-						"text-foreground/66 data-bounded:text-foreground text-sm leading-none font-medium data-[position-left]:mr-3 data-[position-top]:mb-3 data-[position=bottom]:mt-3 data-[position=right]:ml-3",
-						// Centralized disabled handling
+						// Base styles
+						"text-muted-foreground text-sm leading-none font-medium",
+						// Interactive states
+						"cursor-pointer",
+						// States
+						"data-bounded:text-foreground",
+						// Positioning
+						"data-[position-left]:mr-3 data-[position-top]:mb-3 data-[position=bottom]:mt-3 data-[position=right]:ml-3",
+						// Disabled state
 						"data-[disabled]:pointer-events-none data-[disabled]:cursor-not-allowed"
 					)}
 				>

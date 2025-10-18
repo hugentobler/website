@@ -55,7 +55,7 @@
 <div class="fixed bottom-6 left-1/2 z-40 -translate-x-1/2">
 	<div
 		bind:this={anchorElement}
-		class="bg-muted text-foreground rounded-full px-4 py-2 text-sm font-medium shadow-md"
+		class="bg-muted text-muted-foreground rounded-full px-4 py-2 text-sm font-medium shadow-md"
 	>
 		Anchor Point
 	</div>

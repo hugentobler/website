@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { browser } from "$app/environment";
-	import { setupTheme } from "$lib/theme.svelte";
+	import { setupTheme } from "$lib/themes.svelte";
 
-	import "../styles/app.css";
+	import "$styles/app.css";
 
 	let { children } = $props();
 
@@ -27,11 +27,3 @@
 </svelte:head>
 
 {@render children()}
-
-<style lang="postcss">
-	@reference "../styles/app.css";
-
-	:global(body) {
-		@apply bg-(--background) text-(--foreground) antialiased;
-	}
-</style>

@@ -1,7 +1,8 @@
 @import 'tailwindcss';
 
-/* import color library */
+/* import color libraries */
 @import './kromatika.css';
+@import './colors.css';
 
 @import './fonts.css';
 @import './type-system.css';
@@ -16,6 +17,12 @@
 /* override default dark mode utilities based on 'prefers-color-scheme' */
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
+/* register custom properties for transitions */
+@property --gradient-stop {
+  syntax: '<percentage>';
+  initial-value: 0%;
+  inherits: false;
+}
 
 @theme {
   /* animation utilities */
@@ -27,18 +34,6 @@
   /* breakpoint utilities */
   --breakpoint-3xl: 120rem;
   --breakpoint-4xl: 150rem;
-
-  /* color utilities */
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-border: var(--border);
-  --color-input: var(--input);
 
   /* font family utilities */
   --font-mono: Berkeley Mono Variable, Berkeley Mono, monospace;
@@ -89,26 +84,7 @@
     /* navbar - we provide this default to child layouts */
     --navbar-height: calc(var(--spacing) * 16);
 
-    /* page theme variables */
-    /* TODO: remove duplicative colors */
-    --background: var(--color-zinc-200);
-    --foreground: var(--color-teal-900);
-    --card: var(--color-charcoal-50);
-    --card-foreground: var(--foreground);
-    --muted: var(--color-charcoal-200);
-    --muted-foreground: oklch(0.556 0 0);
-    --accent: var(--color-charcoal-800);
-    --accent-foreground: oklch(0.205 0 0);
-    --border: var(--color-charcoal-100);
-    --input: var(--color-red-400);
-
-
-    --primary: var(--color-orange-500);
-    --primary-dark: var(--color-orange-400);
-    --secondary: var(--color-charcoal-300);
-    --destructive: var(--color-red-500);
-
-    /* scrollbar variables */
+    /* scrollbar variables - auto-adapt to theme via --foreground/--background */
     --scrollbar-color-thumb: var(--foreground);
     --scrollbar-color-track: var(--background);
     --scrollbar-width: auto;
@@ -116,31 +92,6 @@
 
     /* scroll timeline variables */
     --scroll-timeline: --scroll-timeline;
-
-    /* type system moved to src/styles/type-system.css */
-  }
-
-  [data-theme='dark'] {
-    /* dark theme variables */
-    --background: var(--color-zinc-800);
-    --foreground: var(--color-sky-100);
-    --card: var(--color-zinc-700);
-    --card-foreground: var(--color-sky-100);
-    --muted: var(--color-zinc-600);
-    --muted-foreground: var(--color-sky-200);
-    --accent: var(--color-zinc-500);
-    --accent-foreground: var(--color-sky-50);
-    --border: var(--color-zinc-600);
-    --input: var(--color-red-300);
-
-    --primary: var(--color-orange-400);
-    --primary-dark: var(--color-orange-500);
-    --secondary: var(--color-zinc-400);
-    --destructive: var(--color-red-400);
-
-    /* scrollbar variables for dark mode */
-    --scrollbar-color-thumb: var(--foreground);
-    --scrollbar-color-track: var(--background);
   }
 }
 
@@ -208,5 +159,3 @@
     opacity: 1;
   }
 }
-
-/* type utilities moved to src/styles/type-system.css */
