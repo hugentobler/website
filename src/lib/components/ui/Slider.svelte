@@ -106,7 +106,7 @@
 					class={cn(
 						// Base styles
 						// TODO: Replace with better text sizing solution
-						"bg-background text-foreground border-border flex rounded-full border px-1 pt-0.5 text-xs leading-none text-nowrap tabular-nums",
+						"bg-background text-foreground border-border shadow-border/50 flex rounded-full border px-1 pt-0.5 text-xs leading-none text-nowrap tabular-nums shadow-xs",
 						// Positioning
 						"data-[position=bottom]:mt-2.5 data-[position=left]:mr-2.5 data-[position=right]:ml-2.5 data-[position=top]:mb-2.5",
 						// Orientation
@@ -145,9 +145,9 @@
 					class={cn(
 						// Base styles
 						// TODO: Replace negative margin with better text sizing solution
-						"text-muted-foreground -my-[0.15em] block text-xs leading-none",
+						"text-muted-foreground -my-[0.15em] block text-xs leading-none text-nowrap",
 						// Interactive states
-						"hover:text-foreground cursor-pointer",
+						"hover:text-foreground cursor-alias",
 						// States
 						"data-bounded:text-foreground",
 						// Positioning
@@ -164,7 +164,9 @@
 </Slider.Root>
 
 {#snippet digitWheel(digit: string)}
-	<span class="relative inline-block h-3.5 w-[1ch] overflow-hidden tabular-nums perspective-normal">
+	<span
+		class="relative inline-block h-3.5 w-[1ch] overflow-hidden tabular-nums perspective-distant"
+	>
 		<span
 			class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transition-transform duration-300 ease-out transform-3d"
 			style="transform: translate(-50%, -50%) rotateX(calc({Number(digit)} * -36deg));"
