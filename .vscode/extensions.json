@@ -1,8 +1,8 @@
 {
-  "recommendations": [
-    "biomejs.biome",
-    "bradlc.vscode-tailwindcss",
-    "csstools.postcss",
-    "svelte.svelte-vscode",
-  ]
+	"recommendations": [
+		"biomejs.biome",
+		"bradlc.vscode-tailwindcss",
+		"csstools.postcss",
+		"svelte.svelte-vscode"
+	]
 }

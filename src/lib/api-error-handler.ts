@@ -7,7 +7,7 @@ interface ApiErrorOptions {
 
 export async function handleApiResponse(
 	response: Response,
-	options: ApiErrorOptions
+	options: ApiErrorOptions,
 ): Promise<Response> {
 	if (!response.ok) {
 		console.error(`${options.serviceName} API error:`, {
@@ -15,7 +15,7 @@ export async function handleApiResponse(
 			status: response.status,
 			statusText: response.statusText,
 			url: response.url,
-			headers: Object.fromEntries(response.headers.entries())
+			headers: Object.fromEntries(response.headers.entries()),
 		});
 
 		// Try to log response body if available
@@ -32,15 +32,11 @@ export async function handleApiResponse(
 	return response;
 }
 
-export async function handleGraphQLResponse(
-	data: any,
-	errors: any,
-	options: ApiErrorOptions
-) {
+export async function handleGraphQLResponse(data: any, errors: any, options: ApiErrorOptions) {
 	if (!data || errors) {
 		console.error(`${options.serviceName} GraphQL error:`, {
 			operation: options.operation,
-			errors
+			errors,
 		});
 
 		throw error(500, {

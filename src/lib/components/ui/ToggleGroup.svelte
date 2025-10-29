@@ -91,13 +91,13 @@
 		// Layout
 		"h-fit w-fit items-center",
 		// Disabled state
-		"data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50"
+		"data-disabled:cursor-not-allowed data-disabled:opacity-50"
 	)}
 >
 	<!-- Animated background indicator -->
 	<!-- Positioned at top-1 for vertical padding, left-0 since offsetLeft already includes horizontal padding offset -->
 	<div
-		class="from-accent to-primary pointer-events-none absolute top-px left-0 rounded-sm bg-gradient-to-r transition-[transform,width,height,opacity] duration-200 ease-out"
+		class="from-accent to-primary pointer-events-none absolute top-px left-0 rounded-sm bg-linear-to-r transition-[transform,width,height,opacity] duration-200 ease-out"
 		style={indicatorStyle}
 	></div>
 
@@ -140,7 +140,7 @@
 				// Focus states - only show ring on keyboard focus, not programmatic focus
 				"focus-visible:ring-accent focus-visible:ring-offset-background focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:outline-none",
 				// Disabled state
-				"data-[disabled]:pointer-events-none data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50"
+				"data-disabled:pointer-events-none data-disabled:cursor-not-allowed data-disabled:opacity-50"
 			)}
 		>
 			{opt.label}

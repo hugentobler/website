@@ -56,7 +56,7 @@
 		// Orientation
 		orientation === "vertical" ? "h-full w-fit flex-col" : "h-fit w-full",
 		// Disabled state
-		"data-[disabled]:pointer-events-none data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50"
+		"data-disabled:pointer-events-none data-disabled:cursor-not-allowed data-disabled:opacity-50"
 	)}
 >
 	{#snippet children({ thumbItems, tickItems })}
@@ -73,9 +73,9 @@
 					// Base styles
 					"from-accent to-primary absolute transition-(--primary) duration-150",
 					// Gradient based on orientation
-					orientation === "vertical" ? "w-full bg-gradient-to-b" : "h-full bg-gradient-to-r",
+					orientation === "vertical" ? "w-full bg-linear-to-b" : "h-full bg-linear-to-r",
 					// Disabled state
-					"data-[disabled]:pointer-events-none data-[disabled]:cursor-not-allowed"
+					"data-disabled:pointer-events-none data-disabled:cursor-not-allowed"
 				)}
 			/>
 		</span>
@@ -94,7 +94,7 @@
 					"focus-visible:ring-accent focus-visible:ring-offset-background focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none",
 					// Disabled state
 					"disabled:pointer-events-none disabled:opacity-50",
-					"data-[disabled]:pointer-events-none data-[disabled]:cursor-not-allowed"
+					"data-disabled:pointer-events-none data-disabled:cursor-not-allowed"
 				)}
 			/>
 			{#if !hideThumbLabels}
@@ -110,7 +110,7 @@
 						// Positioning
 						"data-[position=bottom]:mt-2.5 data-[position=left]:mr-2.5 data-[position=right]:ml-2.5 data-[position=top]:mb-2.5",
 						// Orientation
-						orientation === "vertical" ? "!translate-y-1/2 transform" : undefined
+						orientation === "vertical" ? "translate-y-1/2! transform" : undefined
 					)}
 				>
 					{#each labelValue.split("") as char}
@@ -135,7 +135,7 @@
 					// Orientation
 					orientation === "vertical" ? "h-px w-1.5" : "h-1.5 w-px",
 					// Disabled state
-					"data-[disabled]:pointer-events-none data-[disabled]:cursor-not-allowed"
+					"data-disabled:pointer-events-none data-disabled:cursor-not-allowed"
 				)}
 			/>
 			{#if label !== undefined}
@@ -151,9 +151,9 @@
 						// States
 						"data-bounded:text-foreground",
 						// Positioning
-						"data-[position-left]:mr-3 data-[position-top]:mb-3 data-[position=bottom]:mt-3 data-[position=right]:ml-3",
+						"data-position-left:mr-3 data-position-top:mb-3 data-[position=bottom]:mt-3 data-[position=right]:ml-3",
 						// Disabled state
-						"data-[disabled]:pointer-events-none data-[disabled]:cursor-not-allowed"
+						"data-disabled:pointer-events-none data-disabled:cursor-not-allowed"
 					)}
 				>
 					{label}
@@ -173,7 +173,7 @@
 		>
 			{#each Array.from({ length: 10 }, (_, i) => i) as num}
 				<span
-					class="absolute top-1/2 left-1/2 [backface-visibility:hidden]"
+					class="absolute top-1/2 left-1/2 backface-hidden"
 					style="transform: translate(-50%, -50%) rotateX({num * 36}deg) translateZ(2em);"
 				>
 					{num}
