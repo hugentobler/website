@@ -12,11 +12,11 @@
 </script>
 
 <!-- Navbar using existing system -->
-<nav
+<!-- <nav
 	class="fixed inset-x-1 top-0 z-30 mx-auto flex h-(--navbar-height) max-w-[calc(var(--container-5xl)*2)] gap-1 py-1"
 >
 	{@render navbar()}
-</nav>
+</nav> -->
 
 <!-- Main content with bottom padding for fixed navbar -->
 <div bind:this={container} class="min-h-dvh pb-(--navbar-height)">

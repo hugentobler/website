@@ -12,16 +12,27 @@
 		UNI_WEIGHTS,
 	} from "$lib/typography/config";
 	import {
-		DEFAULT_TYPE_SCALES,
+		calculateLineBoxHeight,
+		calculateLineHeight,
+		DEFAULT_BASE_GRID_UNIT,
+		DEFAULT_TYPE_SCALE,
+		getTypeSizes,
 		SAMPLE_TEXT,
-		TYPE_LEVEL_LABELS,
-		type TypeLevel,
-		type TypeScale,
+		type TypeSize,
 	} from "$lib/typography/type-scale";
 
 	type FontKey = keyof typeof FONTS;
 	const fonts = Object.entries(FONTS) as [FontKey, string][];
-	const typeLevels: TypeLevel[] = ["h1", "h2", "h3", "p", "small"];
+
+	// Base grid unit
+	let baseGridUnit = $state(DEFAULT_BASE_GRID_UNIT);
+
+	// Type scale state (mutable copy of default scale)
+	let typeScale = $state(structuredClone(DEFAULT_TYPE_SCALE));
+
+	// Derived: ordered type sizes and grid columns
+	const typeSizes = $derived(getTypeSizes());
+	const gridCols = $derived(`auto ${typeSizes.map(() => "1fr").join(" ")}`);
 
 	// Font toggle (allow empty)
 	let activeFont = $state<FontKey | "">("UNI");
@@ -58,19 +69,19 @@
 	// Custom anchor for popover
 	let anchorElement = $state<HTMLElement>();
 
-	// Type scale state (one for each font)
-	let uniTypeScale = $state<TypeScale>({ ...DEFAULT_TYPE_SCALES.UNI });
-	let berTypeScale = $state<TypeScale>({ ...DEFAULT_TYPE_SCALES.BER });
-
-	// Derived: active type scale based on selected font
-	const activeTypeScale = $derived(selectedFont === "UNI" ? uniTypeScale : berTypeScale);
+	// Helper to update a specific size in the type scale
+	function updateTypeScale(
+		size: TypeSize,
+		field: "fontSize" | "lineUnits" | "rows",
+		value: number
+	) {
+		typeScale[size][field] = value;
+	}
 
 	// Derived: font variation settings for specimens
 	const fontVariationSettings = $derived(
 		selectedFont === "UNI"
 			? {
-					// For Univers, we use stretch and weight
-					// Note: Univers uses font-stretch CSS property, not wdth axis
 					fontFamily: FONTS.UNI,
 					fontStretch: activeStretch,
 					fontWeight: UniWeight,
@@ -78,7 +89,6 @@
 					fontVariationSettings: undefined,
 				}
 			: {
-					// For Berkeley Mono, we use variable font axes
 					fontFamily: FONTS.BER,
 					fontStretch: undefined,
 					fontWeight: undefined,
@@ -88,18 +98,84 @@
 	);
 </script>
 
-<!-- Type Specimens Display -->
-<div class="container mx-auto max-w-4xl p-8">
-	<div class="space-y-8">
-		{#each typeLevels as level}
-			{@const scale = activeTypeScale[level]}
-			<div class="flex items-baseline gap-4">
-				<span class="text-muted-foreground w-16 shrink-0 text-sm font-medium">
-					{TYPE_LEVEL_LABELS[level]}
-				</span>
-				<p
+<div class="grid w-full grid-rows-2 overflow-x-auto">
+	<div class="grid" style:grid-template-columns={gridCols} style:gap="{baseGridUnit * 12}px">
+		<div class="w-24"></div>
+		{#each typeSizes as size}
+			{@const scale = typeScale[size]}
+			<div class="flex flex-col gap-2 pl-3">
+				<div class="text-sm font-medium uppercase">{size}</div>
+				<div class="flex items-center gap-2">
+					<label for="{size}-fontSize" class="text-xs">Size:</label>
+					<input
+						id="{size}-fontSize"
+						type="number"
+						value={scale.fontSize}
+						onchange={(e) => updateTypeScale(size, "fontSize", Number(e.currentTarget.value))}
+						min="8"
+						max="96"
+						step="1"
+						class="border-input bg-background w-16 rounded border px-2 py-1 text-xs"
+					/>
+					<span class="text-muted-foreground text-xs">px</span>
+				</div>
+				<div class="flex items-center gap-2">
+					<label for="{size}-lineUnits" class="text-xs">Units:</label>
+					<input
+						id="{size}-lineUnits"
+						type="number"
+						value={scale.lineUnits}
+						onchange={(e) => updateTypeScale(size, "lineUnits", Number(e.currentTarget.value))}
+						min="1"
+						max="20"
+						step="1"
+						class="border-input bg-background w-16 rounded border px-2 py-1 text-xs"
+					/>
+				</div>
+				<div class="flex items-center gap-2">
+					<label for="{size}-rows" class="text-xs">Rows:</label>
+					<input
+						id="{size}-rows"
+						type="number"
+						value={scale.rows}
+						onchange={(e) => updateTypeScale(size, "rows", Number(e.currentTarget.value))}
+						min="1"
+						max="10"
+						step="1"
+						class="border-input bg-background w-16 rounded border px-2 py-1 text-xs"
+					/>
+				</div>
+				<div class="text-muted-foreground text-xs">
+					<div>Line: {calculateLineBoxHeight(scale.lineUnits, baseGridUnit)}px</div>
+					<div>
+						LH: {calculateLineHeight(scale.fontSize, scale.lineUnits, baseGridUnit).toFixed(3)}
+					</div>
+				</div>
+			</div>
+		{/each}
+	</div>
+	<div
+		class="box-content grid border-collapse border-t border-b border-dashed border-(--color-raspberry-300)"
+		style:grid-template-columns={gridCols}
+		style:height="{baseGridUnit * 12}px"
+		style:gap="{baseGridUnit * 12}px"
+	>
+		<div class="w-24">Repetition Unit</div>
+		{#each typeSizes as size}
+			{@const scale = typeScale[size]}
+			<div class="relative -my-px w-72 overflow-clip border-x border-x-(--color-charcoal-200) pl-3">
+				<div
+					class="grid h-full divide-y divide-(--color-charcoal-300) overflow-hidden border-y border-y-(--color-charcoal-300)"
+					style:grid-template-rows="repeat({scale.rows}, 1fr)"
+				>
+					{#each Array(scale.rows) as _}
+						<div></div>
+					{/each}
+				</div>
+				<div
+					class="absolute inset-0 pl-3"
 					style:font-size="{scale.fontSize}px"
-					style:line-height={scale.lineHeight}
+					style:line-height={calculateLineHeight(scale.fontSize, scale.lineUnits, baseGridUnit)}
 					style:font-family={fontVariationSettings.fontFamily}
 					style:font-stretch={fontVariationSettings.fontStretch}
 					style:font-weight={fontVariationSettings.fontWeight}
@@ -107,9 +183,28 @@
 					style:font-variation-settings={fontVariationSettings.fontVariationSettings}
 				>
 					{SAMPLE_TEXT}
-				</p>
+					{SAMPLE_TEXT}
+					{SAMPLE_TEXT}
+				</div>
 			</div>
 		{/each}
+	</div>
+</div>
+
+<!-- Global Grid Unit Control -->
+<div class="bg-muted/50 container mx-auto mt-8 max-w-4xl rounded-lg border p-4">
+	<div class="flex items-center gap-4">
+		<label for="base-grid-unit" class="text-sm font-medium">Base Grid Unit:</label>
+		<input
+			id="base-grid-unit"
+			type="number"
+			bind:value={baseGridUnit}
+			min="1"
+			max="20"
+			step="1"
+			class="border-input bg-background w-20 rounded border px-2 py-1 text-sm"
+		/>
+		<span class="text-muted-foreground text-sm">px</span>
 	</div>
 </div>
 

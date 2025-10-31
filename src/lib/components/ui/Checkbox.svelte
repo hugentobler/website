@@ -56,8 +56,8 @@
 			// Unchecked state
 			"data-[state=unchecked]:bg-background",
 			// Checked/Indeterminate state - gradient background
-			"data-[state=checked]:from-accent data-[state=checked]:to-primary data-[state=checked]:bg-gradient-to-br",
-			"data-[state=indeterminate]:from-accent data-[state=indeterminate]:to-primary data-[state=indeterminate]:bg-gradient-to-br",
+			"data-[state=checked]:from-accent data-[state=checked]:to-primary data-[state=checked]:bg-linear-to-br",
+			"data-[state=indeterminate]:from-accent data-[state=indeterminate]:to-primary data-[state=indeterminate]:bg-linear-to-br",
 			// Hover states
 			"data-[state=unchecked]:hover:bg-muted",
 			// Cursor states
@@ -68,7 +68,7 @@
 			"focus-visible:ring-accent focus-visible:ring-offset-background focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:outline-none",
 			// Disabled state
 			"disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50",
-			"data-[disabled]:pointer-events-none data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50"
+			"data-disabled:pointer-events-none data-disabled:cursor-not-allowed data-disabled:opacity-50"
 		)}
 	>
 		{#snippet children({ checked, indeterminate })}

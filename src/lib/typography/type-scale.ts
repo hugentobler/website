@@ -1,42 +1,49 @@
-// Type scale configuration for typography preview
-// Defines font size and line height for each typographic level
-
-export type TypeLevel = "h1" | "h2" | "h3" | "p" | "small";
+// Type scale configuration using t-shirt sizing
+// Everything is derived from DEFAULT_TYPE_SCALE for single source of truth
 
 export type TypeScaleLevel = {
 	fontSize: number; // in pixels
-	lineHeight: number; // unitless multiplier
+	lineUnits: number; // how many grid units for line box height
+	rows: number; // how many rows to display in preview grid
 };
 
-export type TypeScale = Record<TypeLevel, TypeScaleLevel>;
+// Default base grid unit
+export const DEFAULT_BASE_GRID_UNIT = 6; // px
 
-// Default type scale values (starting points for tuning)
-export const DEFAULT_TYPE_SCALES: Record<"UNI" | "BER", TypeScale> = {
-	UNI: {
-		h1: { fontSize: 48, lineHeight: 1.2 },
-		h2: { fontSize: 36, lineHeight: 1.3 },
-		h3: { fontSize: 24, lineHeight: 1.4 },
-		p: { fontSize: 16, lineHeight: 1.5 },
-		small: { fontSize: 14, lineHeight: 1.5 },
-	},
-	BER: {
-		// Monospace typically needs tighter leading
-		h1: { fontSize: 48, lineHeight: 1.1 },
-		h2: { fontSize: 36, lineHeight: 1.2 },
-		h3: { fontSize: 24, lineHeight: 1.3 },
-		p: { fontSize: 16, lineHeight: 1.4 },
-		small: { fontSize: 14, lineHeight: 1.4 },
-	},
-};
+// Default type scale using standard size naming - SINGLE SOURCE OF TRUTH
+// lineUnits × baseGridUnit = line box height
+// lineHeight = (lineUnits × baseGridUnit) / fontSize
+export const DEFAULT_TYPE_SCALE = {
+	xl: { fontSize: 48, lineUnits: 10, rows: 1 },
+	lg: { fontSize: 36, lineUnits: 8, rows: 2 },
+	md: { fontSize: 24, lineUnits: 6, rows: 3 },
+	sm: { fontSize: 18, lineUnits: 4, rows: 4 },
+	xs: { fontSize: 14, lineUnits: 4, rows: 5 },
+} satisfies Record<string, TypeScaleLevel>;
+
+// Derive types from the DEFAULT_TYPE_SCALE
+export type TypeSize = keyof typeof DEFAULT_TYPE_SCALE;
+export type TypeScale = typeof DEFAULT_TYPE_SCALE;
 
 // Sample text for type specimens
 export const SAMPLE_TEXT = "The quick brown fox jumps over the lazy dog";
 
-// Labels for display
-export const TYPE_LEVEL_LABELS: Record<TypeLevel, string> = {
-	h1: "H1",
-	h2: "H2",
-	h3: "H3",
-	p: "P",
-	small: "Small",
-};
+// Helper to get ordered type sizes from the scale
+export function getTypeSizes(): TypeSize[] {
+	return Object.keys(DEFAULT_TYPE_SCALE) as TypeSize[];
+}
+
+// Helper function to calculate lineHeight from grid system
+export function calculateLineHeight(
+	fontSize: number,
+	lineUnits: number,
+	baseGridUnit: number,
+): number {
+	const lineBoxHeight = lineUnits * baseGridUnit;
+	return lineBoxHeight / fontSize;
+}
+
+// Helper function to calculate line box height
+export function calculateLineBoxHeight(lineUnits: number, baseGridUnit: number): number {
+	return lineUnits * baseGridUnit;
+}
