@@ -28,7 +28,7 @@
 <Popover.Root bind:open>
 	{#if trigger}
 		<Popover.Trigger
-			class="focus-visible:ring-muted inline-flex items-center justify-center focus-visible:ring-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
+			class="focus-visible:ring-accent focus-visible:ring-offset-background inline-flex items-center justify-center focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
 		>
 			{@render trigger()}
 		</Popover.Trigger>

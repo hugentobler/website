@@ -3,7 +3,7 @@
 
 export const FONTS = {
 	UNI: "Univers",
-	BER: "Berkeley Mono",
+	BER: "Berkeley Mono Variable",
 };
 
 // Univers: map stretch -> allowed weights

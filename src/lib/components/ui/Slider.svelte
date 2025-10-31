@@ -91,7 +91,7 @@
 					"hover:border-muted-foreground hover:bg-card",
 					"data-active:border-accent data-active:scale-[0.98]",
 					// Focus states
-					"focus-visible:ring-accent focus-visible:ring-offset-background focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none",
+					"focus-visible:ring-accent focus-visible:ring-offset-background focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:outline-none",
 					// Disabled state
 					"disabled:pointer-events-none disabled:opacity-50",
 					"data-disabled:pointer-events-none data-disabled:cursor-not-allowed"

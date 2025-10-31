@@ -132,7 +132,7 @@
 				"text-sm leading-none transition-colors",
 				// Interactive states - text color changes based on state
 				"data-[state=off]:text-foreground/66",
-				"data-[state=on]:text-foreground data-[state=on]:invert",
+				"data-[state=on]:text-background",
 				// Cursor states
 				"cursor-alias",
 				// Active state animation

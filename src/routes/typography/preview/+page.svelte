@@ -11,9 +11,17 @@
 		UNI_STRETCH_WEIGHTS,
 		UNI_WEIGHTS,
 	} from "$lib/typography/config";
+	import {
+		DEFAULT_TYPE_SCALES,
+		SAMPLE_TEXT,
+		TYPE_LEVEL_LABELS,
+		type TypeLevel,
+		type TypeScale,
+	} from "$lib/typography/type-scale";
 
 	type FontKey = keyof typeof FONTS;
 	const fonts = Object.entries(FONTS) as [FontKey, string][];
+	const typeLevels: TypeLevel[] = ["h1", "h2", "h3", "p", "small"];
 
 	// Font toggle (allow empty)
 	let activeFont = $state<FontKey | "">("UNI");
@@ -49,7 +57,61 @@
 
 	// Custom anchor for popover
 	let anchorElement = $state<HTMLElement>();
+
+	// Type scale state (one for each font)
+	let uniTypeScale = $state<TypeScale>({ ...DEFAULT_TYPE_SCALES.UNI });
+	let berTypeScale = $state<TypeScale>({ ...DEFAULT_TYPE_SCALES.BER });
+
+	// Derived: active type scale based on selected font
+	const activeTypeScale = $derived(selectedFont === "UNI" ? uniTypeScale : berTypeScale);
+
+	// Derived: font variation settings for specimens
+	const fontVariationSettings = $derived(
+		selectedFont === "UNI"
+			? {
+					// For Univers, we use stretch and weight
+					// Note: Univers uses font-stretch CSS property, not wdth axis
+					fontFamily: FONTS.UNI,
+					fontStretch: activeStretch,
+					fontWeight: UniWeight,
+					fontStyle: UniItalic ? "italic" : "normal",
+					fontVariationSettings: undefined,
+				}
+			: {
+					// For Berkeley Mono, we use variable font axes
+					fontFamily: FONTS.BER,
+					fontStretch: undefined,
+					fontWeight: undefined,
+					fontStyle: undefined,
+					fontVariationSettings: `"wdth" ${BerWidth}, "wght" ${BerWeight}, "slnt" ${BerSlant}`,
+				}
+	);
 </script>
+
+<!-- Type Specimens Display -->
+<div class="container mx-auto max-w-4xl p-8">
+	<div class="space-y-8">
+		{#each typeLevels as level}
+			{@const scale = activeTypeScale[level]}
+			<div class="flex items-baseline gap-4">
+				<span class="text-muted-foreground w-16 shrink-0 text-sm font-medium">
+					{TYPE_LEVEL_LABELS[level]}
+				</span>
+				<p
+					style:font-size="{scale.fontSize}px"
+					style:line-height={scale.lineHeight}
+					style:font-family={fontVariationSettings.fontFamily}
+					style:font-stretch={fontVariationSettings.fontStretch}
+					style:font-weight={fontVariationSettings.fontWeight}
+					style:font-style={fontVariationSettings.fontStyle}
+					style:font-variation-settings={fontVariationSettings.fontVariationSettings}
+				>
+					{SAMPLE_TEXT}
+				</p>
+			</div>
+		{/each}
+	</div>
+</div>
 
 <!-- Anchor element at bottom center -->
 <div class="fixed bottom-6 left-1/2 z-40 -translate-x-1/2">
