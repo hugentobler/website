@@ -27,6 +27,9 @@
 	// Base grid unit
 	let baseGridUnit = $state(DEFAULT_BASE_GRID_UNIT);
 
+	// Number of vertical rhythm rows to preview
+	let previewRows = $state(3);
+
 	// Type scale state (mutable copy of default scale)
 	let typeScale = $state(structuredClone(DEFAULT_TYPE_SCALE));
 
@@ -98,7 +101,42 @@
 	);
 </script>
 
-<div class="grid w-full grid-rows-2 overflow-x-auto">
+<div class="my-5 grid w-full grid-rows-2 overflow-x-auto">
+	<div
+		class="grid grid-flow-col"
+		style:grid-template-columns="auto repeat({typeSizes.length}, 1fr {baseGridUnit * 12}px)"
+		style:grid-template-rows="repeat({previewRows}, {baseGridUnit * 12}px)"
+	>
+		<div class="row-span-full w-24">Preview</div>
+		{#each typeSizes as size, i}
+			{@const scale = typeScale[size]}
+			{@const totalRows = scale.rows * previewRows}
+			{@const colStart = 2 + i * 2}
+			{@const colEnd = colStart + 1}
+			<div
+				class="relative row-span-full box-border w-72 overflow-clip border-x border-x-(--color-charcoal-300) pl-3"
+				style:grid-column="{colStart} / {colEnd}"
+			>
+				<div class="grid h-full" style:grid-template-rows="repeat({totalRows}, 1fr)">
+					{#each Array(totalRows) as _}
+						<div
+							class="relative border-t border-(--color-charcoal-300) last-of-type:border-b"
+						></div>
+					{/each}
+				</div>
+			</div>
+		{/each}
+		{#each Array(previewRows) as _, rowIndex}
+			<div
+				class="col-span-full box-border border-t border-dashed border-(--color-raspberry-300)"
+				class:border-b={rowIndex === previewRows - 1}
+				style:grid-row={rowIndex + 1}
+			></div>
+		{/each}
+	</div>
+</div>
+
+<!-- <div class="grid w-full grid-rows-2 overflow-x-auto">
 	<div class="grid" style:grid-template-columns={gridCols} style:gap="{baseGridUnit * 12}px">
 		<div class="w-24"></div>
 		{#each typeSizes as size}
@@ -189,7 +227,7 @@
 			</div>
 		{/each}
 	</div>
-</div>
+</div> -->
 
 <!-- Global Grid Unit Control -->
 <div class="bg-muted/50 container mx-auto mt-8 max-w-4xl rounded-lg border p-4">
