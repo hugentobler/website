@@ -1,5 +1,14 @@
 <script lang="ts">
-	import { Button, Checkbox, Output, Popover, Slider, ToggleGroup } from "$lib/components/ui";
+	import {
+		AnimatedNumber,
+		Button,
+		ButtonGroup,
+		Checkbox,
+		Output,
+		Popover,
+		Slider,
+		ToggleGroup,
+	} from "$lib/components/ui";
 	import {
 		BER_SLANT_RANGE,
 		BER_WEIGHT_RANGE,
@@ -114,45 +123,53 @@
 			{@const colEnd = colStart + 1}
 			<div class="flex w-72 flex-col gap-2 pl-3" style:grid-column="{colStart} / {colEnd}">
 				<div class="text-sm font-medium uppercase">{size}</div>
-				<!-- Font Size Control -->
-				<div class="flex items-center gap-2">
-					<Button
-						class="h-6 w-6 text-xs"
-						onclick={() => updateTypeScale(size, "fontSize", scale.fontSize - 1)}
-						aria-label="Decrease font size"
-					>
-						−
-					</Button>
-					<Output class="w-12 text-center">
-						{scale.fontSize}px
-					</Output>
-					<Button
-						class="h-6 w-6 text-xs"
-						onclick={() => updateTypeScale(size, "fontSize", scale.fontSize + 1)}
-						aria-label="Increase font size"
-					>
-						+
-					</Button>
-				</div>
-				<!-- Line Units Control -->
-				<div class="flex items-center gap-2">
-					<Button
-						class="h-6 w-6 text-xs"
-						onclick={() => updateTypeScale(size, "lineUnits", Math.max(1, scale.lineUnits - 1))}
-						aria-label="Decrease line units"
-					>
-						−
-					</Button>
-					<Output class="w-12 text-center">
-						{scale.lineUnits}u
-					</Output>
-					<Button
-						class="h-6 w-6 text-xs"
-						onclick={() => updateTypeScale(size, "lineUnits", scale.lineUnits + 1)}
-						aria-label="Increase line units"
-					>
-						+
-					</Button>
+				<!-- Controls Row -->
+				<div class="flex gap-2">
+					<!-- Font Size Control -->
+					<ButtonGroup>
+						<Button
+							class="size-6 text-lg font-light"
+							onclick={() => updateTypeScale(size, "fontSize", scale.fontSize - 1)}
+							aria-label="Decrease font size"
+						>
+							−
+						</Button>
+						<Output class="h-6 px-2">
+							<AnimatedNumber class="text-sm" value={scale.fontSize} /><span class="ml-0.5 text-xs"
+								>px</span
+							>
+						</Output>
+						<Button
+							class="size-6 text-lg font-light"
+							onclick={() => updateTypeScale(size, "fontSize", scale.fontSize + 1)}
+							aria-label="Increase font size"
+						>
+							+
+						</Button>
+						<!-- <Output class="px-2">px</Output> -->
+					</ButtonGroup>
+					<!-- Line Units Control -->
+					<ButtonGroup>
+						<Button
+							class="size-6 text-lg font-light"
+							onclick={() => updateTypeScale(size, "lineUnits", Math.max(1, scale.lineUnits - 1))}
+							aria-label="Decrease line units"
+						>
+							−
+						</Button>
+						<Output class="h-6 px-2">
+							<AnimatedNumber class="text-sm" value={scale.lineUnits} /><span class="ml-0.5 text-xs"
+								>units</span
+							>
+						</Output>
+						<Button
+							class="size-6 text-lg font-light"
+							onclick={() => updateTypeScale(size, "lineUnits", scale.lineUnits + 1)}
+							aria-label="Increase line units"
+						>
+							+
+						</Button>
+					</ButtonGroup>
 				</div>
 				<!-- Calculated values -->
 				<div class="text-muted-foreground text-xs">

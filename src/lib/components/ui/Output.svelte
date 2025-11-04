@@ -25,9 +25,9 @@
 	{...restProps}
 	class={cn(
 		// Base styles
-		"bg-background border-border shadow-border/50 relative inline-flex items-center justify-center rounded-sm border shadow-xs",
+		"bg-muted/66 border-border shadow-border/50 relative inline-flex items-center justify-center rounded-sm border shadow-xs",
 		// Text styles
-		"text-muted-foreground text-xs",
+		"text-muted-foreground",
 		// Custom class
 		className
 	)}
