@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Checkbox, Popover, Slider, ToggleGroup } from "$lib/components/ui";
+	import { Button, Checkbox, Output, Popover, Slider, ToggleGroup } from "$lib/components/ui";
 	import {
 		BER_SLANT_RANGE,
 		BER_WEIGHT_RANGE,
@@ -101,34 +101,108 @@
 	);
 </script>
 
-<div class="my-5 grid w-full grid-rows-2 overflow-x-auto">
+<div class="my-5 w-full overflow-x-scroll pb-4">
+	<!-- Type scale controls row -->
+	<div
+		class="grid"
+		style:grid-template-columns="auto repeat({typeSizes.length}, 1fr {baseGridUnit * 12}px)"
+	>
+		<div class="w-24" style:grid-column="1"></div>
+		{#each typeSizes as size, i}
+			{@const scale = typeScale[size]}
+			{@const colStart = 2 + i * 2}
+			{@const colEnd = colStart + 1}
+			<div class="flex w-72 flex-col gap-2 pl-3" style:grid-column="{colStart} / {colEnd}">
+				<div class="text-sm font-medium uppercase">{size}</div>
+				<!-- Font Size Control -->
+				<div class="flex items-center gap-2">
+					<Button
+						class="h-6 w-6 text-xs"
+						onclick={() => updateTypeScale(size, "fontSize", scale.fontSize - 1)}
+						aria-label="Decrease font size"
+					>
+						−
+					</Button>
+					<Output class="w-12 text-center">
+						{scale.fontSize}px
+					</Output>
+					<Button
+						class="h-6 w-6 text-xs"
+						onclick={() => updateTypeScale(size, "fontSize", scale.fontSize + 1)}
+						aria-label="Increase font size"
+					>
+						+
+					</Button>
+				</div>
+				<!-- Line Units Control -->
+				<div class="flex items-center gap-2">
+					<Button
+						class="h-6 w-6 text-xs"
+						onclick={() => updateTypeScale(size, "lineUnits", Math.max(1, scale.lineUnits - 1))}
+						aria-label="Decrease line units"
+					>
+						−
+					</Button>
+					<Output class="w-12 text-center">
+						{scale.lineUnits}u
+					</Output>
+					<Button
+						class="h-6 w-6 text-xs"
+						onclick={() => updateTypeScale(size, "lineUnits", scale.lineUnits + 1)}
+						aria-label="Increase line units"
+					>
+						+
+					</Button>
+				</div>
+				<!-- Calculated values -->
+				<div class="text-muted-foreground text-xs">
+					<div>
+						LH: {calculateLineHeight(scale.fontSize, scale.lineUnits, baseGridUnit).toFixed(3)}
+					</div>
+				</div>
+			</div>
+		{/each}
+	</div>
+	<!-- Preview grid -->
 	<div
 		class="grid grid-flow-col"
 		style:grid-template-columns="auto repeat({typeSizes.length}, 1fr {baseGridUnit * 12}px)"
 		style:grid-template-rows="repeat({previewRows}, {baseGridUnit * 12}px)"
 	>
-		<div class="row-span-full w-24">Preview</div>
+		<div class="row-span-full w-24" style:grid-column="1">Preview</div>
 		{#each typeSizes as size, i}
 			{@const scale = typeScale[size]}
 			{@const totalRows = scale.rows * previewRows}
 			{@const colStart = 2 + i * 2}
 			{@const colEnd = colStart + 1}
 			<div
-				class="relative row-span-full box-border w-72 overflow-clip border-x border-x-(--color-charcoal-300) pl-3"
+				class="relative row-span-full w-72 overflow-clip border-x border-x-(--color-charcoal-300) pl-3"
 				style:grid-column="{colStart} / {colEnd}"
 			>
 				<div class="grid h-full" style:grid-template-rows="repeat({totalRows}, 1fr)">
 					{#each Array(totalRows) as _}
-						<div
-							class="relative border-t border-(--color-charcoal-300) last-of-type:border-b"
-						></div>
+						<div class="border-t border-(--color-charcoal-300) last-of-type:border-b"></div>
 					{/each}
+				</div>
+				<div
+					class="absolute inset-0 pl-3"
+					style:font-size="{scale.fontSize}px"
+					style:line-height={calculateLineHeight(scale.fontSize, scale.lineUnits, baseGridUnit)}
+					style:font-family={fontVariationSettings.fontFamily}
+					style:font-stretch={fontVariationSettings.fontStretch}
+					style:font-weight={fontVariationSettings.fontWeight}
+					style:font-style={fontVariationSettings.fontStyle}
+					style:font-variation-settings={fontVariationSettings.fontVariationSettings}
+				>
+					{Array(totalRows + 1)
+						.fill(`${SAMPLE_TEXT}.`)
+						.join(" ")}
 				</div>
 			</div>
 		{/each}
 		{#each Array(previewRows) as _, rowIndex}
 			<div
-				class="col-span-full box-border border-t border-dashed border-(--color-raspberry-300)"
+				class="col-span-full border-t border-dashed border-(--color-raspberry-300)"
 				class:border-b={rowIndex === previewRows - 1}
 				style:grid-row={rowIndex + 1}
 			></div>
