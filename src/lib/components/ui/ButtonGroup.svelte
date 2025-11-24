@@ -43,12 +43,7 @@
 </div>
 
 <style lang="postcss">
-	@reference "@/styles/app.css";
-
-	.button-group {
-		/* Remove gap between children for seamless connection */
-		/*gap: 0;*/
-	}
+	@reference "$styles/app.css";
 
 	/* Horizontal orientation */
 	.button-group.flex-row > :global(*:not(:first-child):not(:last-child)) {
