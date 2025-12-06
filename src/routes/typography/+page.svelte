@@ -1,6 +1,6 @@
 <script lang="ts">
 import { ToggleGroup } from "$lib/components/ui";
-import { FONTS } from "$lib/typography/config";
+import { FONTS } from "$lib/typography";
 let fontMode = $state<'sans' | 'mono'>('sans');
 let gridOn = $state<boolean>(true);
 let gridClass = $derived(gridOn ? 'baseline-grid-major' : '');

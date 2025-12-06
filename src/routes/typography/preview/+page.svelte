@@ -10,201 +10,241 @@
 		ToggleGroup,
 	} from "$lib/components/ui";
 	import {
+		BASELINE,
+		FONTS,
+		type FontId,
+		type FontScale,
+		type Size,
+		TYPE_SCALES,
+	} from "$lib/typography";
+	import {
 		BER_SLANT_RANGE,
 		BER_WEIGHT_RANGE,
 		BER_WIDTH_RANGE,
-		FONTS,
 		getCenterValue,
 		rangeValues,
+		SAMPLE_TEXT,
 		UNI_STRETCH,
 		UNI_STRETCH_WEIGHTS,
 		UNI_WEIGHTS,
-	} from "$lib/typography/config";
-	import {
-		calculateLineBoxHeight,
-		calculateLineHeight,
-		DEFAULT_BASE_GRID_UNIT,
-		DEFAULT_TYPE_SCALE,
-		getTypeSizes,
-		SAMPLE_TEXT,
-		type TypeSize,
-	} from "$lib/typography/type-scale";
+	} from "./config";
 
-	type FontKey = keyof typeof FONTS;
-	const fonts = Object.entries(FONTS) as [FontKey, string][];
+	// =============================================================================
+	// Constants
+	// =============================================================================
 
-	// Base grid unit
-	let baseGridUnit = $state(DEFAULT_BASE_GRID_UNIT);
+	const fonts = Object.entries(FONTS) as [FontId, string][];
+	const sizes = Object.keys(TYPE_SCALES.sans) as Size[];
+	const PREVIEW_ROWS = 3;
 
-	// Number of vertical rhythm rows to preview
-	let previewRows = $state(3);
+	// Default values for font variation controls
+	const DEFAULT_UNI_STRETCH_IDX = 1; // "condensed"
+	const DEFAULT_UNI_WEIGHT = getCenterValue(UNI_STRETCH_WEIGHTS[UNI_STRETCH[1]]);
+	const DEFAULT_BER_WIDTH = getCenterValue(rangeValues(BER_WIDTH_RANGE));
+	const DEFAULT_BER_WEIGHT = getCenterValue(rangeValues(BER_WEIGHT_RANGE));
+	const DEFAULT_BER_SLANT = BER_SLANT_RANGE.max;
 
-	// Type scale state (mutable copy of default scale)
-	let typeScale = $state(structuredClone(DEFAULT_TYPE_SCALE));
+	// =============================================================================
+	// State - Core editable data
+	// =============================================================================
 
-	// Derived: ordered type sizes and grid columns
-	const typeSizes = $derived(getTypeSizes());
-	const gridCols = $derived(`auto ${typeSizes.map(() => "1fr").join(" ")}`);
-
-	// Font toggle (allow empty)
-	let activeFont = $state<FontKey | "">("UNI");
-	let activeFontHistory = $state<FontKey>("UNI");
-	$effect(() => {
-		if (activeFont !== "") activeFontHistory = activeFont as FontKey;
+	let config = $state({
+		baseline: BASELINE,
+		typeScales: structuredClone(TYPE_SCALES),
 	});
 
-	// Derived UI state
-	const selectedFont = $derived(activeFont === "" ? activeFontHistory : activeFont);
-	const slidersDisabled = $derived(activeFont === "");
+	// =============================================================================
+	// State - UI controls
+	// =============================================================================
 
-	// Slider states
-	let UniStretchIdx = $state<number>(1);
-	let UniWeight = $state<number>(getCenterValue(UNI_STRETCH_WEIGHTS[UNI_STRETCH[1]]));
-	let UniItalic = $state<boolean>(false);
-	let BerWidth = $state<number>(getCenterValue(rangeValues(BER_WIDTH_RANGE)));
-	let BerWeight = $state<number>(getCenterValue(rangeValues(BER_WEIGHT_RANGE)));
-	let BerSlant = $state<number>(BER_SLANT_RANGE.max);
+	let ui = $state({
+		activeFont: "sans" as FontId,
+		// Univers variation controls
+		uniStretchIdx: DEFAULT_UNI_STRETCH_IDX,
+		uniWeight: DEFAULT_UNI_WEIGHT,
+		uniItalic: false,
+		// Berkeley Mono variation controls
+		berWidth: DEFAULT_BER_WIDTH,
+		berWeight: DEFAULT_BER_WEIGHT,
+		berSlant: DEFAULT_BER_SLANT,
+	});
 
-	// Allowed weights for the active stretch; clamp weight on stretch change
+	// Popover state
+	let anchorElement = $state<HTMLElement>();
+	let popoverOpen = $state(true);
+
+	// =============================================================================
+	// Derived state
+	// =============================================================================
+
+	// Active Univers stretch value (clamped to valid range)
 	const activeStretch = $derived(
-		UNI_STRETCH[Math.max(0, Math.min(UniStretchIdx, UNI_STRETCH.length - 1))]
+		UNI_STRETCH[Math.max(0, Math.min(ui.uniStretchIdx, UNI_STRETCH.length - 1))]
 	);
+
+	// Allowed weights for the active stretch
 	const allowedWeights = $derived(UNI_STRETCH_WEIGHTS[activeStretch] as readonly number[]);
+
+	// Font variation settings for text preview
+	const fontVariationSettings = $derived(
+		ui.activeFont === "sans"
+			? {
+					fontFamily: FONTS.sans,
+					fontStretch: activeStretch,
+					fontWeight: ui.uniWeight,
+					fontStyle: ui.uniItalic ? "italic" : "normal",
+					fontVariationSettings: undefined,
+				}
+			: {
+					fontFamily: FONTS.mono,
+					fontStretch: undefined,
+					fontWeight: undefined,
+					fontStyle: undefined,
+					fontVariationSettings: `"wdth" ${ui.berWidth}, "wght" ${ui.berWeight}, "slnt" ${ui.berSlant}`,
+				}
+	);
+
+	// =============================================================================
+	// Effects
+	// =============================================================================
+
+	// Clamp Univers weight when stretch changes
 	$effect(() => {
-		if (!allowedWeights.includes(UniWeight)) {
-			UniWeight = allowedWeights.reduce((prev, curr) =>
-				Math.abs(curr - UniWeight) < Math.abs(prev - UniWeight) ? curr : prev
+		if (!allowedWeights.includes(ui.uniWeight)) {
+			ui.uniWeight = allowedWeights.reduce((prev, curr) =>
+				Math.abs(curr - ui.uniWeight) < Math.abs(prev - ui.uniWeight) ? curr : prev
 			);
 		}
 	});
 
-	// Custom anchor for popover
-	let anchorElement = $state<HTMLElement>();
+	// =============================================================================
+	// Actions
+	// =============================================================================
 
-	// Helper to update a specific size in the type scale
 	function updateTypeScale(
-		size: TypeSize,
-		field: "fontSize" | "lineUnits" | "rows",
+		font: FontId,
+		size: Size,
+		field: "fontSize" | "lineHeight",
 		value: number
 	) {
-		typeScale[size][field] = value;
-	}
+		console.log(`[updateTypeScale] font=${font}, size=${size}, field=${field}, value=${value}`);
+		console.log(`[updateTypeScale] Before:`, config.typeScales[font][size][field]);
 
-	// Derived: font variation settings for specimens
-	const fontVariationSettings = $derived(
-		selectedFont === "UNI"
-			? {
-					fontFamily: FONTS.UNI,
-					fontStretch: activeStretch,
-					fontWeight: UniWeight,
-					fontStyle: UniItalic ? "italic" : "normal",
-					fontVariationSettings: undefined,
-				}
-			: {
-					fontFamily: FONTS.BER,
-					fontStretch: undefined,
-					fontWeight: undefined,
-					fontStyle: undefined,
-					fontVariationSettings: `"wdth" ${BerWidth}, "wght" ${BerWeight}, "slnt" ${BerSlant}`,
-				}
-	);
+		// Direct mutation should work in Svelte 5 with $state
+		config.typeScales[font][size][field] = value;
+
+		console.log(`[updateTypeScale] After:`, config.typeScales[font][size][field]);
+		console.log(
+			`[updateTypeScale] Full state:`,
+			JSON.stringify(config.typeScales[font][size], null, 2)
+		);
+	}
 </script>
 
-<div class="my-5 w-full overflow-x-scroll pb-4">
-	<!-- Type scale controls row -->
-	<div
-		class="grid"
-		style:grid-template-columns="auto repeat({typeSizes.length}, 1fr {baseGridUnit * 12}px)"
-	>
-		<div class="w-24" style:grid-column="1"></div>
-		{#each typeSizes as size, i}
-			{@const scale = typeScale[size]}
-			{@const colStart = 2 + i * 2}
-			{@const colEnd = colStart + 1}
-			<div class="flex w-72 flex-col gap-2 pl-3" style:grid-column="{colStart} / {colEnd}">
+<!-- Repeat 1 spacer 1 size -->
+<div
+	class="m-5 grid grid-cols-[repeat(3,72px_1fr)] divide-x divide-black *:border-black [&>*:last-child]:border-r"
+>
+	{#each sizes as size}
+		<div class="">SPACE</div>
+		<div class="flex flex-col">SIZE</div>
+	{/each}
+</div>
+
+<!-- Responsive grid with gaps (no spacers for now) -->
+<div
+	class="my-5 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3"
+	style:column-gap="{config.baseline}px"
+	style:row-gap="{config.baseline}px"
+>
+	{#each sizes as size}
+		{@const scale = config.typeScales[ui.activeFont][size]}
+		{@const rowsPerRepetition = sizes.indexOf(size) + 1}
+		{@const totalRows = rowsPerRepetition * PREVIEW_ROWS}
+
+		<!-- Type size column -->
+		<div class="flex flex-col">
+			<!-- Header with size name and controls -->
+			<div
+				class="flex items-center justify-between border-x border-t border-(--color-charcoal-300) p-3"
+			>
 				<div class="text-sm font-medium uppercase">{size}</div>
-				<!-- Controls Row -->
 				<div class="flex gap-2">
 					<!-- Font Size Control -->
 					<ButtonGroup>
 						<Button
 							class="size-6 text-lg font-light"
-							onclick={() => updateTypeScale(size, "fontSize", scale.fontSize - 1)}
+							onclick={() => updateTypeScale(ui.activeFont, size, "fontSize", scale.fontSize - 1)}
 							aria-label="Decrease font size"
 						>
 							−
 						</Button>
 						<Output class="h-6 px-2">
-							<AnimatedNumber class="text-sm" value={scale.fontSize} /><span class="ml-0.5 text-xs"
-								>px</span
-							>
+							<AnimatedNumber class="text-sm" value={scale.fontSize} />
 						</Output>
 						<Button
 							class="size-6 text-lg font-light"
-							onclick={() => updateTypeScale(size, "fontSize", scale.fontSize + 1)}
+							onclick={() => updateTypeScale(ui.activeFont, size, "fontSize", scale.fontSize + 1)}
 							aria-label="Increase font size"
 						>
 							+
 						</Button>
-						<!-- <Output class="px-2">px</Output> -->
 					</ButtonGroup>
-					<!-- Line Units Control -->
+					<!-- Line Height Control -->
 					<ButtonGroup>
 						<Button
 							class="size-6 text-lg font-light"
-							onclick={() => updateTypeScale(size, "lineUnits", Math.max(1, scale.lineUnits - 1))}
-							aria-label="Decrease line units"
+							onclick={() =>
+								updateTypeScale(
+									ui.activeFont,
+									size,
+									"lineHeight",
+									Math.max(1, scale.lineHeight - 1)
+								)}
+							aria-label="Decrease line height"
 						>
 							−
 						</Button>
 						<Output class="h-6 px-2">
-							<AnimatedNumber class="text-sm" value={scale.lineUnits} /><span class="ml-0.5 text-xs"
-								>units</span
-							>
+							<AnimatedNumber class="text-sm" value={scale.lineHeight} />
 						</Output>
 						<Button
 							class="size-6 text-lg font-light"
-							onclick={() => updateTypeScale(size, "lineUnits", scale.lineUnits + 1)}
-							aria-label="Increase line units"
+							onclick={() =>
+								updateTypeScale(ui.activeFont, size, "lineHeight", scale.lineHeight + 1)}
+							aria-label="Increase line height"
 						>
 							+
 						</Button>
 					</ButtonGroup>
 				</div>
-				<!-- Calculated values -->
-				<div class="text-muted-foreground text-xs">
-					<div>
-						LH: {calculateLineHeight(scale.fontSize, scale.lineUnits, baseGridUnit).toFixed(3)}
-					</div>
-				</div>
 			</div>
-		{/each}
-	</div>
-	<!-- Preview grid -->
-	<div
-		class="grid grid-flow-col"
-		style:grid-template-columns="auto repeat({typeSizes.length}, 1fr {baseGridUnit * 12}px)"
-		style:grid-template-rows="repeat({previewRows}, {baseGridUnit * 12}px)"
-	>
-		<div class="row-span-full w-24" style:grid-column="1">Preview</div>
-		{#each typeSizes as size, i}
-			{@const scale = typeScale[size]}
-			{@const totalRows = scale.rows * previewRows}
-			{@const colStart = 2 + i * 2}
-			{@const colEnd = colStart + 1}
+
+			<!-- Preview box with baseline grid -->
 			<div
-				class="relative row-span-full w-72 overflow-clip border-x border-x-(--color-charcoal-300) pl-3"
-				style:grid-column="{colStart} / {colEnd}"
+				class="relative overflow-clip border-x border-b border-(--color-charcoal-300)"
+				style:height="{PREVIEW_ROWS * config.baseline}px"
 			>
+				<!-- Grid lines -->
 				<div class="grid h-full" style:grid-template-rows="repeat({totalRows}, 1fr)">
 					{#each Array(totalRows) as _}
 						<div class="border-t border-(--color-charcoal-300) last-of-type:border-b"></div>
 					{/each}
 				</div>
+				<!-- Repetition unit markers -->
+				<div class="absolute inset-0 grid" style:grid-template-rows="repeat({PREVIEW_ROWS}, 1fr)">
+					{#each Array(PREVIEW_ROWS) as _, rowIndex}
+						<div
+							class="border-t border-dashed border-(--color-raspberry-300)"
+							class:border-b={rowIndex === PREVIEW_ROWS - 1}
+						></div>
+					{/each}
+				</div>
+				<!-- Text preview -->
 				<div
-					class="absolute inset-0 pl-3"
+					class="absolute inset-0 p-3"
 					style:font-size="{scale.fontSize}px"
-					style:line-height={calculateLineHeight(scale.fontSize, scale.lineUnits, baseGridUnit)}
+					style:line-height={scale.lineHeight / scale.fontSize}
 					style:font-family={fontVariationSettings.fontFamily}
 					style:font-stretch={fontVariationSettings.fontStretch}
 					style:font-weight={fontVariationSettings.fontWeight}
@@ -216,15 +256,8 @@
 						.join(" ")}
 				</div>
 			</div>
-		{/each}
-		{#each Array(previewRows) as _, rowIndex}
-			<div
-				class="col-span-full border-t border-dashed border-(--color-raspberry-300)"
-				class:border-b={rowIndex === previewRows - 1}
-				style:grid-row={rowIndex + 1}
-			></div>
-		{/each}
-	</div>
+		</div>
+	{/each}
 </div>
 
 <!-- <div class="grid w-full grid-rows-2 overflow-x-auto">
@@ -304,7 +337,7 @@
 				<div
 					class="absolute inset-0 pl-3"
 					style:font-size="{scale.fontSize}px"
-					style:line-height={calculateLineHeight(scale.fontSize, scale.lineUnits, baseGridUnit)}
+					style:line-height={scale.lineHeight / scale.fontSize}
 					style:font-family={fontVariationSettings.fontFamily}
 					style:font-stretch={fontVariationSettings.fontStretch}
 					style:font-weight={fontVariationSettings.fontWeight}
@@ -320,24 +353,43 @@
 	</div>
 </div> -->
 
-<!-- Global Grid Unit Control -->
+<!-- Baseline Grid Control -->
 <div class="bg-muted/50 container mx-auto mt-8 max-w-4xl rounded-lg border p-4">
 	<div class="flex items-center gap-4">
-		<label for="base-grid-unit" class="text-sm font-medium">Base Grid Unit:</label>
+		<label for="baseline" class="text-sm font-medium">Baseline Grid:</label>
 		<input
-			id="base-grid-unit"
+			id="baseline"
 			type="number"
-			bind:value={baseGridUnit}
-			min="1"
-			max="20"
-			step="1"
+			bind:value={config.baseline}
+			min="12"
+			max="144"
+			step="6"
 			class="border-input bg-background w-20 rounded border px-2 py-1 text-sm"
 		/>
 		<span class="text-muted-foreground text-sm">px</span>
+		<span class="text-muted-foreground ml-4 text-xs">The vertical measure all text aligns to</span>
 	</div>
 </div>
 
 <!-- Anchor element at bottom center -->
+<!-- Debug: Active Font Display -->
+<div class="fixed right-6 bottom-6 z-50 rounded border bg-white p-4 shadow-lg">
+	<div class="font-mono text-sm">
+		<div>Active Font: {ui.activeFont}</div>
+		<div>Base fontSize: {config.typeScales[ui.activeFont].base.fontSize}px</div>
+		<div>Base lineHeight: {config.typeScales[ui.activeFont].base.lineHeight}px</div>
+	</div>
+	<div class="mt-2">
+		<select bind:value={ui.activeFont} class="border p-1">
+			{#each fonts as [value, label]}
+				<option {value}>{label}</option>
+			{/each}
+		</select>
+	</div>
+</div>
+
+<!-- POPOVER DISABLED FOR DEBUGGING -->
+<!--
 <div class="fixed bottom-6 left-1/2 z-40 -translate-x-1/2">
 	<div
 		bind:this={anchorElement}
@@ -348,26 +400,25 @@
 </div>
 
 <div class="fixed right-6 bottom-6 z-50">
-	<Popover open side="top" customAnchor={anchorElement}>
+	<Popover bind:open={popoverOpen} side="top" customAnchor={anchorElement}>
 		{#snippet trigger()}
 			Trigger (opens above anchor)
 		{/snippet}
 		<div class="grid grid-cols-3 grid-rows-[auto_minmax(12rem,1fr)] gap-4">
 			<div>
 				<ToggleGroup
-					bind:value={activeFont}
+					bind:value={ui.activeFont}
 					options={fonts.map(([value, label]) => ({ value, label }))}
 				/>
 			</div>
-			{#if selectedFont === "UNI"}
+			{#if ui.activeFont === "sans"}
 				<div class="row-start-2 flex flex-col items-center gap-2">
 					<p>Stretch</p>
 					<Slider
 						orientation="vertical"
-						bind:value={UniStretchIdx}
+						bind:value={ui.uniStretchIdx}
 						step={UNI_STRETCH.map((_, i) => i)}
 						tickLabels={UNI_STRETCH}
-						disabled={slidersDisabled}
 						hideThumbLabels
 					/>
 				</div>
@@ -378,29 +429,27 @@
 						min={UNI_WEIGHTS[0]}
 						max={UNI_WEIGHTS[UNI_WEIGHTS.length - 1]}
 						step={[...UNI_WEIGHTS]}
-						bind:value={UniWeight}
+						bind:value={ui.uniWeight}
 						tickLabels={UNI_WEIGHTS.map((w) => (allowedWeights.includes(w) ? w : undefined))}
-						disabled={slidersDisabled}
 						hideThumbLabels
 					/>
 				</div>
 				<div class="row-start-2 flex items-center gap-2">
-					<Checkbox bind:checked={UniItalic} label="Italic" />
+					<Checkbox bind:checked={ui.uniItalic} label="Italic" />
 				</div>
 			{/if}
-			{#if selectedFont === "BER"}
+			{#if ui.activeFont === "mono"}
 				{@const weightValues = rangeValues(BER_WEIGHT_RANGE)}
 				{@const slantValues = rangeValues(BER_SLANT_RANGE)}
 				<div class="row-start-2 flex flex-col items-center gap-2">
 					<p>Width</p>
 					<Slider
 						orientation="vertical"
-						bind:value={BerWidth}
+						bind:value={ui.berWidth}
 						min={BER_WIDTH_RANGE.min}
 						max={BER_WIDTH_RANGE.max}
 						step={BER_WIDTH_RANGE.step}
 						tickLabels={rangeValues(BER_WIDTH_RANGE)}
-						disabled={slidersDisabled}
 						hideThumbLabels
 					/>
 				</div>
@@ -408,31 +457,30 @@
 					<p>Weight</p>
 					<Slider
 						orientation="vertical"
-						bind:value={BerWeight}
+						bind:value={ui.berWeight}
 						min={BER_WEIGHT_RANGE.min}
 						max={BER_WEIGHT_RANGE.max}
 						step={BER_WEIGHT_RANGE.step}
 						tickLabels={weightValues.map((w, i) =>
 							i === 0 || i === weightValues.length - 1 ? w : undefined
 						)}
-						disabled={slidersDisabled}
 					/>
 				</div>
 				<div class="row-start-2 flex flex-col items-center gap-2">
 					<p>Slant</p>
 					<Slider
 						orientation="vertical"
-						bind:value={BerSlant}
+						bind:value={ui.berSlant}
 						min={BER_SLANT_RANGE.min}
 						max={BER_SLANT_RANGE.max}
 						step={BER_SLANT_RANGE.step}
 						tickLabels={slantValues.map((w, i) =>
 							i === 0 || i === slantValues.length - 1 ? w : undefined
 						)}
-						disabled={slidersDisabled}
 					/>
 				</div>
 			{/if}
 		</div>
 	</Popover>
 </div>
+-->
