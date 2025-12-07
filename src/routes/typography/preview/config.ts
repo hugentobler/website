@@ -36,7 +36,7 @@ export const BER_SLANT_RANGE = { min: -16, max: 0, step: 1 } as const;
 // =============================================================================
 
 // Sample text for type specimens
-export const SAMPLE_TEXT = "The quick brown fox jumps over the lazy dog";
+export const SAMPLE_TEXT = "The quick brown fox jumps over the lazy dog!";
 
 // Generate array of values from a range
 export function rangeValues(range: { min: number; max: number; step: number }): number[] {

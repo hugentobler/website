@@ -141,108 +141,102 @@
 	}
 </script>
 
-<!-- Repeat 1 spacer 1 size -->
+<!-- Responsive grid: 1 col mobile, 2 tablet, 3 desktop -->
+<!-- Each set is: baseline spacer + 1fr typography column -->
 <div
-	class="m-5 grid grid-cols-[repeat(3,72px_1fr)] divide-x divide-black *:border-black [&>*:last-child]:border-r"
->
-	{#each sizes as size}
-		<div class="">SPACE</div>
-		<div class="flex flex-col">SIZE</div>
-	{/each}
-</div>
-
-<!-- Responsive grid with gaps (no spacers for now) -->
-<div
-	class="my-5 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3"
-	style:column-gap="{config.baseline}px"
-	style:row-gap="{config.baseline}px"
+	class="m-5 grid auto-rows-min grid-cols-[var(--baseline)_1fr] divide-x divide-black *:border-black md:grid-cols-[repeat(2,var(--baseline)_1fr)] xl:grid-cols-[repeat(3,var(--baseline)_1fr)] [&>*:last-child]:border-r"
+	style:--baseline="{config.baseline}px"
 >
 	{#each sizes as size}
 		{@const scale = config.typeScales[ui.activeFont][size]}
-		{@const rowsPerRepetition = sizes.indexOf(size) + 1}
-		{@const totalRows = rowsPerRepetition * PREVIEW_ROWS}
+		{@const position = sizes.indexOf(size)}
 
-		<!-- Type size column -->
-		<div class="flex flex-col">
-			<!-- Header with size name and controls -->
+		<!-- Spacer column -->
+		<div>
+			<div class="h-40"></div>
 			<div
-				class="flex items-center justify-between border-x border-t border-(--color-charcoal-300) p-3"
+				class="divide-y divide-black *:border-dotted [&>*:first-child]:border-t [&>*:last-child]:border-b"
 			>
-				<div class="text-sm font-medium uppercase">{size}</div>
-				<div class="flex gap-2">
-					<!-- Font Size Control -->
-					<ButtonGroup>
-						<Button
-							class="size-6 text-lg font-light"
-							onclick={() => updateTypeScale(ui.activeFont, size, "fontSize", scale.fontSize - 1)}
-							aria-label="Decrease font size"
-						>
-							−
-						</Button>
-						<Output class="h-6 px-2">
-							<AnimatedNumber class="text-sm" value={scale.fontSize} />
-						</Output>
-						<Button
-							class="size-6 text-lg font-light"
-							onclick={() => updateTypeScale(ui.activeFont, size, "fontSize", scale.fontSize + 1)}
-							aria-label="Increase font size"
-						>
-							+
-						</Button>
-					</ButtonGroup>
-					<!-- Line Height Control -->
-					<ButtonGroup>
-						<Button
-							class="size-6 text-lg font-light"
-							onclick={() =>
-								updateTypeScale(
-									ui.activeFont,
-									size,
-									"lineHeight",
-									Math.max(1, scale.lineHeight - 1)
-								)}
-							aria-label="Decrease line height"
-						>
-							−
-						</Button>
-						<Output class="h-6 px-2">
-							<AnimatedNumber class="text-sm" value={scale.lineHeight} />
-						</Output>
-						<Button
-							class="size-6 text-lg font-light"
-							onclick={() =>
-								updateTypeScale(ui.activeFont, size, "lineHeight", scale.lineHeight + 1)}
-							aria-label="Increase line height"
-						>
-							+
-						</Button>
-					</ButtonGroup>
+				{#each Array(PREVIEW_ROWS) as _}
+					<div style:height="{BASELINE}px"></div>
+				{/each}
+			</div>
+		</div>
+
+		<!-- Typography column -->
+		<div class="flex flex-col">
+			<div class="flex h-40 flex-col p-4">
+				<p>{size}</p>
+				<p>Font Name</p>
+				<div class="flex justify-between">
+					<p>{scale.fontSize} / {scale.lineHeight}</p>
+					<div class="mt-auto flex gap-2">
+						<!-- Font Size Control -->
+						<ButtonGroup>
+							<Button
+								class="size-6 text-lg font-light"
+								onclick={() => updateTypeScale(ui.activeFont, size, "fontSize", scale.fontSize - 1)}
+								aria-label="Decrease font size"
+							>
+								−
+							</Button>
+							<Output class="h-6 px-2">
+								<AnimatedNumber class="text-sm" value={scale.fontSize} />
+							</Output>
+							<Button
+								class="size-6 text-lg font-light"
+								onclick={() => updateTypeScale(ui.activeFont, size, "fontSize", scale.fontSize + 1)}
+								aria-label="Increase font size"
+							>
+								+
+							</Button>
+						</ButtonGroup>
+						<!-- Line Height Control -->
+						<ButtonGroup>
+							<Button
+								class="size-6 text-lg font-light"
+								onclick={() =>
+									updateTypeScale(
+										ui.activeFont,
+										size,
+										"lineHeight",
+										Math.max(1, scale.lineHeight - 1)
+									)}
+								aria-label="Decrease line height"
+							>
+								−
+							</Button>
+							<Output class="h-6 px-2">
+								<AnimatedNumber class="text-sm" value={scale.lineHeight} />
+							</Output>
+							<Button
+								class="size-6 text-lg font-light"
+								onclick={() =>
+									updateTypeScale(ui.activeFont, size, "lineHeight", scale.lineHeight + 1)}
+								aria-label="Increase line height"
+							>
+								+
+							</Button>
+						</ButtonGroup>
+					</div>
 				</div>
 			</div>
-
-			<!-- Preview box with baseline grid -->
 			<div
-				class="relative overflow-clip border-x border-b border-(--color-charcoal-300)"
-				style:height="{PREVIEW_ROWS * config.baseline}px"
+				class="relative divide-y divide-black *:border-dotted [&>*:first-child]:border-t [&>*:last-child]:border-b"
 			>
-				<!-- Grid lines -->
-				<div class="grid h-full" style:grid-template-rows="repeat({totalRows}, 1fr)">
-					{#each Array(totalRows) as _}
-						<div class="border-t border-(--color-charcoal-300) last-of-type:border-b"></div>
-					{/each}
-				</div>
-				<!-- Repetition unit markers -->
-				<div class="absolute inset-0 grid" style:grid-template-rows="repeat({PREVIEW_ROWS}, 1fr)">
-					{#each Array(PREVIEW_ROWS) as _, rowIndex}
-						<div
-							class="border-t border-dashed border-(--color-raspberry-300)"
-							class:border-b={rowIndex === PREVIEW_ROWS - 1}
-						></div>
-					{/each}
-				</div>
+				{#each Array(PREVIEW_ROWS) as _}
+					<div style:height="{BASELINE}px" class="relative">
+						<!-- Grid lines (behind) -->
+						<div class="absolute inset-0 left-4 divide-y divide-black *:border-dashed">
+							{#each Array(position + 2) as _}
+								<div style:height="{BASELINE / (position + 2)}px"></div>
+							{/each}
+						</div>
+					</div>
+				{/each}
 				<!-- Text preview -->
 				<div
-					class="absolute inset-0 p-3"
+					class="absolute inset-0 left-4 overflow-hidden"
 					style:font-size="{scale.fontSize}px"
 					style:line-height={scale.lineHeight / scale.fontSize}
 					style:font-family={fontVariationSettings.fontFamily}
@@ -251,9 +245,7 @@
 					style:font-style={fontVariationSettings.fontStyle}
 					style:font-variation-settings={fontVariationSettings.fontVariationSettings}
 				>
-					{Array(totalRows + 1)
-						.fill(`${SAMPLE_TEXT}.`)
-						.join(" ")}
+					{SAMPLE_TEXT.concat(" ").repeat(10)}
 				</div>
 			</div>
 		</div>

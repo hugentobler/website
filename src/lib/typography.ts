@@ -30,13 +30,13 @@ export const FONTS = {
 } as const;
 
 // The baseline grid - the vertical measure all text aligns to
-export const BASELINE = 72; // px
+export const BASELINE = 96; // px
 
 // Type scales per font - SINGLE SOURCE OF TRUTH
 // These values are tuned to align optically with the baseline grid
 export const TYPE_SCALES: Record<FontId, FontScale> = {
 	sans: {
-		lg: { fontSize: 48, lineHeight: 72 },
+		lg: { fontSize: 44, lineHeight: 49 },
 		md: { fontSize: 36, lineHeight: 36 },
 		base: { fontSize: 24, lineHeight: 24 },
 		sm: { fontSize: 18, lineHeight: 18 },
