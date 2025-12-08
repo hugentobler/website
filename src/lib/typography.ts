@@ -13,9 +13,6 @@ export type ScaleLevel = {
 // T-shirt size names (same for all fonts)
 export type Size = "lg" | "md" | "base" | "sm" | "xs";
 
-// Type scale structure: same sizes, different values per font
-export type FontScale = Record<Size, ScaleLevel>;
-
 // Font identifiers (matches CSS naming: font-sans, font-mono)
 export type FontId = "sans" | "mono";
 
@@ -34,11 +31,11 @@ export const BASELINE = 96; // px
 
 // Type scales per font - SINGLE SOURCE OF TRUTH
 // These values are tuned to align optically with the baseline grid
-export const TYPE_SCALES: Record<FontId, FontScale> = {
+export const TYPE_SCALES: Record<FontId, Record<Size, ScaleLevel>> = {
 	sans: {
-		lg: { fontSize: 44, lineHeight: 49 },
-		md: { fontSize: 36, lineHeight: 36 },
-		base: { fontSize: 24, lineHeight: 24 },
+		lg: { fontSize: 36, lineHeight: 48 },
+		md: { fontSize: 24, lineHeight: 32 },
+		base: { fontSize: 18, lineHeight: 24 },
 		sm: { fontSize: 18, lineHeight: 18 },
 		xs: { fontSize: 12, lineHeight: 12 },
 	},

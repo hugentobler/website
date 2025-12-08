@@ -1,199 +1,379 @@
 <script lang="ts">
-import { ToggleGroup } from "$lib/components/ui";
-import { FONTS } from "$lib/typography";
-let fontMode = $state<'sans' | 'mono'>('sans');
-let gridOn = $state<boolean>(true);
-let gridClass = $derived(gridOn ? 'baseline-grid-major' : '');
-let rhythm = $state<number>(6);
+	import {
+		AnimatedNumber,
+		Button,
+		ButtonGroup,
+		Checkbox,
+		Output,
+		Slider,
+		ToggleGroup,
+	} from "$lib/components/ui";
+	import { BASELINE, FONTS, type FontId, type Size, TYPE_SCALES } from "$lib/typography";
+	import {
+		BER_SLANT_RANGE,
+		BER_WEIGHT_RANGE,
+		BER_WIDTH_RANGE,
+		getCenterValue,
+		pxToRem,
+		rangeValues,
+		SAMPLE_TEXT,
+		UNI_STRETCH,
+		UNI_STRETCH_WEIGHTS,
+		UNI_WEIGHTS,
+	} from "./config";
 
-// Sans controls (Univers)
-let sansSize = $state<number>(17);
-let sansUnits = $state<number>(4);
-let sansLeading = $derived(rhythm * sansUnits);
-let sansWeight = $state<number>(400); // 300 | 400 | 600
-let sansStretch = $state<string>('normal'); // normal | condensed | expanded | ultra-condensed
-let sansTracking = $state<string>('0em');
+	// =============================================================================
+	// Constants
+	// =============================================================================
 
-// Mono controls (Berkeley Mono Variable)
-let monoSize = $state<number>(16);
-let monoUnits = $state<number>(4);
-let monoLeading = $derived(rhythm * monoUnits);
-let monoWght = $state<number>(400);
-let monoWdth = $state<string>('100%'); // 60%–100%
-let monoSlnt = $state<string>('0deg'); // -16deg–0deg
-let monoTracking = $state<string>('0em');
+	const fonts = Object.entries(FONTS) as [FontId, string][];
+	const sizes = Object.keys(TYPE_SCALES.sans) as Size[];
+	const PREVIEW_ROWS = 3;
 
-// Paragraph spacing in rhythm units (applies to second paragraph)
-let paraUnits = $state<number>(2);
+	// Default values for font variation controls
+	const DEFAULT_UNI_STRETCH_IDX = 1; // "condensed"
+	const DEFAULT_UNI_WEIGHT = getCenterValue(UNI_STRETCH_WEIGHTS[UNI_STRETCH[1]]);
+	const DEFAULT_BER_WIDTH = getCenterValue(rangeValues(BER_WIDTH_RANGE));
+	const DEFAULT_BER_WEIGHT = getCenterValue(rangeValues(BER_WEIGHT_RANGE));
+	const DEFAULT_BER_SLANT = BER_SLANT_RANGE.max;
 
-$effect(() => {
-	const r = document.documentElement;
-	r.style.setProperty('--type-rhythm', `${rhythm}px`);
-	// apply base tokens
-	r.style.setProperty('--sans-text-base', `${sansSize}px`);
-	r.style.setProperty('--sans-leading-base-units', `${sansUnits}`);
-	r.style.setProperty('--mono-text-base', `${monoSize}px`);
-	r.style.setProperty('--mono-leading-base-units', `${monoUnits}`);
-	// axes
-	r.style.setProperty('--sans-weight', `${sansWeight}`);
-	r.style.setProperty('--sans-stretch', `${sansStretch}`);
-	r.style.setProperty('--sans-tracking', `${sansTracking}`);
-	r.style.setProperty('--mono-wght', `${monoWght}`);
-	r.style.setProperty('--mono-stretch', `${monoWdth}`);
-	r.style.setProperty('--mono-slnt', `${monoSlnt}`);
-	r.style.setProperty('--mono-tracking', `${monoTracking}`);
-});
+	// =============================================================================
+	// State - All preview settings (nothing exports, just for testing)
+	// =============================================================================
 
-function inc(val: number, by = 1) { return val + by; }
-function dec(val: number, by = 1) { return Math.max(0, val - by); }
+	let settings = $state({
+		// Type scale settings
+		baseline: BASELINE,
+		typeScales: structuredClone(TYPE_SCALES),
+		// Active font
+		activeFont: "sans" as FontId,
+		// Univers variation controls
+		uniStretchIdx: DEFAULT_UNI_STRETCH_IDX,
+		uniWeight: DEFAULT_UNI_WEIGHT,
+		uniItalic: false,
+		// Berkeley Mono variation controls
+		berWidth: DEFAULT_BER_WIDTH,
+		berWeight: DEFAULT_BER_WEIGHT,
+		berSlant: DEFAULT_BER_SLANT,
+	});
 
-const fontEntries = Object.entries(FONTS).map(([key, label]) => ({
-	key,
-	label,
-	mode: key === 'UNI' ? 'sans' : 'mono',
-}));
+	// =============================================================================
+	// Derived state
+	// =============================================================================
+
+	// Active Univers stretch value (clamped to valid range)
+	const currentStretch = $derived(
+		UNI_STRETCH[Math.max(0, Math.min(settings.uniStretchIdx, UNI_STRETCH.length - 1))]
+	);
+
+	// Allowed weights for the active stretch
+	const validWeights = $derived(UNI_STRETCH_WEIGHTS[currentStretch] as readonly number[]);
+
+	// Font variation settings for text preview
+	const previewFontSettings = $derived(
+		settings.activeFont === "sans"
+			? {
+					fontFamily: FONTS.sans,
+					fontStretch: currentStretch,
+					fontWeight: settings.uniWeight,
+					fontStyle: settings.uniItalic ? "italic" : "normal",
+					previewFontSettings: undefined,
+				}
+			: {
+					fontFamily: FONTS.mono,
+					fontStretch: undefined,
+					fontWeight: undefined,
+					fontStyle: undefined,
+					previewFontSettings: `"wdth" ${settings.berWidth}, "wght" ${settings.berWeight}, "slnt" ${settings.berSlant}`,
+				}
+	);
+
+	// =============================================================================
+	// Effects
+	// =============================================================================
+
+	// Clamp Univers weight when stretch changes
+	$effect(() => {
+		if (!validWeights.includes(settings.uniWeight)) {
+			settings.uniWeight = validWeights.reduce((prev, curr) =>
+				Math.abs(curr - settings.uniWeight) < Math.abs(prev - settings.uniWeight) ? curr : prev
+			);
+		}
+	});
+
+	// =============================================================================
+	// Actions
+	// =============================================================================
+
+	function updateTypeScale(
+		font: FontId,
+		size: Size,
+		field: "fontSize" | "lineHeight",
+		value: number
+	) {
+		console.log(`[updateTypeScale] font=${font}, size=${size}, field=${field}, value=${value}`);
+		console.log(`[updateTypeScale] Before:`, settings.typeScales[font][size][field]);
+
+		// Direct mutation should work in Svelte 5 with $state
+		settings.typeScales[font][size][field] = value;
+
+		console.log(`[updateTypeScale] After:`, settings.typeScales[font][size][field]);
+		console.log(
+			`[updateTypeScale] Full state:`,
+			JSON.stringify(settings.typeScales[font][size], null, 2)
+		);
+	}
 </script>
 
-<section class="space-y-6 p-6 bg-white/70 dark:bg-black/30">
-	<!-- Global controls -->
-	<div class="flex flex-wrap items-end gap-4">
-		<label class="flex items-center gap-2">
-			<span class="type-sans-sm">Font</span>
-			<select bind:value={fontMode} class="type-sans-sm border px-2 py-1 bg-white/80 dark:bg-black/30">
-				<option value="sans">Sans (Univers)</option>
-				<option value="mono">Mono (Berkeley Mono)</option>
-			</select>
-		</label>
+<!-- Responsive grid: 1 col mobile, 2 tablet, 3 desktop -->
+<!-- Each set is: baseline spacer + 1fr typography column -->
+<div
+	class="m-5 grid auto-rows-min grid-cols-[var(--baseline)_1fr] divide-x divide-black *:border-black md:grid-cols-[repeat(2,var(--baseline)_1fr)] xl:grid-cols-[repeat(3,var(--baseline)_1fr)] [&>*:last-child]:border-r"
+	style:--baseline="{settings.baseline}px"
+>
+	{#each sizes as size}
+		{@const scale = settings.typeScales[settings.activeFont][size]}
+		{@const position = sizes.indexOf(size)}
 
-			<ToggleGroup
-				bind:value={fontMode}
-				type="single"
-				options={fontEntries.map((f) => ({ value: f.mode, label: f.label }))}
-			/>
-
-		<label class="flex items-center gap-2">
-			<input type="checkbox" bind:checked={gridOn} />
-			<span class="type-sans-sm">Show grid (minors + major)</span>
-		</label>
-
-		<label class="flex items-center gap-2">
-			<span class="type-sans-sm">Rhythm (px)</span>
-			<input type="number" min="1" bind:value={rhythm} class="type-sans-sm border px-2 py-1 w-20 bg-white/80 dark:bg-black/30" />
-			<div class="flex gap-1">
-				<button class="type-sans-sm px-2 py-1 border" onclick={() => (rhythm = dec(rhythm))}>−1</button>
-				<button class="type-sans-sm px-2 py-1 border" onclick={() => (rhythm = inc(rhythm))}>+1</button>
+		<!-- Spacer column -->
+		<div>
+			<div class="h-40"></div>
+			<div
+				class="divide-y divide-black *:border-dotted [&>*:first-child]:border-t [&>*:last-child]:border-b"
+			>
+				{#each Array(PREVIEW_ROWS) as _}
+					<div style:height="{BASELINE}px"></div>
+				{/each}
 			</div>
-		</label>
+		</div>
+
+		<!-- Typography column -->
+		<div class="flex flex-col">
+			<div class="flex h-40 flex-col p-4">
+				<p class="text-sm font-medium uppercase">{size}</p>
+				<p class="text-xs text-gray-600">{FONTS[settings.activeFont]}</p>
+				<div class="mt-1 text-xs">
+					<div class="font-mono">
+						<span class="text-gray-500">px:</span> {scale.fontSize} / {scale.lineHeight}
+					</div>
+					<div class="font-mono text-gray-600">
+						<span class="text-gray-400">rem:</span> {pxToRem(scale.fontSize).toFixed(3)} / {(scale.lineHeight / scale.fontSize).toFixed(3)}
+					</div>
+				</div>
+				<div class="mt-auto flex gap-2">
+					<!-- Font Size Control -->
+						<ButtonGroup>
+							<Button
+								class="size-6 text-lg font-light"
+								onclick={() =>
+									updateTypeScale(settings.activeFont, size, "fontSize", scale.fontSize - 1)}
+								aria-label="Decrease font size"
+							>
+								−
+							</Button>
+							<Output class="h-6 px-2">
+								<AnimatedNumber class="text-sm" value={scale.fontSize} />
+							</Output>
+							<Button
+								class="size-6 text-lg font-light"
+								onclick={() =>
+									updateTypeScale(settings.activeFont, size, "fontSize", scale.fontSize + 1)}
+								aria-label="Increase font size"
+							>
+								+
+							</Button>
+						</ButtonGroup>
+						<!-- Line Height Control -->
+						<ButtonGroup>
+							<Button
+								class="size-6 text-lg font-light"
+								onclick={() =>
+									updateTypeScale(
+										settings.activeFont,
+										size,
+										"lineHeight",
+										Math.max(1, scale.lineHeight - 1)
+									)}
+								aria-label="Decrease line height"
+							>
+								−
+							</Button>
+							<Output class="h-6 px-2">
+								<AnimatedNumber class="text-sm" value={scale.lineHeight} />
+							</Output>
+							<Button
+								class="size-6 text-lg font-light"
+								onclick={() =>
+									updateTypeScale(settings.activeFont, size, "lineHeight", scale.lineHeight + 1)}
+								aria-label="Increase line height"
+							>
+								+
+							</Button>
+						</ButtonGroup>
+				</div>
+			</div>
+			<div
+				class="relative divide-y divide-black *:border-dotted [&>*:first-child]:border-t [&>*:last-child]:border-b"
+			>
+				{#each Array(PREVIEW_ROWS) as _}
+					<div style:height="{BASELINE}px" class="relative">
+						<!-- Grid lines (behind) -->
+						<div class="absolute inset-0 left-4 divide-y divide-black *:border-dashed">
+							{#each Array(position + 2) as _}
+								<div style:height="{BASELINE / (position + 2)}px"></div>
+							{/each}
+						</div>
+					</div>
+				{/each}
+				<!-- Text preview -->
+				<div
+					class="absolute inset-0 left-4 overflow-hidden"
+					style:font-size="{scale.fontSize}px"
+					style:line-height={scale.lineHeight / scale.fontSize}
+					style:font-family={previewFontSettings.fontFamily}
+					style:font-stretch={previewFontSettings.fontStretch}
+					style:font-weight={previewFontSettings.fontWeight}
+					style:font-style={previewFontSettings.fontStyle}
+					style:font-variation-settings={previewFontSettings.previewFontSettings}
+				>
+					{SAMPLE_TEXT.concat(" ").repeat(10)}
+				</div>
+			</div>
+		</div>
+	{/each}
+
+	<!-- Font Controls (6th item) -->
+	<!-- Spacer column -->
+	<div>
+		<div class="h-40"></div>
+		<div
+			class="divide-y divide-black *:border-dotted [&>*:first-child]:border-t [&>*:last-child]:border-b"
+		>
+			{#each Array(PREVIEW_ROWS) as _}
+				<div style:height="{BASELINE}px"></div>
+			{/each}
+		</div>
 	</div>
 
-	<!-- Per-font controls -->
-	{#if fontMode === 'sans'}
-		<div class="flex flex-wrap items-end gap-4">
-			<label class="flex items-center gap-2">
-				<span class="type-sans-sm">Base size (px)</span>
-				<input type="number" min="8" bind:value={sansSize} class="type-sans-sm border px-2 py-1 w-24 bg-white/80 dark:bg-black/30" />
-				<div class="flex gap-1">
-					<button class="type-sans-sm px-2 py-1 border" onclick={() => (sansSize = dec(sansSize))}>−1</button>
-					<button class="type-sans-sm px-2 py-1 border" onclick={() => (sansSize = inc(sansSize))}>+1</button>
-				</div>
-			</label>
-			<label class="flex items-center gap-2">
-				<span class="type-sans-sm">Leading (units)</span>
-				<input type="number" min="1" bind:value={sansUnits} class="type-sans-sm border px-2 py-1 w-20 bg-white/80 dark:bg-black/30" />
-			</label>
-			<label class="flex items-center gap-2">
-				<span class="type-sans-sm">Weight</span>
-				<select bind:value={sansWeight} class="type-sans-sm border px-2 py-1 bg-white/80 dark:bg-black/30">
-					<option value={300}>300</option>
-					<option value={400}>400</option>
-					<option value={600}>600</option>
-				</select>
-			</label>
-			<label class="flex items-center gap-2">
-				<span class="type-sans-sm">Stretch</span>
-				<select bind:value={sansStretch} class="type-sans-sm border px-2 py-1 bg-white/80 dark:bg-black/30">
-					<option value="normal">normal</option>
-					<option value="condensed">condensed</option>
-					<option value="expanded">expanded</option>
-					<option value="ultra-condensed">ultra-condensed</option>
-				</select>
-			</label>
-			<label class="flex items-center gap-2">
-				<span class="type-sans-sm">Tracking</span>
-				<input type="text" bind:value={sansTracking} class="type-sans-sm border px-2 py-1 w-24 bg-white/80 dark:bg-black/30" placeholder="e.g. 0.02em" />
-			</label>
-			<label class="flex items-center gap-2">
-				<span class="type-sans-sm">Paragraph spacing (units)</span>
-				<input type="number" min="0" bind:value={paraUnits} class="type-sans-sm border px-2 py-1 w-20 bg-white/80 dark:bg-black/30" />
-			</label>
-		</div>
-	{:else}
-		<div class="flex flex-wrap items-end gap-4">
-			<label class="flex items-center gap-2">
-				<span class="type-sans-sm">Base size (px)</span>
-				<input type="number" min="8" bind:value={monoSize} class="type-sans-sm border px-2 py-1 w-24 bg-white/80 dark:bg-black/30" />
-				<div class="flex gap-1">
-					<button class="type-sans-sm px-2 py-1 border" onclick={() => (monoSize = dec(monoSize))}>−1</button>
-					<button class="type-sans-sm px-2 py-1 border" onclick={() => (monoSize = inc(monoSize))}>+1</button>
-				</div>
-			</label>
-			<label class="flex items-center gap-2">
-				<span class="type-sans-sm">Leading (units)</span>
-				<input type="number" min="1" bind:value={monoUnits} class="type-sans-sm border px-2 py-1 w-20 bg-white/80 dark:bg-black/30" />
-			</label>
-			<label class="flex items-center gap-2">
-				<span class="type-sans-sm">Weight</span>
-				<input type="number" min="100" max="900" step="50" bind:value={monoWght} class="type-sans-sm border px-2 py-1 w-24 bg-white/80 dark:bg-black/30" />
-			</label>
-			<label class="flex items-center gap-2">
-				<span class="type-sans-sm">Width</span>
-				<input type="text" bind:value={monoWdth} class="type-sans-sm border px-2 py-1 w-20 bg-white/80 dark:bg-black/30" placeholder="60%–100%" />
-			</label>
-			<label class="flex items-center gap-2">
-				<span class="type-sans-sm">Slant</span>
-				<input type="text" bind:value={monoSlnt} class="type-sans-sm border px-2 py-1 w-20 bg-white/80 dark:bg-black/30" placeholder="-16deg–0deg" />
-			</label>
-			<label class="flex items-center gap-2">
-				<span class="type-sans-sm">Tracking</span>
-				<input type="text" bind:value={monoTracking} class="type-sans-sm border px-2 py-1 w-24 bg-white/80 dark:bg-black/30" placeholder="e.g. 0.02em" />
-			</label>
-			<label class="flex items-center gap-2">
-				<span class="type-sans-sm">Paragraph spacing (units)</span>
-				<input type="number" min="0" bind:value={paraUnits} class="type-sans-sm border px-2 py-1 w-20 bg-white/80 dark:bg-black/30" />
-			</label>
-		</div>
-	{/if}
+	<!-- Controls column -->
+	<div class="flex flex-col gap-4 border-y border-black p-4">
+		<p class="text-sm font-medium uppercase">Controls</p>
 
-	<header>
-		<h1 class="uni-type-lg font-sans">Body Text Preview</h1>
-		<p class="uni-type-sm font-sans">Tune base size, leading, axes, rhythm, and spacing.</p>
-	</header>
+		<!-- Baseline Grid Control -->
+		<div class="flex flex-col gap-2">
+			<p class="text-xs font-medium">Baseline Grid</p>
+			<ButtonGroup>
+				<Button
+					class="size-6 text-lg font-light"
+					onclick={() => (settings.baseline = Math.max(6, settings.baseline - 6))}
+					aria-label="Decrease baseline"
+				>
+					−
+				</Button>
+				<Output class="h-6 px-2">
+					<AnimatedNumber class="text-sm" value={settings.baseline} />
+				</Output>
+				<Button
+					class="size-6 text-lg font-light"
+					onclick={() => (settings.baseline = Math.min(144, settings.baseline + 6))}
+					aria-label="Increase baseline"
+				>
+					+
+				</Button>
+			</ButtonGroup>
+		</div>
 
-	{#if fontMode === 'sans'}
-		<article class="space-y-4">
-			<p class={`uni-type-base font-sans uni-axes ${gridClass}`} style={`--leading-units: ${sansUnits}`}>
-				Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt
-				ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
-				laboris nisi ut aliquip ex ea commodo consequat.
-			</p>
-			<p class={`uni-type-base font-sans uni-axes ${gridClass}`} style={`--leading-units: ${sansUnits}; margin-top: calc(var(--type-rhythm) * ${paraUnits})`}>
-				Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-				pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt
-				mollit anim id est laborum.
-			</p>
-		</article>
-	{:else}
-		<article class="space-y-4">
-			<p class={`bm-type-base font-mono bm-axes ${gridClass}`} style={`--leading-units: ${monoUnits}`}>
-				Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt
-				ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
-				laboris nisi ut aliquip ex ea commodo consequat.
-			</p>
-			<p class={`bm-type-base font-mono bm-axes ${gridClass}`} style={`--leading-units: ${monoUnits}; margin-top: calc(var(--type-rhythm) * ${paraUnits})`}>
-				Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-				pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt
-				mollit anim id est laborum.
-			</p>
-		</article>
-	{/if}
-</section>
+		<!-- Font Toggle -->
+		<div>
+			<ToggleGroup
+				bind:value={settings.activeFont}
+				options={fonts.map(([value, label]) => ({ value, label }))}
+			/>
+		</div>
+
+		<!-- Sliders -->
+		<div class="flex-1">
+			{#if settings.activeFont === "sans"}
+				<div class="flex h-full gap-4">
+					<div class="flex flex-col items-center gap-2">
+						<p class="text-xs font-medium">Stretch</p>
+						<Slider
+							orientation="vertical"
+							bind:value={settings.uniStretchIdx}
+							step={UNI_STRETCH.map((_, i) => i)}
+							tickLabels={UNI_STRETCH}
+							hideThumbLabels
+							class="h-full"
+						/>
+					</div>
+					<div class="flex flex-col items-center gap-2">
+						<p class="text-xs font-medium">Weight</p>
+						<Slider
+							orientation="vertical"
+							min={UNI_WEIGHTS[0]}
+							max={UNI_WEIGHTS[UNI_WEIGHTS.length - 1]}
+							step={[...UNI_WEIGHTS]}
+							bind:value={settings.uniWeight}
+							tickLabels={UNI_WEIGHTS.map((w) => (validWeights.includes(w) ? w : undefined))}
+							hideThumbLabels
+							class="h-full"
+						/>
+					</div>
+					<div class="flex items-end">
+						<Checkbox bind:checked={settings.uniItalic} label="Italic" />
+					</div>
+				</div>
+			{/if}
+			{#if settings.activeFont === "mono"}
+				{@const weightValues = rangeValues(BER_WEIGHT_RANGE)}
+				{@const slantValues = rangeValues(BER_SLANT_RANGE)}
+				<div class="flex h-full gap-4">
+					<div class="flex flex-col items-center gap-2">
+						<p class="text-xs font-medium">Width</p>
+						<Slider
+							orientation="vertical"
+							bind:value={settings.berWidth}
+							min={BER_WIDTH_RANGE.min}
+							max={BER_WIDTH_RANGE.max}
+							step={BER_WIDTH_RANGE.step}
+							tickLabels={rangeValues(BER_WIDTH_RANGE)}
+							hideThumbLabels
+							class="h-full"
+						/>
+					</div>
+					<div class="flex flex-col items-center gap-2">
+						<p class="text-xs font-medium">Weight</p>
+						<Slider
+							orientation="vertical"
+							bind:value={settings.berWeight}
+							min={BER_WEIGHT_RANGE.min}
+							max={BER_WEIGHT_RANGE.max}
+							step={BER_WEIGHT_RANGE.step}
+							tickLabels={weightValues.map((w, i) =>
+								i === 0 || i === weightValues.length - 1 ? w : undefined
+							)}
+							class="h-full"
+						/>
+					</div>
+					<div class="flex flex-col items-center gap-2">
+						<p class="text-xs font-medium">Slant</p>
+						<Slider
+							orientation="vertical"
+							bind:value={settings.berSlant}
+							min={BER_SLANT_RANGE.min}
+							max={BER_SLANT_RANGE.max}
+							step={BER_SLANT_RANGE.step}
+							tickLabels={slantValues.map((w, i) =>
+								i === 0 || i === slantValues.length - 1 ? w : undefined
+							)}
+							class="h-full"
+						/>
+					</div>
+				</div>
+			{/if}
+		</div>
+
+		<!-- Credit -->
+		<a href="https://www.daybreak.studio/writing/adaline-typography">Daybreak Studio</a>
+	</div>
+</div>
