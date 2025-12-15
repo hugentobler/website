@@ -154,62 +154,64 @@
 				<p class="text-xs text-gray-600">{FONTS[settings.activeFont]}</p>
 				<div class="mt-1 text-xs">
 					<div class="font-mono">
-						<span class="text-gray-500">px:</span> {scale.fontSize} / {scale.lineHeight}
+						<span class="text-gray-500">px:</span>
+						{scale.fontSize} / {scale.lineHeight}
 					</div>
 					<div class="font-mono text-gray-600">
-						<span class="text-gray-400">rem:</span> {pxToRem(scale.fontSize).toFixed(3)} / {(scale.lineHeight / scale.fontSize).toFixed(3)}
+						<span class="text-gray-400">rem:</span>
+						{pxToRem(scale.fontSize).toFixed(3)} / {(scale.lineHeight / scale.fontSize).toFixed(3)}
 					</div>
 				</div>
 				<div class="mt-auto flex gap-2">
 					<!-- Font Size Control -->
-						<ButtonGroup>
-							<Button
-								class="size-6 text-lg font-light"
-								onclick={() =>
-									updateTypeScale(settings.activeFont, size, "fontSize", scale.fontSize - 1)}
-								aria-label="Decrease font size"
-							>
-								−
-							</Button>
-							<Output class="h-6 px-2">
-								<AnimatedNumber class="text-sm" value={scale.fontSize} />
-							</Output>
-							<Button
-								class="size-6 text-lg font-light"
-								onclick={() =>
-									updateTypeScale(settings.activeFont, size, "fontSize", scale.fontSize + 1)}
-								aria-label="Increase font size"
-							>
-								+
-							</Button>
-						</ButtonGroup>
-						<!-- Line Height Control -->
-						<ButtonGroup>
-							<Button
-								class="size-6 text-lg font-light"
-								onclick={() =>
-									updateTypeScale(
-										settings.activeFont,
-										size,
-										"lineHeight",
-										Math.max(1, scale.lineHeight - 1)
-									)}
-								aria-label="Decrease line height"
-							>
-								−
-							</Button>
-							<Output class="h-6 px-2">
-								<AnimatedNumber class="text-sm" value={scale.lineHeight} />
-							</Output>
-							<Button
-								class="size-6 text-lg font-light"
-								onclick={() =>
-									updateTypeScale(settings.activeFont, size, "lineHeight", scale.lineHeight + 1)}
-								aria-label="Increase line height"
-							>
-								+
-							</Button>
-						</ButtonGroup>
+					<ButtonGroup>
+						<Button
+							class="size-6 text-lg font-light"
+							onclick={() =>
+								updateTypeScale(settings.activeFont, size, "fontSize", scale.fontSize - 1)}
+							aria-label="Decrease font size"
+						>
+							−
+						</Button>
+						<Output class="h-6 px-2">
+							<AnimatedNumber class="text-sm" value={scale.fontSize} />
+						</Output>
+						<Button
+							class="size-6 text-lg font-light"
+							onclick={() =>
+								updateTypeScale(settings.activeFont, size, "fontSize", scale.fontSize + 1)}
+							aria-label="Increase font size"
+						>
+							+
+						</Button>
+					</ButtonGroup>
+					<!-- Line Height Control -->
+					<ButtonGroup>
+						<Button
+							class="size-6 text-lg font-light"
+							onclick={() =>
+								updateTypeScale(
+									settings.activeFont,
+									size,
+									"lineHeight",
+									Math.max(1, scale.lineHeight - 1)
+								)}
+							aria-label="Decrease line height"
+						>
+							−
+						</Button>
+						<Output class="h-6 px-2">
+							<AnimatedNumber class="text-sm" value={scale.lineHeight} />
+						</Output>
+						<Button
+							class="size-6 text-lg font-light"
+							onclick={() =>
+								updateTypeScale(settings.activeFont, size, "lineHeight", scale.lineHeight + 1)}
+							aria-label="Increase line height"
+						>
+							+
+						</Button>
+					</ButtonGroup>
 				</div>
 			</div>
 			<div
@@ -236,7 +238,7 @@
 					style:font-style={previewFontSettings.fontStyle}
 					style:font-variation-settings={previewFontSettings.previewFontSettings}
 				>
-					{SAMPLE_TEXT.concat(" ").repeat(10)}
+					{SAMPLE_TEXT.concat(" ").repeat((position + 1) * 4)}
 				</div>
 			</div>
 		</div>
@@ -375,5 +377,37 @@
 
 		<!-- Credit -->
 		<a href="https://www.daybreak.studio/writing/adaline-typography">Daybreak Studio</a>
+	</div>
+</div>
+
+<!-- =============================================================================
+     Real Layout Test: Header + Body with baseline grid
+     ============================================================================= -->
+<div class="relative m-5 mt-16 grid grid-cols-[1fr_2fr] gap-baseline border-t border-black pt-8">
+	<!-- Baseline grid overlay -->
+	<div
+		class="pointer-events-none absolute inset-0 pt-8"
+		style:background-image="repeating-linear-gradient(
+			to bottom,
+			transparent,
+			transparent calc(var(--spacing-baseline) - 1px),
+			rgba(0, 0, 0, 0.1) calc(var(--spacing-baseline) - 1px),
+			rgba(0, 0, 0, 0.1) var(--spacing-baseline)
+		)"
+	></div>
+
+	<!-- Left: Header -->
+	<div>
+		<h2 class="font-sans type-lg">A new approach to typography</h2>
+	</div>
+
+	<!-- Right: Body text -->
+	<div>
+		<p class="font-sans type-base">
+			Typography serves language, not the convenience of a system. The strongest type systems are
+			specific, opinionated, and crafted with care for the context they serve. For many designers,
+			typography is a first love. In the pages of design books and type manuals, the environment
+			feels steady. Columns, baselines, and margins hold firm.
+		</p>
 	</div>
 </div>

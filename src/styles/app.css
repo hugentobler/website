@@ -5,7 +5,7 @@
 @import './colors.css';
 
 @import './fonts.css';
-@import './type-system.css';
+@import './typography.css';
 @import './type-helpers.css';
 @import './type-mono.css';
 @import './type-uni.css';
@@ -25,6 +25,9 @@
 }
 
 @theme {
+  /* baseline grid unit for vertical rhythm */
+  --spacing-baseline: 96px;
+
   /* animation utilities */
   --animate-fade-in: fade-in 300ms ease;
   --animate-underline: underline 100ms ease-out;

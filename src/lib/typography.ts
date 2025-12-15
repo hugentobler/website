@@ -36,8 +36,8 @@ export const TYPE_SCALES: Record<FontId, Record<Size, ScaleLevel>> = {
 		lg: { fontSize: 36, lineHeight: 48 },
 		md: { fontSize: 24, lineHeight: 32 },
 		base: { fontSize: 18, lineHeight: 24 },
-		sm: { fontSize: 18, lineHeight: 18 },
-		xs: { fontSize: 12, lineHeight: 12 },
+		sm: { fontSize: 16, lineHeight: 19 },
+		xs: { fontSize: 14, lineHeight: 16 },
 	},
 	mono: {
 		lg: { fontSize: 44, lineHeight: 66 },
