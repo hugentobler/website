@@ -25,8 +25,8 @@
 }
 
 @theme {
-  /* baseline grid unit for vertical rhythm */
-  --spacing-baseline: 96px;
+  /* baseline spacing = --baseline from typography.css (base.lineHeight) */
+  --spacing-baseline: var(--baseline);
 
   /* animation utilities */
   --animate-fade-in: fade-in 300ms ease;

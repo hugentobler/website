@@ -8,7 +8,7 @@
 		Slider,
 		ToggleGroup,
 	} from "$lib/components/ui";
-	import { BASELINE, FONTS, type FontId, type Size, TYPE_SCALES } from "$lib/typography";
+	import { FONTS, getBaseline, type FontId, type Size, TYPE_SCALES } from "$lib/typography";
 	import {
 		BER_SLANT_RANGE,
 		BER_WEIGHT_RANGE,
@@ -38,14 +38,11 @@
 	const DEFAULT_BER_SLANT = BER_SLANT_RANGE.max;
 
 	// =============================================================================
-	// State - All preview settings (nothing exports, just for testing)
+	// State
 	// =============================================================================
 
 	let settings = $state({
-		// Type scale settings
-		baseline: BASELINE,
 		typeScales: structuredClone(TYPE_SCALES),
-		// Active font
 		activeFont: "sans" as FontId,
 		// Univers variation controls
 		uniStretchIdx: DEFAULT_UNI_STRETCH_IDX,
@@ -61,7 +58,10 @@
 	// Derived state
 	// =============================================================================
 
-	// Active Univers stretch value (clamped to valid range)
+	// Baseline = base.lineHeight (derived from active font)
+	const baseline = $derived(settings.typeScales[settings.activeFont].base.lineHeight);
+
+	// Active Univers stretch value
 	const currentStretch = $derived(
 		UNI_STRETCH[Math.max(0, Math.min(settings.uniStretchIdx, UNI_STRETCH.length - 1))]
 	);
@@ -77,16 +77,28 @@
 					fontStretch: currentStretch,
 					fontWeight: settings.uniWeight,
 					fontStyle: settings.uniItalic ? "italic" : "normal",
-					previewFontSettings: undefined,
+					fontVariationSettings: undefined,
 				}
 			: {
 					fontFamily: FONTS.mono,
 					fontStretch: undefined,
 					fontWeight: undefined,
 					fontStyle: undefined,
-					previewFontSettings: `"wdth" ${settings.berWidth}, "wght" ${settings.berWeight}, "slnt" ${settings.berSlant}`,
+					fontVariationSettings: `"wdth" ${settings.berWidth}, "wght" ${settings.berWeight}, "slnt" ${settings.berSlant}`,
 				}
 	);
+
+	// =============================================================================
+	// Helpers
+	// =============================================================================
+
+	/** Format baseline multiple (e.g., "2×" or "0.79×") */
+	function formatMultiple(lineHeight: number): string {
+		const multiple = lineHeight / baseline;
+		if (multiple === 1) return "1× (baseline)";
+		if (Number.isInteger(multiple)) return `${multiple}×`;
+		return `${multiple.toFixed(2)}×`;
+	}
 
 	// =============================================================================
 	// Effects
@@ -111,64 +123,66 @@
 		field: "fontSize" | "lineHeight",
 		value: number
 	) {
-		console.log(`[updateTypeScale] font=${font}, size=${size}, field=${field}, value=${value}`);
-		console.log(`[updateTypeScale] Before:`, settings.typeScales[font][size][field]);
-
-		// Direct mutation should work in Svelte 5 with $state
 		settings.typeScales[font][size][field] = value;
-
-		console.log(`[updateTypeScale] After:`, settings.typeScales[font][size][field]);
-		console.log(
-			`[updateTypeScale] Full state:`,
-			JSON.stringify(settings.typeScales[font][size], null, 2)
-		);
 	}
 </script>
 
-<!-- Responsive grid: 1 col mobile, 2 tablet, 3 desktop -->
-<!-- Each set is: baseline spacer + 1fr typography column -->
+<!-- =============================================================================
+     Type Scale Preview Grid
+     ============================================================================= -->
 <div
 	class="m-5 grid auto-rows-min grid-cols-[var(--baseline)_1fr] divide-x divide-black *:border-black md:grid-cols-[repeat(2,var(--baseline)_1fr)] xl:grid-cols-[repeat(3,var(--baseline)_1fr)] [&>*:last-child]:border-r"
-	style:--baseline="{settings.baseline}px"
+	style:--baseline="{baseline}px"
 >
 	{#each sizes as size}
 		{@const scale = settings.typeScales[settings.activeFont][size]}
 		{@const position = sizes.indexOf(size)}
+		{@const isBase = size === "base"}
 
-		<!-- Spacer column -->
+		<!-- Spacer column (baseline width) -->
 		<div>
 			<div class="h-40"></div>
 			<div
 				class="divide-y divide-black *:border-dotted [&>*:first-child]:border-t [&>*:last-child]:border-b"
 			>
 				{#each Array(PREVIEW_ROWS) as _}
-					<div style:height="{BASELINE}px"></div>
+					<div style:height="{baseline}px"></div>
 				{/each}
 			</div>
 		</div>
 
 		<!-- Typography column -->
 		<div class="flex flex-col">
-			<div class="flex h-40 flex-col p-4">
-				<p class="text-sm font-medium uppercase">{size}</p>
+			<!-- Header with size info -->
+			<div class="flex h-40 flex-col p-4" class:bg-amber-50={isBase}>
+				<div class="flex items-center gap-2">
+					<p class="text-sm font-medium uppercase">{size}</p>
+					{#if isBase}
+						<span class="rounded bg-amber-200 px-1.5 py-0.5 text-xs">anchor</span>
+					{/if}
+				</div>
 				<p class="text-xs text-gray-600">{FONTS[settings.activeFont]}</p>
+
+				<!-- Metrics display -->
 				<div class="mt-1 text-xs">
 					<div class="font-mono">
 						<span class="text-gray-500">px:</span>
 						{scale.fontSize} / {scale.lineHeight}
+						<span class="text-gray-400">({formatMultiple(scale.lineHeight)})</span>
 					</div>
 					<div class="font-mono text-gray-600">
 						<span class="text-gray-400">rem:</span>
 						{pxToRem(scale.fontSize).toFixed(3)} / {(scale.lineHeight / scale.fontSize).toFixed(3)}
 					</div>
 				</div>
+
+				<!-- Controls -->
 				<div class="mt-auto flex gap-2">
-					<!-- Font Size Control -->
+					<!-- Font Size -->
 					<ButtonGroup>
 						<Button
 							class="size-6 text-lg font-light"
-							onclick={() =>
-								updateTypeScale(settings.activeFont, size, "fontSize", scale.fontSize - 1)}
+							onclick={() => updateTypeScale(settings.activeFont, size, "fontSize", scale.fontSize - 1)}
 							aria-label="Decrease font size"
 						>
 							−
@@ -178,24 +192,17 @@
 						</Output>
 						<Button
 							class="size-6 text-lg font-light"
-							onclick={() =>
-								updateTypeScale(settings.activeFont, size, "fontSize", scale.fontSize + 1)}
+							onclick={() => updateTypeScale(settings.activeFont, size, "fontSize", scale.fontSize + 1)}
 							aria-label="Increase font size"
 						>
 							+
 						</Button>
 					</ButtonGroup>
-					<!-- Line Height Control -->
+					<!-- Line Height -->
 					<ButtonGroup>
 						<Button
 							class="size-6 text-lg font-light"
-							onclick={() =>
-								updateTypeScale(
-									settings.activeFont,
-									size,
-									"lineHeight",
-									Math.max(1, scale.lineHeight - 1)
-								)}
+							onclick={() => updateTypeScale(settings.activeFont, size, "lineHeight", Math.max(1, scale.lineHeight - 1))}
 							aria-label="Decrease line height"
 						>
 							−
@@ -205,8 +212,7 @@
 						</Output>
 						<Button
 							class="size-6 text-lg font-light"
-							onclick={() =>
-								updateTypeScale(settings.activeFont, size, "lineHeight", scale.lineHeight + 1)}
+							onclick={() => updateTypeScale(settings.activeFont, size, "lineHeight", scale.lineHeight + 1)}
 							aria-label="Increase line height"
 						>
 							+
@@ -214,15 +220,17 @@
 					</ButtonGroup>
 				</div>
 			</div>
+
+			<!-- Text preview area -->
 			<div
 				class="relative divide-y divide-black *:border-dotted [&>*:first-child]:border-t [&>*:last-child]:border-b"
 			>
 				{#each Array(PREVIEW_ROWS) as _}
-					<div style:height="{BASELINE}px" class="relative">
-						<!-- Grid lines (behind) -->
+					<div style:height="{baseline}px" class="relative">
+						<!-- Sub-grid lines -->
 						<div class="absolute inset-0 left-4 divide-y divide-black *:border-dashed">
 							{#each Array(position + 2) as _}
-								<div style:height="{BASELINE / (position + 2)}px"></div>
+								<div style:height="{baseline / (position + 2)}px"></div>
 							{/each}
 						</div>
 					</div>
@@ -236,7 +244,7 @@
 					style:font-stretch={previewFontSettings.fontStretch}
 					style:font-weight={previewFontSettings.fontWeight}
 					style:font-style={previewFontSettings.fontStyle}
-					style:font-variation-settings={previewFontSettings.previewFontSettings}
+					style:font-variation-settings={previewFontSettings.fontVariationSettings}
 				>
 					{SAMPLE_TEXT.concat(" ").repeat((position + 1) * 4)}
 				</div>
@@ -244,45 +252,27 @@
 		</div>
 	{/each}
 
-	<!-- Font Controls (6th item) -->
-	<!-- Spacer column -->
+	<!-- Controls Panel (6th grid item) -->
 	<div>
 		<div class="h-40"></div>
 		<div
 			class="divide-y divide-black *:border-dotted [&>*:first-child]:border-t [&>*:last-child]:border-b"
 		>
 			{#each Array(PREVIEW_ROWS) as _}
-				<div style:height="{BASELINE}px"></div>
+				<div style:height="{baseline}px"></div>
 			{/each}
 		</div>
 	</div>
 
-	<!-- Controls column -->
 	<div class="flex flex-col gap-4 border-y border-black p-4">
 		<p class="text-sm font-medium uppercase">Controls</p>
 
-		<!-- Baseline Grid Control -->
-		<div class="flex flex-col gap-2">
-			<p class="text-xs font-medium">Baseline Grid</p>
-			<ButtonGroup>
-				<Button
-					class="size-6 text-lg font-light"
-					onclick={() => (settings.baseline = Math.max(6, settings.baseline - 6))}
-					aria-label="Decrease baseline"
-				>
-					−
-				</Button>
-				<Output class="h-6 px-2">
-					<AnimatedNumber class="text-sm" value={settings.baseline} />
-				</Output>
-				<Button
-					class="size-6 text-lg font-light"
-					onclick={() => (settings.baseline = Math.min(144, settings.baseline + 6))}
-					aria-label="Increase baseline"
-				>
-					+
-				</Button>
-			</ButtonGroup>
+		<!-- Baseline display (derived, read-only) -->
+		<div class="flex flex-col gap-1">
+			<p class="text-xs font-medium">Baseline (= base.lineHeight)</p>
+			<div class="font-mono text-sm">
+				{baseline}px
+			</div>
 		</div>
 
 		<!-- Font Toggle -->
@@ -293,7 +283,7 @@
 			/>
 		</div>
 
-		<!-- Sliders -->
+		<!-- Font Variation Sliders -->
 		<div class="flex-1">
 			{#if settings.activeFont === "sans"}
 				<div class="flex h-full gap-4">
@@ -376,23 +366,28 @@
 		</div>
 
 		<!-- Credit -->
-		<a href="https://www.daybreak.studio/writing/adaline-typography">Daybreak Studio</a>
+		<a href="https://www.daybreak.studio/writing/adaline-typography" class="text-xs text-gray-500">
+			Inspired by Daybreak Studio
+		</a>
 	</div>
 </div>
 
 <!-- =============================================================================
-     Real Layout Test: Header + Body with baseline grid
+     Real Layout Test
      ============================================================================= -->
-<div class="relative m-5 mt-16 grid grid-cols-[1fr_2fr] gap-baseline border-t border-black pt-8">
+<div
+	class="relative m-5 mt-16 grid grid-cols-[1fr_2fr] border-t border-black pt-8"
+	style:gap="{baseline}px"
+>
 	<!-- Baseline grid overlay -->
 	<div
 		class="pointer-events-none absolute inset-0 pt-8"
 		style:background-image="repeating-linear-gradient(
 			to bottom,
 			transparent,
-			transparent calc(var(--spacing-baseline) - 1px),
-			rgba(0, 0, 0, 0.1) calc(var(--spacing-baseline) - 1px),
-			rgba(0, 0, 0, 0.1) var(--spacing-baseline)
+			transparent {baseline - 1}px,
+			rgba(0, 0, 0, 0.1) {baseline - 1}px,
+			rgba(0, 0, 0, 0.1) {baseline}px
 		)"
 	></div>
 

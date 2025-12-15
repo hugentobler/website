@@ -1,16 +1,17 @@
 /* =============================================================================
-   AUTO-GENERATED FILE - Do not edit manually!
+   AUTO-GENERATED - Do not edit manually!
    Source: src/lib/typography.ts
-   Run: Changes to typography.ts will regenerate this file automatically
+   
+   Typography System (Bottom-Up):
+   - baseline = base.lineHeight = 24px
+   - All layout spacing uses baseline multiples
+   - Font-size and line-height are optically tuned per size
    ============================================================================= */
 
 @layer base {
 	:root {
-		/* Baseline grid unit */
-		--baseline: 96px;
-		
-		/* Vertical rhythm unit */
-		--type-rhythm: 6px;
+		/* Baseline grid unit = base.lineHeight */
+		--baseline: 24px;
 	}
 }
 
@@ -18,50 +19,58 @@
    Font utilities with type scale variables
    ============================================================================= */
 
-/* font-sans: sets font-family and defines type scale for Univers */
+/* font-sans: Univers type scale */
 @utility font-sans {
 	font-family: var(--font-sans);
 
-	/* Type scale tuned for Univers (font-size in rem, line-height unitless) */
+	/* lg: 36px / 48px (2× baseline) */
 	--type-lg: 2.25rem;
 	--leading-lg: 1.3333;
 
+	/* md: 24px / 32px (1.33× baseline) */
 	--type-md: 1.5rem;
 	--leading-md: 1.3333;
 
+	/* base: 18px / 24px (1× baseline) */
 	--type-base: 1.125rem;
 	--leading-base: 1.3333;
 
+	/* sm: 16px / 19px (0.79× baseline) */
 	--type-sm: 1rem;
 	--leading-sm: 1.1875;
 
+	/* xs: 14px / 16px (0.67× baseline) */
 	--type-xs: 0.875rem;
 	--leading-xs: 1.1429;
 }
 
-/* font-mono: sets font-family and defines type scale for Berkeley Mono */
+/* font-mono: Berkeley Mono type scale */
 @utility font-mono {
 	font-family: var(--font-mono);
 
-	/* Type scale tuned for Berkeley Mono (font-size in rem, line-height unitless) */
+	/* lg: 44px / 44px (2× baseline) */
 	--type-lg: 2.75rem;
-	--leading-lg: 1.5;
+	--leading-lg: 1;
 
+	/* md: 32px / 32px (1.45× baseline) */
 	--type-md: 2rem;
 	--leading-md: 1;
 
+	/* base: 22px / 22px (1× baseline) */
 	--type-base: 1.375rem;
 	--leading-base: 1;
 
+	/* sm: 16px / 16px (0.73× baseline) */
 	--type-sm: 1rem;
 	--leading-sm: 1;
 
+	/* xs: 11px / 11px (0.5× baseline) */
 	--type-xs: 0.6875rem;
 	--leading-xs: 1;
 }
 
 /* =============================================================================
-   Type size utilities (read from font-defined variables)
+   Type size utilities
    ============================================================================= */
 
 @utility type-lg {
@@ -90,7 +99,7 @@
 }
 
 /* =============================================================================
-   Baseline grid overlay utilities
+   Baseline grid overlay (for debugging)
    ============================================================================= */
 
 @utility baseline-grid {
@@ -99,6 +108,6 @@
 		rgba(127 127 127 / 0.25) 1px,
 		transparent 1px
 	);
-	background-size: 100% var(--type-rhythm);
+	background-size: 100% var(--baseline);
 	background-position: 0 0;
 }
