@@ -11,9 +11,13 @@
  *    (baseline, cap-height) align to the grid
  * 
  * Usage:
- *   - Layout spacing: use baseline multiples (h-baseline, gap-baseline, etc.)
+ *   - Layout spacing: use baseline multiples (h-baseline, gap-baseline, p-baseline, etc.)
  *   - Typography: use type-* utilities (type-lg, type-base, etc.)
  *   - Font family: combine with font-sans or font-mono
+ * 
+ * CSS Variables:
+ *   - --type-baseline: Global baseline value (compiled, for Tailwind utilities)
+ *   - --baseline: Local/stateful baseline (for dynamic preview components)
  * 
  * Reference: Daybreak Studio's Atlas type system for Adaline
  */
@@ -45,19 +49,23 @@ export const FONTS = {
  * The `base` size anchors the system:
  * - Its line-height becomes the baseline grid unit
  * - Other sizes are tuned for visual balance, not mathematical ratios
+ * 
+ * IMPORTANT: All fonts should share the same base.lineHeight so they
+ * align to a unified baseline grid. Sans is the primary font.
  */
 export const TYPE_SCALES: Record<FontId, Record<Size, ScaleLevel>> = {
 	sans: {
 		lg: { fontSize: 36, lineHeight: 48 },
 		md: { fontSize: 24, lineHeight: 32 },
-		base: { fontSize: 18, lineHeight: 24 }, // ← baseline = 24px
+		base: { fontSize: 18, lineHeight: 24 }, // ← baseline = 24px (primary)
 		sm: { fontSize: 16, lineHeight: 19 },
 		xs: { fontSize: 14, lineHeight: 16 },
 	},
 	mono: {
+		// TODO: Tune mono to use base.lineHeight = 24px (same as sans)
 		lg: { fontSize: 44, lineHeight: 44 },
 		md: { fontSize: 32, lineHeight: 32 },
-		base: { fontSize: 22, lineHeight: 22 }, // ← baseline = 22px
+		base: { fontSize: 22, lineHeight: 22 },
 		sm: { fontSize: 16, lineHeight: 16 },
 		xs: { fontSize: 11, lineHeight: 11 },
 	},

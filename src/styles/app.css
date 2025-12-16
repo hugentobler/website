@@ -25,8 +25,8 @@
 }
 
 @theme {
-  /* baseline spacing = --baseline from typography.css (base.lineHeight) */
-  --spacing-baseline: var(--baseline);
+  /* baseline spacing utility (uses --type-baseline from typography.css) */
+  --spacing-baseline: var(--type-baseline);
 
   /* animation utilities */
   --animate-fade-in: fade-in 300ms ease;

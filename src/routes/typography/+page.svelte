@@ -8,7 +8,7 @@
 		Slider,
 		ToggleGroup,
 	} from "$lib/components/ui";
-	import { FONTS, getBaseline, type FontId, type Size, TYPE_SCALES } from "$lib/typography";
+	import { FONTS, type FontId, getBaseline, type Size, TYPE_SCALES } from "$lib/typography";
 	import {
 		BER_SLANT_RANGE,
 		BER_WEIGHT_RANGE,
@@ -131,7 +131,7 @@
      Type Scale Preview Grid
      ============================================================================= -->
 <div
-	class="m-5 grid auto-rows-min grid-cols-[var(--baseline)_1fr] divide-x divide-black *:border-black md:grid-cols-[repeat(2,var(--baseline)_1fr)] xl:grid-cols-[repeat(3,var(--baseline)_1fr)] [&>*:last-child]:border-r"
+	class="m-5 grid auto-rows-min grid-cols-[var(--type-baseline)_1fr] divide-x divide-black *:border-black md:grid-cols-[repeat(2,var(--type-baseline)_1fr)] xl:grid-cols-[repeat(3,var(--type-baseline)_1fr)] [&>*:last-child]:border-r"
 	style:--baseline="{baseline}px"
 >
 	{#each sizes as size}
@@ -146,7 +146,7 @@
 				class="divide-y divide-black *:border-dotted [&>*:first-child]:border-t [&>*:last-child]:border-b"
 			>
 				{#each Array(PREVIEW_ROWS) as _}
-					<div style:height="{baseline}px"></div>
+					<div style:height="calc(var(--baseline) * 4)"></div>
 				{/each}
 			</div>
 		</div>
@@ -182,7 +182,8 @@
 					<ButtonGroup>
 						<Button
 							class="size-6 text-lg font-light"
-							onclick={() => updateTypeScale(settings.activeFont, size, "fontSize", scale.fontSize - 1)}
+							onclick={() =>
+								updateTypeScale(settings.activeFont, size, "fontSize", scale.fontSize - 1)}
 							aria-label="Decrease font size"
 						>
 							−
@@ -192,7 +193,8 @@
 						</Output>
 						<Button
 							class="size-6 text-lg font-light"
-							onclick={() => updateTypeScale(settings.activeFont, size, "fontSize", scale.fontSize + 1)}
+							onclick={() =>
+								updateTypeScale(settings.activeFont, size, "fontSize", scale.fontSize + 1)}
 							aria-label="Increase font size"
 						>
 							+
@@ -202,7 +204,13 @@
 					<ButtonGroup>
 						<Button
 							class="size-6 text-lg font-light"
-							onclick={() => updateTypeScale(settings.activeFont, size, "lineHeight", Math.max(1, scale.lineHeight - 1))}
+							onclick={() =>
+								updateTypeScale(
+									settings.activeFont,
+									size,
+									"lineHeight",
+									Math.max(1, scale.lineHeight - 1)
+								)}
 							aria-label="Decrease line height"
 						>
 							−
@@ -212,7 +220,8 @@
 						</Output>
 						<Button
 							class="size-6 text-lg font-light"
-							onclick={() => updateTypeScale(settings.activeFont, size, "lineHeight", scale.lineHeight + 1)}
+							onclick={() =>
+								updateTypeScale(settings.activeFont, size, "lineHeight", scale.lineHeight + 1)}
 							aria-label="Increase line height"
 						>
 							+
@@ -226,11 +235,11 @@
 				class="relative divide-y divide-black *:border-dotted [&>*:first-child]:border-t [&>*:last-child]:border-b"
 			>
 				{#each Array(PREVIEW_ROWS) as _}
-					<div style:height="{baseline}px" class="relative">
+					<div style:height="calc(var(--baseline) * 4)" class="relative">
 						<!-- Sub-grid lines -->
 						<div class="absolute inset-0 left-4 divide-y divide-black *:border-dashed">
 							{#each Array(position + 2) as _}
-								<div style:height="{baseline / (position + 2)}px"></div>
+								<div style:height={`calc(var(--baseline) * 4 / ${position + 2})`}></div>
 							{/each}
 						</div>
 					</div>
@@ -259,7 +268,7 @@
 			class="divide-y divide-black *:border-dotted [&>*:first-child]:border-t [&>*:last-child]:border-b"
 		>
 			{#each Array(PREVIEW_ROWS) as _}
-				<div style:height="{baseline}px"></div>
+				<div style:height="calc(var(--baseline) * 4)"></div>
 			{/each}
 		</div>
 	</div>
@@ -375,30 +384,22 @@
 <!-- =============================================================================
      Real Layout Test
      ============================================================================= -->
-<div
-	class="relative m-5 mt-16 grid grid-cols-[1fr_2fr] border-t border-black pt-8"
-	style:gap="{baseline}px"
->
+<div class="gap-baseline relative m-5 mt-16 grid grid-cols-[1fr_2fr] border-t border-black pt-8">
 	<!-- Baseline grid overlay -->
 	<div
 		class="pointer-events-none absolute inset-0 pt-8"
-		style:background-image="repeating-linear-gradient(
-			to bottom,
-			transparent,
-			transparent {baseline - 1}px,
-			rgba(0, 0, 0, 0.1) {baseline - 1}px,
-			rgba(0, 0, 0, 0.1) {baseline}px
-		)"
+		style:background-image="repeating-linear-gradient( to bottom, transparent, transparent {baseline -
+			1}px, rgba(0, 0, 0, 0.1) {baseline - 1}px, rgba(0, 0, 0, 0.1) {baseline}px )"
 	></div>
 
 	<!-- Left: Header -->
 	<div>
-		<h2 class="font-sans type-lg">A new approach to typography</h2>
+		<h2 class="type-lg font-sans">A new approach to typography</h2>
 	</div>
 
 	<!-- Right: Body text -->
 	<div>
-		<p class="font-sans type-base">
+		<p class="type-base font-sans">
 			Typography serves language, not the convenience of a system. The strongest type systems are
 			specific, opinionated, and crafted with care for the context they serve. For many designers,
 			typography is a first love. In the pages of design books and type manuals, the environment

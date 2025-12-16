@@ -1,12 +1,13 @@
 /**
  * Vite plugin to generate typography.css from typography.ts
- * 
+ *
  * Watches for changes and regenerates CSS with HMR support.
  * Baseline is derived from base.lineHeight (bottom-up approach).
  */
-import type { Plugin, ViteDevServer } from "vite";
+
 import fs from "node:fs";
 import path from "node:path";
+import type { Plugin, ViteDevServer } from "vite";
 
 const TYPOGRAPHY_SOURCE = "src/lib/typography.ts";
 const TYPOGRAPHY_OUTPUT = "src/styles/typography.css";
@@ -26,13 +27,11 @@ async function loadTypographyConfig(): Promise<{
 	const content = await fs.promises.readFile(absolutePath, "utf-8");
 
 	// Extract TYPE_SCALES object
-	const typeScalesMatch = content.match(
-		/export const TYPE_SCALES[^=]*=\s*(\{[\s\S]*?\n\};)/
-	);
+	const typeScalesMatch = content.match(/export const TYPE_SCALES[^=]*=\s*(\{[\s\S]*?\n\};)/);
 	if (!typeScalesMatch) throw new Error("Could not find TYPE_SCALES in typography.ts");
 
 	// Parse the object (safe because we control the source)
-	let objStr = typeScalesMatch[1].replace(/\};$/, "}");
+	const objStr = typeScalesMatch[1].replace(/\};$/, "}");
 	const TYPE_SCALES = new Function(`return ${objStr}`)() as Record<string, TypeScale>;
 
 	return { TYPE_SCALES };
@@ -40,30 +39,32 @@ async function loadTypographyConfig(): Promise<{
 
 /**
  * Generate CSS from typography config
- * 
+ *
  * Baseline is derived from each font's base.lineHeight
  */
 function generateCSS(config: Awaited<ReturnType<typeof loadTypographyConfig>>): string {
 	const { TYPE_SCALES } = config;
 	const sizes = Object.keys(TYPE_SCALES.sans);
-	
+
 	// Baseline = base.lineHeight (using sans as the primary/default)
-	const baseline = TYPE_SCALES.sans.base.lineHeight;
+	const baselinePx = TYPE_SCALES.sans.base.lineHeight;
+	const baselineRem = pxToRem(baselinePx);
 
 	const css = `/* =============================================================================
    AUTO-GENERATED - Do not edit manually!
    Source: ${TYPOGRAPHY_SOURCE}
-   
+
    Typography System (Bottom-Up):
-   - baseline = base.lineHeight = ${baseline}px
+   - baseline = base.lineHeight = ${baselinePx}px (${baselineRem}rem)
    - All layout spacing uses baseline multiples
    - Font-size and line-height are optically tuned per size
+   - Using rem so spacing scales with user font preferences
    ============================================================================= */
 
 @layer base {
 	:root {
-		/* Baseline grid unit = base.lineHeight */
-		--baseline: ${baseline}px;
+		/* Global baseline for Tailwind utilities (e.g., h-baseline, gap-baseline) */
+		--type-baseline: ${baselineRem}rem;
 	}
 }
 
@@ -78,7 +79,7 @@ function generateCSS(config: Awaited<ReturnType<typeof loadTypographyConfig>>): 
 ${Object.entries(TYPE_SCALES.sans)
 	.map(([size, { fontSize, lineHeight }]) => {
 		const ratio = (lineHeight / fontSize).toFixed(4).replace(/\.?0+$/, "");
-		const multiple = (lineHeight / baseline).toFixed(2).replace(/\.?0+$/, "");
+		const multiple = (lineHeight / baselinePx).toFixed(2).replace(/\.?0+$/, "");
 		return `	/* ${size}: ${fontSize}px / ${lineHeight}px (${multiple}× baseline) */
 	--type-${size}: ${pxToRem(fontSize)}rem;
 	--leading-${size}: ${ratio};`;
@@ -111,7 +112,7 @@ ${sizes
 		(size) => `@utility type-${size} {
 	font-size: var(--type-${size});
 	line-height: var(--leading-${size});
-}`
+}`,
 	)
 	.join("\n\n")}
 
@@ -125,7 +126,7 @@ ${sizes
 		rgba(127 127 127 / 0.25) 1px,
 		transparent 1px
 	);
-	background-size: 100% var(--baseline);
+	background-size: 100% var(--type-baseline);
 	background-position: 0 0;
 }
 `;
