@@ -1,0 +1,48 @@
+{
+	"$schema": "https://biomejs.dev/schemas/2.3.11/schema.json",
+	"assist": {
+		"actions": {
+			"source": {
+				"organizeImports": "on",
+				"useSortedAttributes": "on",
+				"useSortedKeys": "on",
+				"useSortedProperties": "on"
+			}
+		}
+	},
+	"css": {
+		"formatter": { "enabled": true, "quoteStyle": "single" },
+		"parser": { "cssModules": true, "tailwindDirectives": true }
+	},
+	"files": {
+		"includes": ["**", "!node_modules", "!.svelte-kit"] // Ignore build folders
+	},
+	"formatter": {
+		"lineWidth": 100
+	},
+	"html": {
+		"experimentalFullSupportEnabled": true,
+		"formatter": { "enabled": true, "indentScriptAndStyle": true }
+	},
+	"json": {
+		"parser": { "allowComments": true, "allowTrailingCommas": true }
+	},
+	"overrides": [
+		{
+			"includes": ["**/*.svelte", "**/*.astro", "**/*.vue"],
+			"linter": {
+				"rules": {
+					"correctness": {
+						"noUnusedImports": "off",
+						"noUnusedVariables": "off"
+					},
+					"style": {
+						"useConst": "off",
+						"useImportType": "off"
+					}
+				}
+			}
+		}
+	], // Disable some rules for HTML-ish languages until fully supported
+	"root": true // Marks root of Biome project
+}
