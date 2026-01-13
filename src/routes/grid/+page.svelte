@@ -8,7 +8,9 @@
 
 <style>
     .page {
-		height: 100dvh;
+        display: grid;
+        grid-template-areas: "a a";
+        height: 100dvh;
 		padding: 4rem;
 		overflow: hidden;
 	}
