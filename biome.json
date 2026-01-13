@@ -4,9 +4,6 @@
 		"includes": ["**/*.{js,ts,svelte,json}", "!.svelte-kit"]
 	},
 	"formatter": {
-		"enabled": true,
-		"indentStyle": "tab",
-		"indentWidth": 2,
 		"lineWidth": 100
 	},
 	"overrides": [
