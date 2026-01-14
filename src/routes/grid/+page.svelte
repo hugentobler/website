@@ -1,9 +1,15 @@
+<!--
+1. Import Markdown SvelteComponent
+2. Based on number of rows, we are able to chunk text into a grid area, since there is a shared baseline height
+-->
+
+
 <script lang="ts">
-	import Bowtie, { frontmatter } from "$lib/markdown/bowtie.md";
+	import Markdown, { frontmatter } from "$lib/markdown/bowtie.md";
 </script>
 
 <div class="page">
-	<Bowtie />
+	<Markdown />
 </div>
 
 <style>

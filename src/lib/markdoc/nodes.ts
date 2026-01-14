@@ -7,16 +7,16 @@ const nodes: Config["nodes"] = {
 		render: "", // Disable default wrapping in <article>
 	},
 	image: {
-		render: "EnhancedImage",
 		attributes: {
 			...Markdoc.nodes.image.attributes,
 		},
+		render: "EnhancedImage",
 	},
 	link: {
-		render: "DecoratedLink",
 		attributes: {
 			...Markdoc.nodes.link.attributes,
 		},
+		render: "DecoratedLink",
 		transform(node, config) {
 			const attributes = node.transformAttributes(config);
 			const children = node.transformChildren(config);
