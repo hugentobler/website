@@ -1,9 +1,10 @@
-export type BlockType = "text" | "image";
+type BlockType = "text" | "image";
 
-export type MeasuredBlock = {
+type MeasuredBlock = {
   /**
    * Measurement output for a single top-level block element.
    * Grid spans are derived from DOM height and the baseline line height.
+   * This is the bridge between DOM sizing and layout placement.
    */
   id: string;
   html: string;
@@ -13,10 +14,10 @@ export type MeasuredBlock = {
   gridColSpan: number;
 };
 
-export type LayoutItem = {
+export type PlacedBlock = {
   /**
    * Final positioned element ready for rendering.
-   * This is the output of placement.
+   * This is the output of placement and the input for page rendering.
    */
   id: string;
   html: string;
@@ -27,7 +28,7 @@ export type LayoutItem = {
   gridRowSpan: number;
 };
 
-export type Config = {
+type Config = {
   pageGridCols: number;
   pageGridRows: number;
   baseLineHeightPx: number;
@@ -36,11 +37,11 @@ export type Config = {
 };
 
 export const DEFAULT_CONFIG: Config = {
-  baseLineHeightPx: 24,
-  imageColSpan: 6,
-  pageGridCols: 6,
-  pageGridRows: 9,
-  textColSpan: 6,
+	baseLineHeightPx: 24,
+	imageColSpan: 6,
+	pageGridCols: 6,
+	pageGridRows: 9,
+	textColSpan: 3,
 };
 
 export function measureBlocks(
@@ -68,18 +69,23 @@ export function measureBlocks(
 }
 
 export function paginateBlocks(
-  measuredBlocks: MeasuredBlock[],
-  config: Config = DEFAULT_CONFIG,
-): LayoutItem[][] {
-  const pages: LayoutItem[][] = [];
-  let currentPage: LayoutItem[] = [];
-  let grid = createGrid(config.pageGridRows, config.pageGridCols);
-  let flowBarrierRow = 0;
+	measuredBlocks: MeasuredBlock[],
+	config: Config = DEFAULT_CONFIG,
+): PlacedBlock[][] {
+	/**
+	 * Groups text blocks into column-sized chunks, then places them on pages.
+	 * This is a pure layout step and does not touch the DOM.
+	 */
+	const groupedBlocks = groupBlocksForColumns(measuredBlocks, config);
+	const pages: PlacedBlock[][] = [];
+	let currentPage: PlacedBlock[] = [];
+	let grid = createGrid(config.pageGridRows, config.pageGridCols);
+	let flowBarrierRow = 0;
 
-  for (const block of measuredBlocks) {
-    if (
-      block.gridRowSpan > config.pageGridRows ||
-      block.gridColSpan > config.pageGridCols
+	for (const block of groupedBlocks) {
+		if (
+			block.gridRowSpan > config.pageGridRows ||
+			block.gridColSpan > config.pageGridCols
     ) {
       continue;
     }
@@ -119,7 +125,68 @@ export function paginateBlocks(
     pages.push(currentPage);
   }
 
-  return pages;
+	return pages;
+}
+
+function groupBlocksForColumns(measuredBlocks: MeasuredBlock[], config: Config): MeasuredBlock[] {
+	const grouped: MeasuredBlock[] = [];
+	let currentText: {
+		html: string[];
+		gridRowSpan: number;
+		height: number;
+	} | null = null;
+	let groupIndex = 0;
+
+	const flushTextGroup = () => {
+		if (!currentText) return;
+		grouped.push({
+			gridColSpan: config.textColSpan,
+			gridRowSpan: currentText.gridRowSpan,
+			height: currentText.height,
+			html: currentText.html.join(""),
+			id: `text-group-${groupIndex}`,
+			type: "text",
+		});
+		groupIndex += 1;
+		currentText = null;
+	};
+
+	for (const block of measuredBlocks) {
+		if (block.type !== "text") {
+			flushTextGroup();
+			grouped.push({
+				...block,
+				gridColSpan: config.imageColSpan,
+			});
+			continue;
+		}
+
+		if (!currentText) {
+			currentText = {
+				html: [block.html],
+				gridRowSpan: block.gridRowSpan,
+				height: block.height,
+			};
+			continue;
+		}
+
+		if (currentText.gridRowSpan + block.gridRowSpan <= config.pageGridRows) {
+			currentText.html.push(block.html);
+			currentText.gridRowSpan += block.gridRowSpan;
+			currentText.height += block.height;
+			continue;
+		}
+
+		flushTextGroup();
+		currentText = {
+			html: [block.html],
+			gridRowSpan: block.gridRowSpan,
+			height: block.height,
+		};
+	}
+
+	flushTextGroup();
+	return grouped;
 }
 
 function createGrid(rows: number, columns: number): boolean[][] {
@@ -133,7 +200,7 @@ function findPlacement(
   block: MeasuredBlock,
   config: Config,
   minRowStart: number,
-): LayoutItem | null {
+): PlacedBlock | null {
   const maxRowStart = config.pageGridRows - block.gridRowSpan;
   const maxColStart = config.pageGridCols - block.gridColSpan;
 

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { Snippet } from "svelte";
 	import type { Attachment } from "svelte/attachments";
-	import type { LayoutItem } from "./typesetter";
+	import type { PlacedBlock } from "./typesetter";
 	import { DEFAULT_CONFIG, measureBlocks, paginateBlocks } from "./typesetter";
 
 	/**
@@ -18,7 +18,7 @@
 	// Page dimensions
 	let page = $state({ h: 0, w: 0 });
 	let didWarnMissingHeight = false;
-	let pages = $state<LayoutItem[][]>([]);
+	let pages = $state<PlacedBlock[][]>([]);
 	// Attach callback to root element, observe root dimensions.
 	const onRootResize = (entry: ResizeObserverEntry): void => {
 		const { width, height } = entry.contentRect;
@@ -37,8 +37,20 @@
 	$effect(() => {
 		if (!ghost) return;
 		if (page.w === 0 || page.h === 0) return;
-		const measured = measureBlocks(ghost);
-		pages = paginateBlocks(measured);
+		// Grid rows are derived from the container height and the baseline line height.
+		// This keeps the visual grid aligned with text metrics while filling the page.
+		const pageGridRows = Math.max(
+			1,
+			Math.floor(page.h / DEFAULT_CONFIG.baseLineHeightPx),
+		);
+		// Extend defaults with the computed row count for this container.
+		const gridConfig = {
+			...DEFAULT_CONFIG,
+			pageGridRows,
+		};
+		// Measure the ghost blocks, then paginate them into placed blocks per page.
+		const measured = measureBlocks(ghost, gridConfig);
+		pages = paginateBlocks(measured, gridConfig);
 	});
 </script>
 
