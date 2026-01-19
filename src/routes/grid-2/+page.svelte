@@ -7,7 +7,7 @@
 	<Markdown />
 {/snippet}
 
-<div style="padding: 4rem; height: 100dvh; width: 100%;">
+<div style="height: 100dvh; width: 100%;">
     <Typesetter>
     	{@render content()}
     </Typesetter>

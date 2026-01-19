@@ -1,252 +1,264 @@
-type BlockType = "text" | "image";
+export const BASELINE_PX = 20;
+const IMAGE_COL_SPAN = 6;
+export const TEXT_COL_SPAN = 2;
 
-type MeasuredBlock = {
-  /**
-   * Measurement output for a single top-level block element.
-   * Grid spans are derived from DOM height and the baseline line height.
-   * This is the bridge between DOM sizing and layout placement.
-   */
-  id: string;
-  html: string;
-  type: BlockType;
-  height: number;
-  gridRowSpan: number;
-  gridColSpan: number;
-};
+type NodeType = "text" | "image";
 
-export type PlacedBlock = {
-  /**
-   * Final positioned element ready for rendering.
-   * This is the output of placement and the input for page rendering.
-   */
-  id: string;
-  html: string;
-  type: BlockType;
-  gridColStart: number;
-  gridColSpan: number;
-  gridRowStart: number;
-  gridRowSpan: number;
-};
-
-type Config = {
-  pageGridCols: number;
-  pageGridRows: number;
-  baseLineHeightPx: number;
-  textColSpan: number;
-  imageColSpan: number;
-};
-
-export const DEFAULT_CONFIG: Config = {
-	baseLineHeightPx: 24,
-	imageColSpan: 6,
-	pageGridCols: 6,
-	pageGridRows: 9,
-	textColSpan: 3,
-};
-
-export function measureBlocks(
-  root: HTMLElement,
-  config: Config = DEFAULT_CONFIG,
-): MeasuredBlock[] {
-  /**
-   * Measures each top-level child and derives grid spans from height and baseline.
-   * Width is currently a fixed span based on block kind.
-   */
-  const blocks = Array.from(root.children) as HTMLElement[];
-  return blocks.map((block, index) => {
-    const height = block.getBoundingClientRect().height;
-    const lines = Math.max(1, Math.ceil(height / config.baseLineHeightPx));
-    const isImage = block.tagName === "FIGURE";
-    return {
-      gridColSpan: isImage ? config.imageColSpan : config.textColSpan,
-      gridRowSpan: lines,
-      height,
-      html: block.outerHTML,
-      id: `block-${index}`,
-      type: isImage ? "image" : "text",
-    };
-  });
-}
-
-export function paginateBlocks(
-	measuredBlocks: MeasuredBlock[],
-	config: Config = DEFAULT_CONFIG,
-): PlacedBlock[][] {
+type Node = {
 	/**
-	 * Groups text blocks into column-sized chunks, then places them on pages.
-	 * This is a pure layout step and does not touch the DOM.
+	 * Measurement output for a single top-level block element.
+	 * Grid spans are derived from DOM height and the baseline line height.
+	 * This is the bridge between DOM sizing and layout placement.
 	 */
-	const groupedBlocks = groupBlocksForColumns(measuredBlocks, config);
-	const pages: PlacedBlock[][] = [];
-	let currentPage: PlacedBlock[] = [];
-	let grid = createGrid(config.pageGridRows, config.pageGridCols);
-	let flowBarrierRow = 0;
+	id: string;
+	html: string;
+	type: NodeType;
+	heightPx: number;
+	gridRowSpan: number;
+	gridColSpan: number;
+};
 
-	for (const block of groupedBlocks) {
-		if (
-			block.gridRowSpan > config.pageGridRows ||
-			block.gridColSpan > config.pageGridCols
-    ) {
-      continue;
-    }
+export type PlacedNode = {
+	/**
+	 * Final positioned element ready for rendering.
+	 * This is the output of placement and the input for page rendering.
+	 */
+	id: string;
+	html: string;
+	type: NodeType;
+	gridColStart: number;
+	gridColSpan: number;
+	gridRowStart: number;
+	gridRowSpan: number;
+};
 
-    const placement = findPlacement(grid, block, config, flowBarrierRow);
-    if (!placement) {
-      if (currentPage.length > 0) {
-        pages.push(currentPage);
-      }
-      currentPage = [];
-      grid = createGrid(config.pageGridRows, config.pageGridCols);
-      flowBarrierRow = 0;
-      const nextPlacement = findPlacement(grid, block, config, flowBarrierRow);
-      if (!nextPlacement) {
-        continue;
-      }
-      currentPage.push(nextPlacement);
-      if (nextPlacement.type === "image") {
-        flowBarrierRow = Math.max(
-          flowBarrierRow,
-          nextPlacement.gridRowStart + nextPlacement.gridRowSpan - 1,
-        );
-      }
-      continue;
-    }
+const nodeIsImage = (node: HTMLElement): boolean => node.tagName === "FIGURE";
 
-    currentPage.push(placement);
-    if (placement.type === "image") {
-      flowBarrierRow = Math.max(
-        flowBarrierRow,
-        placement.gridRowStart + placement.gridRowSpan - 1,
-      );
-    }
-  }
+export const measureNodes = (
+	root: HTMLElement,
+	pageGridRowGapPx: number,
+	pageGridRowHeightPx: number,
+): Node[] => {
+	/**
+	 * Measures each top-level child and derives grid spans from the row rhythm.
+	 * Width is currently a fixed span based on block kind.
+	 */
+	const nodes = Array.from(root.children) as HTMLElement[];
+	return nodes.map((node, index) => {
+		const heightPx = node.getBoundingClientRect().height;
+		const rowSpan = Math.max(
+			1,
+			Math.ceil((heightPx + pageGridRowGapPx) / (pageGridRowHeightPx + pageGridRowGapPx)),
+		);
+		const isImage = nodeIsImage(node);
+		return {
+			gridColSpan: isImage ? IMAGE_COL_SPAN : TEXT_COL_SPAN,
+			gridRowSpan: rowSpan,
+			heightPx,
+			html: node.outerHTML,
+			id: `typesetter-${index}`,
+			type: isImage ? "image" : "text",
+		};
+	});
+};
 
-  if (currentPage.length > 0) {
-    pages.push(currentPage);
-  }
-
-	return pages;
-}
-
-function groupBlocksForColumns(measuredBlocks: MeasuredBlock[], config: Config): MeasuredBlock[] {
-	const grouped: MeasuredBlock[] = [];
-	let currentText: {
+export const groupNodes = (nodes: Node[], pageGridRows: number): Node[] => {
+	const grouped: Node[] = [];
+	// Accumulate consecutive text nodes into a single column group.
+	let textGroup: {
 		html: string[];
 		gridRowSpan: number;
-		height: number;
+		heightPx: number;
 	} | null = null;
 	let groupIndex = 0;
 
+	// Commit the current text group into the output list.
 	const flushTextGroup = () => {
-		if (!currentText) return;
+		if (!textGroup) return;
 		grouped.push({
-			gridColSpan: config.textColSpan,
-			gridRowSpan: currentText.gridRowSpan,
-			height: currentText.height,
-			html: currentText.html.join(""),
-			id: `text-group-${groupIndex}`,
+			gridColSpan: TEXT_COL_SPAN,
+			gridRowSpan: textGroup.gridRowSpan,
+			heightPx: textGroup.heightPx,
+			html: textGroup.html.join(""),
+			id: `typesetter-${groupIndex}`,
 			type: "text",
 		});
 		groupIndex += 1;
-		currentText = null;
+		textGroup = null;
 	};
 
-	for (const block of measuredBlocks) {
-		if (block.type !== "text") {
+	for (const node of nodes) {
+		// Non-text nodes break text flow and stand alone.
+		if (node.type !== "text") {
 			flushTextGroup();
-			grouped.push({
-				...block,
-				gridColSpan: config.imageColSpan,
-			});
+			grouped.push(node);
 			continue;
 		}
 
-		if (!currentText) {
-			currentText = {
-				html: [block.html],
-				gridRowSpan: block.gridRowSpan,
-				height: block.height,
+		// Start a new text group if none exists.
+		if (!textGroup) {
+			textGroup = {
+				gridRowSpan: node.gridRowSpan,
+				heightPx: node.heightPx,
+				html: [node.html],
 			};
 			continue;
 		}
 
-		if (currentText.gridRowSpan + block.gridRowSpan <= config.pageGridRows) {
-			currentText.html.push(block.html);
-			currentText.gridRowSpan += block.gridRowSpan;
-			currentText.height += block.height;
+		// Append to the current group if it fits in the column height.
+		if (textGroup.gridRowSpan + node.gridRowSpan <= pageGridRows) {
+			textGroup.html.push(node.html);
+			textGroup.gridRowSpan += node.gridRowSpan;
+			textGroup.heightPx += node.heightPx;
 			continue;
 		}
 
+		// Otherwise, flush and start a new group.
 		flushTextGroup();
-		currentText = {
-			html: [block.html],
-			gridRowSpan: block.gridRowSpan,
-			height: block.height,
+		textGroup = {
+			gridRowSpan: node.gridRowSpan,
+			heightPx: node.heightPx,
+			html: [node.html],
 		};
 	}
 
+	// Flush any remaining text group after the loop.
 	flushTextGroup();
 	return grouped;
+};
+
+export const placeNodesOnPages = (
+	nodes: Node[],
+	pageGridCols: number,
+	pageGridRows: number,
+): PlacedNode[][] => {
+	/**
+	 * Places already-grouped nodes onto pages using a page-level occupancy grid.
+	 * Returns pages of placed nodes ready for rendering.
+	 */
+	const pages: PlacedNode[][] = [];
+	let currentPage: PlacedNode[] = [];
+	let grid = createGrid(pageGridRows, pageGridCols);
+
+	// Finalize the current page and reset the page-level occupancy grid.
+	const pushPage = () => {
+		if (currentPage.length === 0) return;
+		pages.push(currentPage);
+		currentPage = [];
+		grid = createGrid(pageGridRows, pageGridCols);
+	};
+
+	const applyPlacement = (placement: PlacedNode) => {
+		// Track placements on the current page.
+		currentPage.push(placement);
+	};
+
+	for (const node of nodes) {
+		// Skip nodes that cannot fit the grid at all.
+		if (node.gridRowSpan > pageGridRows || node.gridColSpan > pageGridCols) {
+			continue;
+		}
+
+		// Try to place on the current page first.
+		let placement = placeNodeOnGrid(grid, node, pageGridCols, pageGridRows);
+		if (!placement) {
+			// Start a new page and retry placement once.
+			pushPage();
+			placement = placeNodeOnGrid(grid, node, pageGridCols, pageGridRows);
+			if (!placement) continue;
+		}
+
+		applyPlacement(placement);
+	}
+
+	// Flush the trailing page after all nodes are processed.
+	pushPage();
+	return pages;
+};
+
+/**
+ * Creates an empty page occupancy grid.
+ */
+const createGrid = (rows: number, columns: number): boolean[][] => {
+	return Array.from({ length: rows }, () => Array.from({ length: columns }, () => false));
+};
+
+/**
+ * Finds the first placement for a node and marks the grid when placed.
+ */
+const placeNodeOnGrid = (
+	grid: boolean[][],
+	node: Node,
+	pageGridCols: number,
+	pageGridRows: number,
+): PlacedNode | null => {
+	const maxRowStart = pageGridRows - node.gridRowSpan;
+	const maxColStart = pageGridCols - node.gridColSpan;
+	// Precompute row masks for fast overlap checks.
+	const rowMasks = getRowMasks(grid, pageGridCols);
+
+	for (let col = 0; col <= maxColStart; col += 1) {
+		// Scan rows within this column start.
+		for (let row = 0; row <= maxRowStart; row += 1) {
+			if (!fits(rowMasks, row, col, node)) continue;
+			mark(grid, rowMasks, row, col, node);
+			return {
+				gridColSpan: node.gridColSpan,
+				gridColStart: col + 1,
+				gridRowSpan: node.gridRowSpan,
+				gridRowStart: row + 1,
+				html: node.html,
+				id: node.id,
+				type: node.type,
+			};
+		}
+	}
+
+	return null;
+};
+
+/**
+ * Converts each occupancy row into a bitmask for quick intersection tests.
+ */
+function getRowMasks(grid: boolean[][], columns: number): number[] {
+	return grid.map((row) => {
+		let mask = 0;
+		for (let col = 0; col < columns; col += 1) {
+			if (row[col]) mask |= 1 << col;
+		}
+		return mask;
+	});
 }
 
-function createGrid(rows: number, columns: number): boolean[][] {
-  return Array.from({ length: rows }, () =>
-    Array.from({ length: columns }, () => false),
-  );
+/**
+ * Checks whether a node fits at the given row/col start.
+ */
+function fits(rowMasks: number[], rowStart: number, colStart: number, node: Node): boolean {
+	// Build a bitmask covering the node's column span.
+	const mask = ((1 << node.gridColSpan) - 1) << colStart;
+	for (let row = rowStart; row < rowStart + node.gridRowSpan; row += 1) {
+		if (rowMasks[row] & mask) return false;
+	}
+
+	return true;
 }
 
-function findPlacement(
-  grid: boolean[][],
-  block: MeasuredBlock,
-  config: Config,
-  minRowStart: number,
-): PlacedBlock | null {
-  const maxRowStart = config.pageGridRows - block.gridRowSpan;
-  const maxColStart = config.pageGridCols - block.gridColSpan;
-
-  for (let col = 0; col <= maxColStart; col += block.gridColSpan) {
-    for (let row = minRowStart; row <= maxRowStart; row += 1) {
-      if (!fits(grid, row, col, block)) continue;
-      mark(grid, row, col, block);
-      return {
-        gridColSpan: block.gridColSpan,
-        gridColStart: col + 1,
-        gridRowSpan: block.gridRowSpan,
-        gridRowStart: row + 1,
-        html: block.html,
-        id: block.id,
-        type: block.type,
-      };
-    }
-  }
-
-  return null;
-}
-
-function fits(
-  grid: boolean[][],
-  rowStart: number,
-  colStart: number,
-  block: MeasuredBlock,
-): boolean {
-  for (let row = rowStart; row < rowStart + block.gridRowSpan; row += 1) {
-    for (let col = colStart; col < colStart + block.gridColSpan; col += 1) {
-      if (grid[row]?.[col]) return false;
-    }
-  }
-
-  return true;
-}
-
+/**
+ * Marks occupied cells and updates row masks after placement.
+ */
 function mark(
-  grid: boolean[][],
-  rowStart: number,
-  colStart: number,
-  block: MeasuredBlock,
+	grid: boolean[][],
+	rowMasks: number[],
+	rowStart: number,
+	colStart: number,
+	node: Node,
 ): void {
-  for (let row = rowStart; row < rowStart + block.gridRowSpan; row += 1) {
-    for (let col = colStart; col < colStart + block.gridColSpan; col += 1) {
-      grid[row][col] = true;
-    }
-  }
+	// Update grid cells and row masks for the node span.
+	const mask = ((1 << node.gridColSpan) - 1) << colStart;
+	for (let row = rowStart; row < rowStart + node.gridRowSpan; row += 1) {
+		for (let col = colStart; col < colStart + node.gridColSpan; col += 1) {
+			grid[row][col] = true;
+		}
+		rowMasks[row] |= mask;
+	}
 }
