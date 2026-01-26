@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { Snippet } from "svelte";
 	import type { Attachment } from "svelte/attachments";
+	import { browser } from "$app/environment";
 	import type { PlacedNode } from "./typesetter";
 	import {
 		BASELINE_PX,
@@ -26,6 +27,7 @@
 	// Page dimensions
 	let page = $state({ h: 0, marginX: BASELINE_PX, marginY: BASELINE_PX, w: 0 });
 	let didWarnMissingHeight = false;
+	let didWarnServerRender = false;
 	// Attach callback to root element, observe root dimensions.
 	const onRootResize = (entry: ResizeObserverEntry): void => {
 		const { width, height } = entry.contentRect;
@@ -56,8 +58,10 @@
 		return {
 			cols,
 			h,
+			colWidth,
 			rows,
 			textSpanWidth,
+			w,
 		};
 	});
 
@@ -67,43 +71,31 @@
 	}>();
 
 	$effect(() => {
+		if (!browser) {
+			if (!didWarnServerRender) {
+				didWarnServerRender = true;
+				console.warn("Typesetter should be gated to client-only rendering.");
+			}
+			return;
+		}
 		if (!ghost) return;
 		if (page.w === 0 || page.h === 0) return;
 		// Measure node dimensions using ghost
-		const measuredNodes = measureNodes(ghost, pageGridRowGapPx, pageGridRowHeightPx);
-
-		const groupedNodes = groupNodes(measuredNodes, pageGrid.rows);
-
-		console.log("typesetter:page", {
-			gridCols: pageGrid.cols,
-			gridRows: pageGrid.rows,
-			pageH: page.h,
-			pageW: page.w,
-			rowGapPx: pageGridRowGapPx,
-			rowHeightPx: pageGridRowHeightPx,
-			textSpanWidth: pageGrid.textSpanWidth,
-		});
-		console.log(
-			"typesetter:nodes",
-			measuredNodes.slice(0, 5).map((node) => ({
-				gridRowSpan: node.gridRowSpan,
-				heightPx: node.heightPx,
-				id: node.id,
-				type: node.type,
-			})),
+		const measuredNodes = measureNodes(
+			ghost,
+			pageGridRowGapPx,
+			pageGridRowHeightPx,
+			pageGrid.cols,
+			pageGridColGapPx,
+			pageGrid.colWidth,
 		);
-		const totalRows = measuredNodes.reduce((sum, node) => sum + node.gridRowSpan, 0);
-		const avgHeight =
-			measuredNodes.reduce((sum, node) => sum + node.heightPx, 0) / measuredNodes.length;
-		console.log("typesetter:metrics", {
-			pageGridH: pageGrid.h,
-			rowHeightPx: pageGridRowHeightPx,
-			rowGapPx: pageGridRowGapPx,
-			totalRows,
-			avgHeight,
-			rowSpanSample: measuredNodes.slice(0, 8).map((node) => node.gridRowSpan),
-			heightSample: measuredNodes.slice(0, 8).map((node) => node.heightPx),
-		});
+
+		const groupedNodes = groupNodes(
+			measuredNodes,
+			pageGrid.rows,
+			pageGridRowGapPx,
+			pageGridRowHeightPx,
+		);
 
 		pages = placeNodesOnPages(groupedNodes, pageGrid.cols, pageGrid.rows);
 	});
@@ -119,6 +111,7 @@
 	style:--typesetter-page-marginX={`${page.marginX}px`}
 	style:--typesetter-page-marginY={`${page.marginY}px`}
 	style:--typesetter-page-grid-col-gap={`${pageGridColGapPx}px`}
+	style:--typesetter-page-grid-w={`${pageGrid.w}px`}
 >
 	<!-- Use page dimensions so measurement matches the visible output. -->
 	<div data-typesetter-ghost bind:this={ghost}>{@render children()}</div>
@@ -158,7 +151,7 @@
 		top: 0;
 		left: -9999px;
 		visibility: hidden;
-		width: var(--typesetter-baseline-w, auto);
+		width: var(--typesetter-page-grid-w, auto);
 		padding: 0;
 		line-height: var(--typesetter-baseline, 1.5rem); /* TODO: move line height into content?? */
 		pointer-events: none;
@@ -179,6 +172,7 @@
 		height: var(--typesetter-page-h, auto);
 		padding: var(--typesetter-page-marginY, 0px) var(--typesetter-page-marginX, 0px);
 		line-height: var(--typesetter-baseline, 1.5rem); /* TODO: move line height into content */
+        border: 1px solid black;
 	}
 
 	[data-typesetter-item] {
