@@ -107,7 +107,7 @@ export const measureNodes = (
       gridRowSpan: rowSpan,
       heightPx,
       html: node.outerHTML,
-      id: `typesetter-${index}`,
+			id: `typesetter-${index}`,
       type: isImage ? "image" : "text",
     };
   });
@@ -125,8 +125,76 @@ const getBlockRoot = (root: HTMLElement): HTMLElement => {
   return root;
 };
 
+export const placeNodesOnPages = (
+  nodes: Node[],
+  pageGridCols: number,
+  pageGridRows: number,
+): PlacedNode[][] => {
+  const pages: PlacedNode[][] = [];
+  let currentPage: PlacedNode[] = [];
+  let grid = createGrid(pageGridRows, pageGridCols);
+  let cursor = { col: 0, row: 0 };
+
+  const pushPage = () => {
+    if (currentPage.length === 0) return;
+    pages.push(currentPage);
+    currentPage = [];
+    grid = createGrid(pageGridRows, pageGridCols);
+    cursor = { col: 0, row: 0 };
+  };
+
+  for (const node of nodes) {
+    const normalizedNode = {
+      ...node,
+      gridColSpan: Math.min(node.gridColSpan, pageGridCols),
+    };
+    if (normalizedNode.gridRowSpan > pageGridRows) {
+      continue;
+    }
+
+    let placement = findFirstFitFrom(
+      grid,
+      normalizedNode,
+      cursor.row,
+      cursor.col,
+      pageGridCols,
+      pageGridRows,
+    );
+    if (!placement) {
+      pushPage();
+      placement = findFirstFitFrom(
+        grid,
+        normalizedNode,
+        0,
+        0,
+        pageGridCols,
+        pageGridRows,
+      );
+      if (!placement) continue;
+    }
+
+    currentPage.push(placement);
+
+    const nextCol = placement.gridColStart - 1 + placement.gridColSpan;
+    let nextRow = placement.gridRowStart - 1;
+    let nextCursorCol = nextCol;
+    if (nextCursorCol >= pageGridCols) {
+      nextRow += 1;
+      nextCursorCol = 0;
+    }
+    cursor = {
+      col: Math.min(nextCursorCol, pageGridCols - 1),
+      row: Math.min(nextRow, pageGridRows - 1),
+    };
+  }
+
+  pushPage();
+  return pages;
+};
+
 /**
- * Group consecutive text nodes into column-length chunks.
+ * Group consecutive text nodes into chunks that fit the page grid height.
+ * Images remain ungrouped to preserve strict source order placement.
  */
 export const groupNodes = (
   nodes: Node[],
@@ -135,21 +203,13 @@ export const groupNodes = (
   pageGridRowHeightPx: number,
 ): Node[] => {
   const grouped: Node[] = [];
-  // Accumulate consecutive text nodes into a single column group.
   let textGroup: {
     html: string[];
     gridRowSpan: number;
     heightPx: number;
   } | null = null;
-  let imageGroup: {
-    html: string[];
-    gridColSpan: number;
-    gridRowSpan: number;
-    heightPx: number;
-  } | null = null;
   let groupIndex = 0;
 
-  // Commit the current text group into the output list.
   const flushTextGroup = () => {
     if (!textGroup) return;
     grouped.push({
@@ -157,60 +217,21 @@ export const groupNodes = (
       gridRowSpan: textGroup.gridRowSpan,
       heightPx: textGroup.heightPx,
       html: textGroup.html.join(""),
-      id: `typesetter-group-${groupIndex}`,
+			id: `typesetter-group-${groupIndex}`,
       type: "text",
     });
     groupIndex += 1;
     textGroup = null;
   };
 
-  const flushImageGroup = () => {
-    if (!imageGroup) return;
-    grouped.push({
-      gridColSpan: imageGroup.gridColSpan,
-      gridRowSpan: imageGroup.gridRowSpan,
-      heightPx: imageGroup.heightPx,
-      html: imageGroup.html.join(""),
-      id: `typesetter-group-${groupIndex}`,
-      type: "image",
-    });
-    groupIndex += 1;
-    imageGroup = null;
-  };
-
   for (const node of nodes) {
-    if (node.type === "text") {
-      flushImageGroup();
-      // Start a new text group if none exists.
-      if (!textGroup) {
-        textGroup = {
-          gridRowSpan: rowSpanForHeight(
-            node.heightPx,
-            pageGridRowGapPx,
-            pageGridRowHeightPx,
-          ),
-          heightPx: node.heightPx,
-          html: [node.html],
-        };
-        continue;
-      }
-
-      // Append to the current group if it fits in the column height.
-      const nextHeightPx = textGroup.heightPx + node.heightPx;
-      const nextRowSpan = rowSpanForHeight(
-        nextHeightPx,
-        pageGridRowGapPx,
-        pageGridRowHeightPx,
-      );
-      if (nextRowSpan <= pageGridRows) {
-        textGroup.html.push(node.html);
-        textGroup.heightPx = nextHeightPx;
-        textGroup.gridRowSpan = nextRowSpan;
-        continue;
-      }
-
-      // Otherwise, flush and start a new group.
+    if (node.type === "image") {
       flushTextGroup();
+      grouped.push(node);
+      continue;
+    }
+
+    if (!textGroup) {
       textGroup = {
         gridRowSpan: rowSpanForHeight(
           node.heightPx,
@@ -223,161 +244,58 @@ export const groupNodes = (
       continue;
     }
 
-    if (node.type === "image") {
-      flushTextGroup();
-      // Start a new image group if none exists.
-      if (!imageGroup) {
-        imageGroup = {
-          gridColSpan: node.gridColSpan,
-          gridRowSpan: rowSpanForHeight(
-            node.heightPx,
-            pageGridRowGapPx,
-            pageGridRowHeightPx,
-          ),
-          heightPx: node.heightPx,
-          html: [node.html],
-        };
-        continue;
-      }
-
-      if (node.gridColSpan !== imageGroup.gridColSpan) {
-        flushImageGroup();
-        imageGroup = {
-          gridColSpan: node.gridColSpan,
-          gridRowSpan: rowSpanForHeight(
-            node.heightPx,
-            pageGridRowGapPx,
-            pageGridRowHeightPx,
-          ),
-          heightPx: node.heightPx,
-          html: [node.html],
-        };
-        continue;
-      }
-
-      const nextHeightPx = imageGroup.heightPx + node.heightPx;
-      const nextRowSpan = rowSpanForHeight(
-        nextHeightPx,
-        pageGridRowGapPx,
-        pageGridRowHeightPx,
-      );
-      if (nextRowSpan <= pageGridRows) {
-        imageGroup.html.push(node.html);
-        imageGroup.heightPx = nextHeightPx;
-        imageGroup.gridRowSpan = nextRowSpan;
-        continue;
-      }
-
-      flushImageGroup();
-      imageGroup = {
-        gridColSpan: node.gridColSpan,
-        gridRowSpan: rowSpanForHeight(
-          node.heightPx,
-          pageGridRowGapPx,
-          pageGridRowHeightPx,
-        ),
-        heightPx: node.heightPx,
-        html: [node.html],
-      };
-    }
-  }
-
-  // Flush any remaining text group after the loop.
-  flushTextGroup();
-  flushImageGroup();
-  return grouped;
-};
-
-/**
- * Place grouped nodes onto pages using an occupancy grid.
- */
-export const placeNodesOnPages = (
-  nodes: Node[],
-  pageGridCols: number,
-  pageGridRows: number,
-): PlacedNode[][] => {
-  const pages: PlacedNode[][] = [];
-  let currentPage: PlacedNode[] = [];
-  let grid = createGrid(pageGridRows, pageGridCols);
-
-  // Finalize the current page and reset the page-level occupancy grid.
-  const pushPage = () => {
-    if (currentPage.length === 0) return;
-    pages.push(currentPage);
-    currentPage = [];
-    grid = createGrid(pageGridRows, pageGridCols);
-  };
-
-  const applyPlacement = (placement: PlacedNode) => {
-    // Track placements on the current page.
-    currentPage.push(placement);
-  };
-
-  for (const node of nodes) {
-    const normalizedNode = {
-      ...node,
-      // Clamp to the available column count so oversized content uses the closest fit.
-      gridColSpan: Math.min(node.gridColSpan, pageGridCols),
-    };
-    // TODO: Surface skipped nodes (e.g., warn or collect) instead of dropping silently.
-    // Skip nodes that cannot fit the grid at all.
-    if (normalizedNode.gridRowSpan > pageGridRows) {
+    const nextHeightPx = textGroup.heightPx + node.heightPx;
+    const nextRowSpan = rowSpanForHeight(
+      nextHeightPx,
+      pageGridRowGapPx,
+      pageGridRowHeightPx,
+    );
+    if (nextRowSpan <= pageGridRows) {
+      textGroup.html.push(node.html);
+      textGroup.heightPx = nextHeightPx;
+      textGroup.gridRowSpan = nextRowSpan;
       continue;
     }
 
-    // Try to place on the current page first.
-    let placement = placeNodeOnGrid(
-      grid,
-      normalizedNode,
-      pageGridCols,
-      pageGridRows,
-    );
-    if (!placement) {
-      // Start a new page and retry placement once.
-      pushPage();
-      placement = placeNodeOnGrid(
-        grid,
-        normalizedNode,
-        pageGridCols,
-        pageGridRows,
-      );
-      if (!placement) continue;
-    }
-
-    applyPlacement(placement);
+    flushTextGroup();
+    textGroup = {
+      gridRowSpan: rowSpanForHeight(
+        node.heightPx,
+        pageGridRowGapPx,
+        pageGridRowHeightPx,
+      ),
+      heightPx: node.heightPx,
+      html: [node.html],
+    };
   }
 
-  // Flush the trailing page after all nodes are processed.
-  pushPage();
-  return pages;
+  flushTextGroup();
+  return grouped;
 };
 
-/**
- * Creates an empty page occupancy grid.
- */
 const createGrid = (rows: number, columns: number): boolean[][] => {
   return Array.from({ length: rows }, () =>
     Array.from({ length: columns }, () => false),
   );
 };
 
-/**
- * Finds the first placement for a node and marks the grid when placed.
- */
-const placeNodeOnGrid = (
+export const findFirstFitFrom = (
   grid: boolean[][],
   node: Node,
+  startRow: number,
+  startCol: number,
   pageGridCols: number,
   pageGridRows: number,
 ): PlacedNode | null => {
   const maxRowStart = pageGridRows - node.gridRowSpan;
   const maxColStart = pageGridCols - node.gridColSpan;
-  // Precompute row masks for fast overlap checks.
+  if (maxRowStart < 0 || maxColStart < 0) return null;
+  if (startRow > maxRowStart) return null;
   const rowMasks = getRowMasks(grid, pageGridCols);
 
-  for (let col = 0; col <= maxColStart; col += 1) {
-    // Scan rows within this column start.
-    for (let row = 0; row <= maxRowStart; row += 1) {
+  for (let row = startRow; row <= maxRowStart; row += 1) {
+    const initialCol = row === startRow ? startCol : 0;
+    for (let col = initialCol; col <= maxColStart; col += 1) {
       if (!fits(rowMasks, row, col, node)) continue;
       mark(grid, rowMasks, row, col, node);
       return {
@@ -395,9 +313,6 @@ const placeNodeOnGrid = (
   return null;
 };
 
-/**
- * Converts each occupancy row into a bitmask for quick intersection tests.
- */
 const getRowMasks = (grid: boolean[][], columns: number): number[] => {
   return grid.map((row) => {
     let mask = 0;
@@ -408,16 +323,12 @@ const getRowMasks = (grid: boolean[][], columns: number): number[] => {
   });
 };
 
-/**
- * Checks whether a node fits at the given row/col start.
- */
 const fits = (
   rowMasks: number[],
   rowStart: number,
   colStart: number,
   node: Node,
 ): boolean => {
-  // Build a bitmask covering the node's column span.
   const mask = ((1 << node.gridColSpan) - 1) << colStart;
   for (let row = rowStart; row < rowStart + node.gridRowSpan; row += 1) {
     if (rowMasks[row] & mask) return false;
@@ -426,9 +337,6 @@ const fits = (
   return true;
 };
 
-/**
- * Marks occupied cells and updates row masks after placement.
- */
 const mark = (
   grid: boolean[][],
   rowMasks: number[],
@@ -436,7 +344,6 @@ const mark = (
   colStart: number,
   node: Node,
 ): void => {
-  // Update grid cells and row masks for the node span.
   const mask = ((1 << node.gridColSpan) - 1) << colStart;
   for (let row = rowStart; row < rowStart + node.gridRowSpan; row += 1) {
     for (let col = colStart; col < colStart + node.gridColSpan; col += 1) {
