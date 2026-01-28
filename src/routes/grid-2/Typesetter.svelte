@@ -3,16 +3,10 @@
 	import type { Attachment } from "svelte/attachments";
 	import { browser } from "$app/environment";
 	import type { PlacedNode } from "./typesetter";
-	import {
-		BASELINE_PX,
-		groupNodes,
-		measureNodes,
-		placeNodesOnPages,
-		TEXT_COL_SPAN,
-	} from "./typesetter";
+	import { groupNodes, measureNodes, BASELINE_PX as PX, placeNodesOnPages } from "./typesetter";
 
 	/**
-	 * ResizeObserver attachment that re-runs if the callback reference changes.
+	 * Generic ResizeObserver attachment that re-runs if the callback reference changes.
 	 */
 	const ro =
 		(callback: (entry: ResizeObserverEntry) => void): Attachment =>
@@ -22,53 +16,51 @@
 			return () => ro.disconnect();
 		};
 
-	// Ghost - renders content as single Page so content dimensions can be measured
-	let ghost: HTMLElement | null = null;
-	// Page dimensions
-	let page = $state({ h: 0, marginX: BASELINE_PX, marginY: BASELINE_PX, w: 0 });
+	let { children }: { children: Snippet } = $props();
+
 	let didWarnMissingHeight = false;
 	let didWarnServerRender = false;
-	// Attach callback to root element, observe root dimensions.
+	// Attach this callback to the root element to track size changes
 	const onRootResize = (entry: ResizeObserverEntry): void => {
 		const { width, height } = entry.contentRect;
-		page.w = Math.max(0, Math.floor(width));
-		page.h = Math.max(0, Math.floor(height));
-		if ((page.h === 0 || page.w === 0) && !didWarnMissingHeight) {
+		page.wPx = Math.max(0, Math.floor(width));
+		page.hPx = Math.max(0, Math.floor(height));
+		if ((page.hPx === 0 || page.wPx === 0) && !didWarnMissingHeight) {
 			didWarnMissingHeight = true;
 			console.warn("Typesetter requires explicit parent dimensions.");
 		}
 	};
 
-	// Page grid dimensions: subtract grid margins from page height
-	let pageGridRowGapPx = BASELINE_PX * 1;
-	let pageGridRowHeightPx = BASELINE_PX * 5;
-	let pageGridColGapPx = BASELINE_PX * 1;
+	// Ghost: renders children once for measurement before grid placement.
+	let ghost: HTMLElement | null = null;
+
+	// Single grid page bounds (px).
+	// Page grid rows derive from baseline rhythm + available height.
+	let page = $state({ hPx: 0, marginXPx: PX, marginYPx: PX, wPx: 0 });
 	let pageGrid = $derived.by(() => {
+		const rowGapPx = 1 * PX,
+			rowHeiPx = 5 * PX,
+			colGapPx = 1 * PX;
 		const cols = 4;
-		const h = Math.max(0, page.h - BASELINE_PX * 2);
-		const w = Math.max(0, page.w - page.marginX * 2);
-		const totalColGap = Math.max(0, cols - 1) * pageGridColGapPx;
-		const colWidth = cols > 0 ? (w - totalColGap) / cols : 0;
-		const textSpanWidth =
-			colWidth * TEXT_COL_SPAN + Math.max(0, TEXT_COL_SPAN - 1) * pageGridColGapPx;
-		const rows = Math.max(
-			1,
-			Math.floor((h + pageGridRowGapPx) / (pageGridRowHeightPx + pageGridRowGapPx)),
-		);
+		const hPx = Math.max(0, page.hPx - 2 * PX);
+		const wPx = Math.max(0, page.wPx - 2 * page.marginXPx);
+		const totalColGap = Math.max(0, cols - 1) * colGapPx;
+		const colWidPx = cols > 0 ? (wPx - totalColGap) / cols : 0;
+		const rows = Math.max(1, Math.floor((hPx + rowGapPx) / (rowHeiPx + rowGapPx)));
 		return {
+			colGapPx,
 			cols,
-			h,
-			colWidth,
+			colWidPx,
+			hPx,
+			rowGapPx,
+			rowHeiPx,
 			rows,
-			textSpanWidth,
-			w,
+			wPx,
 		};
 	});
 
+	// Paginated grid output: each entry is one grid page of placed nodes.
 	let pages = $state<PlacedNode[][]>([]);
-	const { children } = $props<{
-		children: Snippet;
-	}>();
 
 	$effect(() => {
 		if (!browser) {
@@ -79,22 +71,22 @@
 			return;
 		}
 		if (!ghost) return;
-		if (page.w === 0 || page.h === 0) return;
-		// Measure node dimensions using ghost
+		if (page.wPx === 0 || page.hPx === 0) return;
+
 		const measuredNodes = measureNodes(
 			ghost,
-			pageGridRowGapPx,
-			pageGridRowHeightPx,
+			pageGrid.rowGapPx,
+			pageGrid.rowHeiPx,
 			pageGrid.cols,
-			pageGridColGapPx,
-			pageGrid.colWidth,
+			pageGrid.colGapPx,
+			pageGrid.colWidPx,
 		);
 
 		const groupedNodes = groupNodes(
 			measuredNodes,
 			pageGrid.rows,
-			pageGridRowGapPx,
-			pageGridRowHeightPx,
+			pageGrid.rowGapPx,
+			pageGrid.rowHeiPx,
 		);
 
 		pages = placeNodesOnPages(groupedNodes, pageGrid.cols, pageGrid.rows);
@@ -102,35 +94,34 @@
 </script>
 
 <section
-	data-typesetter
+	data-t8r
 	{@attach ro(onRootResize)}
-	style:--typesetter-baseline={`${BASELINE_PX}px`}
-	style:--typesetter-baseline-w={`${pageGrid.textSpanWidth}px`}
-	style:--typesetter-page-w={`${page.w}px`}
-	style:--typesetter-page-h={`${page.h}px`}
-	style:--typesetter-page-marginX={`${page.marginX}px`}
-	style:--typesetter-page-marginY={`${page.marginY}px`}
-	style:--typesetter-page-grid-col-gap={`${pageGridColGapPx}px`}
-	style:--typesetter-page-grid-w={`${pageGrid.w}px`}
+	style:--base={`${PX}px`}
+	style:--page-w={`${page.wPx}px`}
+	style:--page-h={`${page.hPx}px`}
+	style:--page-mx={`${page.marginXPx}px`}
+	style:--page-my={`${page.marginYPx}px`}
+	style:--grid-col-gap={`${pageGrid.colGapPx}px`}
+	style:--grid-w={`${pageGrid.wPx}px`}
 >
 	<!-- Use page dimensions so measurement matches the visible output. -->
-	<div data-typesetter-ghost bind:this={ghost}>{@render children()}</div>
-	<div data-typesetter-pages>
+	<div data-t8r-ghost bind:this={ghost}>{@render children()}</div>
+	<div data-t8r-pages>
 		<!-- Rendered pages live here; vertical flow is the default. -->
 		{#each pages as pageItems, pageIndex (pageIndex)}
 			<div
-				data-typesetter-page
-				style:--typesetter-page-grid-cols={pageGrid.cols}
-				style:--typesetter-page-grid-row-h={`${pageGridRowHeightPx}px`}
-				style:--typesetter-page-grid-row-gap={`${pageGridRowGapPx}px`}
+				data-t8r-page
+				style:--grid-cols={pageGrid.cols}
+				style:--grid-row-h={`${pageGrid.rowHeiPx}px`}
+				style:--grid-row-gap={`${pageGrid.rowGapPx}px`}
 			>
 				{#each pageItems as item (item.id)}
 					<div
-						data-typesetter-item
-						style:--typesetter-col-start={item.gridColStart}
-						style:--typesetter-col-span={item.gridColSpan}
-						style:--typesetter-row-start={item.gridRowStart}
-						style:--typesetter-row-span={item.gridRowSpan}
+						data-t8r-item
+						style:--col-start={item.gridColStart}
+						style:--col-span={item.gridColSpan}
+						style:--row-start={item.gridRowStart}
+						style:--row-span={item.gridRowSpan}
 					>
 						{@html item.html}
 					</div>
@@ -141,42 +132,42 @@
 </section>
 
 <style>
-	[data-typesetter] {
+	[data-t8r] {
 		width: 100%;
 		height: 100%;
 	}
 
-	[data-typesetter-ghost] {
+	[data-t8r-ghost] {
 		position: fixed;
 		top: 0;
 		left: -9999px;
 		visibility: hidden;
-		width: var(--typesetter-page-grid-w, auto);
+		width: var(--grid-w, auto);
 		padding: 0;
-		line-height: var(--typesetter-baseline, 1.5rem); /* TODO: move line height into content?? */
+		line-height: var(--base, 1.5rem); /* TODO: move line height into content?? */
 		pointer-events: none;
 	}
 
-	[data-typesetter-pages] {
+	[data-t8r-pages] {
 		display: flex;
 		flex-direction: column;
 	}
 
-	[data-typesetter-page] {
+	[data-t8r-page] {
 		display: grid;
-		grid-template-columns: repeat(var(--typesetter-page-grid-cols, 1), minmax(0, 1fr));
-		grid-auto-rows: var(--typesetter-page-grid-row-h, 1.5rem);
-		row-gap: var(--typesetter-page-grid-row-gap, 0px);
-		column-gap: var(--typesetter-page-grid-col-gap, 0px);
-		width: var(--typesetter-page-w, 100%);
-		height: var(--typesetter-page-h, auto);
-		padding: var(--typesetter-page-marginY, 0px) var(--typesetter-page-marginX, 0px);
-		line-height: var(--typesetter-baseline, 1.5rem); /* TODO: move line height into content */
-        border: 1px solid black;
+		grid-template-columns: repeat(var(--grid-cols, 1), minmax(0, 1fr));
+		grid-auto-rows: var(--grid-row-h, 1.5rem);
+		row-gap: var(--grid-row-gap, 0px);
+		column-gap: var(--grid-col-gap, 0px);
+		width: var(--page-w, 100%);
+		height: var(--page-h, auto);
+		padding: var(--page-my, 0px) var(--page-mx, 0px);
+		line-height: var(--base, 1.5rem); /* TODO: move line height into content */
+		border: 1px solid black;
 	}
 
-	[data-typesetter-item] {
-		grid-row: var(--typesetter-row-start) / span var(--typesetter-row-span);
-		grid-column: var(--typesetter-col-start) / span var(--typesetter-col-span);
+	[data-t8r-item] {
+		grid-row: var(--row-start) / span var(--row-span);
+		grid-column: var(--col-start) / span var(--col-span);
 	}
 </style>
