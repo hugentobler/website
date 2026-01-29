@@ -20,7 +20,7 @@
 </script>
 
 {#if image}
-	<figure>
+	<figure data-t8r-span="3">
 		<enhanced:img src={image} {alt} {...restProps} />
 		{#if alt}
 			<figcaption>

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from "svelte";
 	import Markdown from "$lib/markdown/bowtie.md";
-	import Typesetter from "./Typesetter.svelte";
+	import Typesetter from "$lib/typesetter";
 
 	let hydrated = $state(false);
 	onMount(() => {
@@ -13,35 +13,19 @@
 	<Markdown />
 {/snippet}
 
-<div class="typesetter-compare">
-	{#if hydrated}
-		<div class="typesetter-pane">
-			<Typesetter>{@render content()}</Typesetter>
-		</div>
-	{:else}
-		{@render content()}
-	{/if}
-</div>
+{#if hydrated}
+	<div class="typesetter-pane">
+		<Typesetter>{@render content()}</Typesetter>
+	</div>
+{:else}
+	{@render content()}
+{/if}
 
 <style>
-	.typesetter-compare {
-		display: grid;
-		grid-template-columns: 1fr;
-		gap: 24px;
-		width: 100%;
-		min-height: 100dvh;
-		padding: 16px;
-	}
-
 	.typesetter-pane {
+		width: 100%;
 		height: 100dvh;
+		padding: 16px;
 		overflow: auto;
-	}
-
-	@media (min-width: 960px) {
-		.typesetter-compare {
-			grid-template-columns: 1fr 1fr;
-			align-items: stretch;
-		}
 	}
 </style>

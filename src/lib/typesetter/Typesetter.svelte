@@ -1,20 +1,21 @@
 <script lang="ts">
-	import type { Snippet } from "svelte";
-	import type { Attachment } from "svelte/attachments";
-	import { browser } from "$app/environment";
-	import type { PlacedNode } from "./typesetter";
-	import { groupNodes, measureNodes, BASELINE_PX as PX, placeNodesOnPages } from "./typesetter";
-
 	/**
-	 * Generic ResizeObserver attachment that re-runs if the callback reference changes.
+	 * Definitions
+	 * - children: snippet content to render/measure.
+	 * - ro: resize observer attachment for measuring container size.
+	 * - ghost: offscreen measurement container.
+	 * - page: measured container dimensions (wPx, hPx, margins).
+	 * - pageGrid: derived grid metrics (cols, row height/gap, col gap, widths, rows).
+	 * - pages: PlacedNode[][] output of placement.
+	 * - CSS vars on [data-t8r]: --base, --page-w, --page-h, --grid-col-gap, --grid-w.
+	 * - CSS vars per page: --grid-cols, --grid-row-h, --grid-row-gap.
+	 * - CSS vars per item: --col-start, --col-span, --row-start, --row-span.
 	 */
-	const ro =
-		(callback: (entry: ResizeObserverEntry) => void): Attachment =>
-		(node) => {
-			const ro = new ResizeObserver(([entry]) => callback(entry));
-			ro.observe(node);
-			return () => ro.disconnect();
-		};
+	import type { Snippet } from "svelte";
+	import { browser } from "$app/environment";
+	import { resizeObserver } from "$lib/attachments/resizeObserver";
+	import type { PlacedNode } from "$lib/typesetter";
+	import { measureNodes, BASELINE_PX as PX, placeNodesOnPages } from "$lib/typesetter";
 
 	let { children }: { children: Snippet } = $props();
 
@@ -73,6 +74,7 @@
 		if (!ghost) return;
 		if (page.wPx === 0 || page.hPx === 0) return;
 
+		const defaultColSpan = 2;
 		const measuredNodes = measureNodes(
 			ghost,
 			pageGrid.rowGapPx,
@@ -80,22 +82,22 @@
 			pageGrid.cols,
 			pageGrid.colGapPx,
 			pageGrid.colWidPx,
+			defaultColSpan,
 		);
 
-		const groupedNodes = groupNodes(
+		pages = placeNodesOnPages(
 			measuredNodes,
+			pageGrid.cols,
 			pageGrid.rows,
 			pageGrid.rowGapPx,
 			pageGrid.rowHeiPx,
 		);
-
-		pages = placeNodesOnPages(groupedNodes, pageGrid.cols, pageGrid.rows);
 	});
 </script>
 
 <section
 	data-t8r
-	{@attach ro(onRootResize)}
+	{@attach resizeObserver(onRootResize)}
 	style:--base={`${PX}px`}
 	style:--page-w={`${page.wPx}px`}
 	style:--page-h={`${page.hPx}px`}
