@@ -11,25 +11,46 @@
 	 * - CSS vars per page: --grid-cols, --grid-row-h, --grid-row-gap.
 	 * - CSS vars per item: --col-start, --col-span, --row-start, --row-span.
 	 */
+	import { AnimationFrames } from "runed";
 	import type { Snippet } from "svelte";
+	import { onMount } from "svelte";
 	import { browser } from "$app/environment";
 	import { resizeObserver } from "$lib/attachments/resizeObserver";
 	import type { PlacedNode } from "$lib/typesetter";
 	import { measureNodes, BASELINE_PX as PX, placeNodesOnPages } from "$lib/typesetter";
 
-	let { children }: { children: Snippet } = $props();
+	interface Props {
+		class?: string;
+		children: Snippet;
+		height?: string;
+	}
 
+	let { children, class: className, height = "100dvh" }: Props = $props();
+
+	const resizeFpsLimit = 30;
+	// TODO: Consider skipping recompute when size doesn't change to reduce reflow work.
 	let didWarnMissingHeight = false;
 	let didWarnServerRender = false;
-	// Attach this callback to the root element to track size changes
-	const onRootResize = (entry: ResizeObserverEntry): void => {
+	let fallbackEl: HTMLElement | null = null;
+	let layoutEl: HTMLElement | null = null;
+	let pendingEntry: ResizeObserverEntry | null = null;
+	let hasPendingResize = false;
+
+	const applyResize = (entry: ResizeObserverEntry): void => {
 		const { width, height } = entry.contentRect;
 		page.wPx = Math.max(0, Math.floor(width));
 		page.hPx = Math.max(0, Math.floor(height));
 		if ((page.hPx === 0 || page.wPx === 0) && !didWarnMissingHeight) {
 			didWarnMissingHeight = true;
-			console.warn("Typesetter requires explicit parent dimensions.");
+			console.warn(
+				'Typesetter requires a non-zero height. Provide a height prop (e.g. height="100dvh") or ensure the parent has an explicit height.',
+			);
 		}
+	};
+	// Attach this callback to the root element to track size changes
+	const onRootResize = (entry: ResizeObserverEntry): void => {
+		pendingEntry = entry;
+		hasPendingResize = true;
 	};
 
 	// Ghost: renders children once for measurement before grid placement.
@@ -93,10 +114,28 @@
 			pageGrid.rowHeiPx,
 		);
 	});
+
+	onMount(() => {
+		if (browser) {
+			new AnimationFrames(
+				() => {
+					if (!hasPendingResize || !pendingEntry) return;
+					hasPendingResize = false;
+					applyResize(pendingEntry);
+				},
+				{ fpsLimit: () => resizeFpsLimit },
+			);
+		}
+
+		if (fallbackEl) fallbackEl.setAttribute("aria-hidden", "true");
+		if (layoutEl) layoutEl.setAttribute("aria-hidden", "false");
+	});
 </script>
 
 <section
+	class={className}
 	data-t8r
+	style={`height: ${height};`}
 	{@attach resizeObserver(onRootResize)}
 	style:--base={`${PX}px`}
 	style:--page-w={`${page.wPx}px`}
@@ -106,37 +145,58 @@
 	style:--grid-col-gap={`${pageGrid.colGapPx}px`}
 	style:--grid-w={`${pageGrid.wPx}px`}
 >
-	<!-- Use page dimensions so measurement matches the visible output. -->
-	<div data-t8r-ghost bind:this={ghost}>{@render children()}</div>
-	<div data-t8r-pages>
-		<!-- Rendered pages live here; vertical flow is the default. -->
-		{#each pages as pageItems, pageIndex (pageIndex)}
-			<div
-				data-t8r-page
-				style:--grid-cols={pageGrid.cols}
-				style:--grid-row-h={`${pageGrid.rowHeiPx}px`}
-				style:--grid-row-gap={`${pageGrid.rowGapPx}px`}
-			>
-				{#each pageItems as item (item.id)}
-					<div
-						data-t8r-item
-						style:--col-start={item.gridColStart}
-						style:--col-span={item.gridColSpan}
-						style:--row-start={item.gridRowStart}
-						style:--row-span={item.gridRowSpan}
-					>
-						{@html item.html}
-					</div>
-				{/each}
-			</div>
-		{/each}
+	<div data-t8r-fallback aria-hidden="false" bind:this={fallbackEl}>{@render children()}</div>
+	<div data-t8r-layout aria-hidden="true" bind:this={layoutEl}>
+		<!-- Use page dimensions so measurement matches the visible output. -->
+		<div data-t8r-ghost bind:this={ghost}>{@render children()}</div>
+		<div data-t8r-pages>
+			<!-- Rendered pages live here; vertical flow is the default. -->
+			{#each pages as pageItems, pageIndex (pageIndex)}
+				<div
+					data-t8r-page
+					style:--grid-cols={pageGrid.cols}
+					style:--grid-row-h={`${pageGrid.rowHeiPx}px`}
+					style:--grid-row-gap={`${pageGrid.rowGapPx}px`}
+				>
+					{#each pageItems as item (item.id)}
+						<div
+							data-t8r-item
+							style:--col-start={item.gridColStart}
+							style:--col-span={item.gridColSpan}
+							style:--row-start={item.gridRowStart}
+							style:--row-span={item.gridRowSpan}
+						>
+							{@html item.html}
+						</div>
+					{/each}
+				</div>
+			{/each}
+		</div>
 	</div>
 </section>
 
 <style>
+	:global(html.no-js) [data-t8r-fallback] {
+		display: block;
+	}
+
+	:global(html.no-js) [data-t8r-layout] {
+		display: none;
+	}
+
+	:global(html.js) [data-t8r-fallback] {
+		display: none;
+	}
+
+	:global(html.js) [data-t8r-layout] {
+		display: block;
+	}
+
 	[data-t8r] {
 		width: 100%;
 		height: 100%;
+		padding: 16px;
+		overflow: auto;
 	}
 
 	[data-t8r-ghost] {
