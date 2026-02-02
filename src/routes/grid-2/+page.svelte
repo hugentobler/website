@@ -3,6 +3,9 @@
 	import Typesetter from "$lib/typesetter";
 </script>
 
-<Typesetter>
-	<Markdown />
+<!-- <div style="margin: 8px; height: calc(100dvh - 2 * 8px)"> -->
+<!-- <div style="padding:8px;"> -->
+<Typesetter height="100svh">
+   	<Markdown />
 </Typesetter>
+<!-- </div> -->
