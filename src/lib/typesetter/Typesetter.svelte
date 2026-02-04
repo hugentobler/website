@@ -3,18 +3,6 @@
 -->
 
 <script lang="ts">
-	/**
-	 * Definitions
-	 * - children: snippet content to render/measure.
-	 * - ro: resize observer attachment for measuring container size.
-	 * - ghost: offscreen measurement container.
-	 * - page: measured container dimensions (wPx, hPx, margins).
-	 * - pageGrid: derived grid metrics (cols, row height/gap, col gap, widths, rows).
-	 * - pages: PlacedNode[][] output of placement.
-	 * - CSS vars on [data-t8r]: --base, --page-w, --page-h, --grid-col-gap, --grid-w.
-	 * - CSS vars per page: --grid-cols, --grid-row-h, --grid-row-gap.
-	 * - CSS vars per item: --col-start, --col-span, --row-start, --row-span.
-	 */
 	import { AnimationFrames } from "runed";
 	import type { Snippet } from "svelte";
 	import { onMount } from "svelte";
@@ -23,31 +11,40 @@
 	import type { PlacedNode } from "$lib/typesetter";
 	import { measureNodes, BASELINE_PX as PX, placeNodesOnPages } from "$lib/typesetter";
 
-	let { children, height } : {
-	    children: Snippet;
+	// Props
+	let { children, cols: colsProp = 4, debug = false, height }: {
+		children: Snippet;
+		/**
+		 * number of columns in the grid
+		 */
+		cols?: number;
+		/**
+		 * dev-only debug styling for the source element
+		 */
+		debug?: boolean;
 		/**
 		 * css height that typesetter grid shall fill
 		 */
-        height: string;
+		height: string;
 	} = $props();
 
-	// Component defaults
+	// Config
 	const resizeFpsLimit = 30;
 	const defaultColSpan = 2;
+	const isDebug = $derived.by(() => dev && debug);
 
-	// Root
-	// Store rendered root dimensions (px).
+	// State
 	let root = $state({ hPx: 0, padXPx: PX, padYPx: PX, wPx: 0 });
-
-	console.log($state.snapshot(root))
-
-	// TODO: Consider skipping recompute when size doesn't change to reduce reflow work.
-	let didWarnMissingHeight = false;
-	let didWarnServerRender = false;
 	let sourceEl: HTMLElement | null = null;
 	let pendingEntry: ResizeObserverEntry | null = null;
 	let hasPendingResize = false;
+	let pages = $state<PlacedNode[][]>([]);
 
+	// Flags
+	let didWarnMissingHeight = false;
+
+	// Resize handling
+	// TODO: Consider skipping recompute when size doesn't change to reduce reflow work.
 	const applyResize = (entry: ResizeObserverEntry): void => {
 		const { width, height } = entry.contentRect;
 		root.wPx = Math.max(0, Math.floor(width));
@@ -55,15 +52,13 @@
 		if ((root.hPx === 0 || root.wPx === 0) && !didWarnMissingHeight) {
 			didWarnMissingHeight = true;
 			const message =
-				"Typesetter requires a non-zero parent height. Set an explicit height on the parent.";
+				"Typesetter measured zero height. Ensure the `height` prop resolves to a non-zero value.";
 			if (dev) {
 				console.warn(message);
 			} else {
 				throw new Error(message);
 			}
 		}
-
-		console.log($state.snapshot(root))
 
 	};
 	// Attach this callback to the root element to track size changes
@@ -74,11 +69,12 @@
 
 	// Single grid page bounds (px).
 	// Page grid rows derive from baseline rhythm + available height.
+	// Derived
 	let pageGrid = $derived.by(() => {
 		const rowGapPx = 1 * PX,
 			rowHeiPx = 5 * PX,
 			colGapPx = 1 * PX;
-		const cols = 4;
+		const cols = Math.max(1, Math.floor(Number.isFinite(colsProp) ? colsProp : 4));
 		const hPx = Math.max(0, root.hPx - 2 * root.padYPx);
 		const wPx = Math.max(0, root.wPx - 2 * root.padXPx);
 		const totalColGap = Math.max(0, cols - 1) * colGapPx;
@@ -96,19 +92,11 @@
 		};
 	});
 
-	// Paginated grid output: each entry is one grid page of placed nodes.
-	let pages = $state<PlacedNode[][]>([]);
 	const ready = $derived.by(() => pages.length > 0);
-	// const ready = false;
 
+	// Effects
 	$effect(() => {
-		if (!browser) {
-			if (!didWarnServerRender) {
-				didWarnServerRender = true;
-				console.warn("Typesetter should be gated to client-only rendering.");
-			}
-			return;
-		}
+		if (!browser) return;
 		if (!sourceEl) return;
 		if (root.wPx === 0 || root.hPx === 0) return;
 
@@ -131,6 +119,7 @@
 		);
 	});
 
+	// Lifecycle
 	onMount(() => {
 		if (browser) {
 			new AnimationFrames(
@@ -149,6 +138,7 @@
     <section
     	data-t8r-root
     	data-t8r-ready={ready || undefined}
+    	data-t8r-debug={isDebug || undefined}
     	{@attach resizeObserver(onRootResize)}
     	style:--base={`${PX}px`}
     	style:--w={`${root.wPx}px`}
@@ -160,15 +150,13 @@
     	style:--col-span={`${defaultColSpan}`}
     	style:--grid-w={`${pageGrid.wPx}px`}
     >
+        <!-- Off-screen source element for measuring layout -->
         <div data-t8r-source bind:this={sourceEl}>
             {@render children()}
         </div>
-    	<!-- <div data-t8r-source aria-hidden={ready}>
-    		<div data-t8r-source-content bind:this={sourceEl}>{@render children()}</div>
-    	</div> -->
+        <!-- Rendered paginated grid -->
     	{#if ready}
     		<div data-t8r-pages aria-hidden={!ready}>
-    			<!-- Rendered pages live here; vertical flow is the default. -->
     			{#each pages as pageItems, pageIndex (pageIndex)}
     				<div
     					data-t8r-page
@@ -215,27 +203,20 @@
             + ((var(--col-span, 1) - 1) * var(--col-gap, 0px))
             - var(--px)
         ); /* width of --col-span columns including internal gaps */
-	    /*padding: var(--py) var(--px);*/
+        padding: 0;
 		margin: 0;
 	}
-/*
-	[data-t8r-source-content] {
-		box-sizing: border-box;
-		padding: var(--py, 16px) var(--px, 16px);
-	}*/
 
-	[data-t8r-root][data-t8r-ready] [data-t8r-source] {
-		/*position: absolute;*/
-		/*top: 0;*/
-		/*left: -9999px;*/
-		/*left: 0;*/
-		color: orange;
-		/*visibility: hidden;*/
-		/*width: var(--grid-w, auto);*/
-		/*padding: 0;*/
-		/*margin-right: 0;
-		margin-left: 0;*/
+	[data-t8r-root][data-t8r-ready]:not([data-t8r-debug]) [data-t8r-source] {
+		position: fixed;
+		top: 0;
+		left: -9999px;
+		visibility: hidden;
 		pointer-events: none;
+	}
+
+	[data-t8r-root][data-t8r-debug] [data-t8r-source] {
+		color: orange;
 	}
 
 	[data-t8r-pages] {
@@ -252,13 +233,18 @@
 		width: var(--w, 100%);
 		height: var(--h, auto);
 		padding: var(--py, 0px) var(--px, 0px);
-		/*border: 1px solid black;*/
-		outline: 1px solid black;
 	}
 
 	[data-t8r-item] {
 		grid-row: var(--row-start) / span var(--row-span);
 		grid-column: var(--col-start) / span var(--col-span);
+	}
+
+	[data-t8r-root][data-t8r-debug] [data-t8r-page] {
+		outline: 1px solid black;
+	}
+
+	[data-t8r-root][data-t8r-debug] [data-t8r-item] {
 		outline: 1px dashed green;
 	}
 </style>
