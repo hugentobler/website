@@ -28,6 +28,7 @@ type Node = {
   heightPx: number;
   gridRowSpan: number;
   gridColSpan: number;
+  canSkipFlowBreak: boolean;
 };
 
 export type PlacedNode = {
@@ -83,6 +84,8 @@ export const measureNodes = (
   const nodes = Array.from(root.children) as HTMLElement[];
   return nodes.map((node, index) => {
     const overrideSpan = readOverrideSpan(node);
+    const canSkipFlowBreak =
+      overrideSpan !== null && (node.tagName === "FIGURE" || node.tagName === "IMG");
     const rawColSpan = overrideSpan ?? defaultColSpan;
     const colSpan = Math.min(rawColSpan, pageGridCols);
     const widthPx = Math.max(
@@ -99,6 +102,7 @@ export const measureNodes = (
       html: node.outerHTML,
       id: `t8r-node-${index}`,
       isFlowNode: overrideSpan === null,
+      canSkipFlowBreak,
     };
   });
 };
@@ -120,6 +124,8 @@ export const placeNodesOnPages = (
 ): PlacedNode[][] => {
   const pages: PlacedNode[][] = [];
   const grids: boolean[][][] = [];
+  const consumedFlowNodes = new Set<number>();
+  let flowCursor: { pageIndex: number; row: number; col: number } | null = null;
 
   const ensurePage = (pageIndex: number) => {
     if (!pages[pageIndex]) pages[pageIndex] = [];
@@ -137,9 +143,11 @@ export const placeNodesOnPages = (
   for (let index = 0; index < nodes.length; index += 1) {
     const node = nodes[index];
     if (node.isFlowNode) {
+      if (consumedFlowNodes.has(index)) continue;
 			const minRows = node.gridRowSpan;
       let placed = false;
       for (let pageIndex = 0; pageIndex < pages.length; pageIndex += 1) {
+        if (flowCursor && pageIndex < flowCursor.pageIndex) continue;
         ensurePage(pageIndex);
         const grid = grids[pageIndex];
 				const slot = findFirstFlowSlot(
@@ -148,18 +156,24 @@ export const placeNodesOnPages = (
           minRows,
           pageGridCols,
           pageGridRows,
+          flowCursor && pageIndex === flowCursor.pageIndex
+            ? { row: flowCursor.row, col: flowCursor.col }
+            : null,
         );
         if (!slot) continue;
 
-        const { groupedNode, nextIndex } = groupFlowNodes(
+        const { groupedNode, consumedIndexes } = groupFlowNodes(
           nodes,
           index,
           slot.maxRows,
           node.gridColSpan,
           rowGapPx,
           rowHeiPx,
+          consumedFlowNodes,
         );
-        index = nextIndex - 1;
+        for (const consumedIndex of consumedIndexes) {
+          consumedFlowNodes.add(consumedIndex);
+        }
         const placement = placeAt(
           grid,
           slot.rowMasks,
@@ -168,6 +182,11 @@ export const placeNodesOnPages = (
           slot.col,
         );
         pages[pageIndex].push(placement);
+        flowCursor = {
+          pageIndex,
+          row: slot.row + groupedNode.gridRowSpan - 1,
+          col: slot.col + groupedNode.gridColSpan - 1,
+        };
         placed = true;
         break;
       }
@@ -181,17 +200,23 @@ export const placeNodesOnPages = (
           minRows,
           pageGridCols,
           pageGridRows,
+          flowCursor && pageIndex === flowCursor.pageIndex
+            ? { row: flowCursor.row, col: flowCursor.col }
+            : null,
         );
         if (!slot) continue;
-        const { groupedNode, nextIndex } = groupFlowNodes(
+        const { groupedNode, consumedIndexes } = groupFlowNodes(
           nodes,
           index,
           slot.maxRows,
           node.gridColSpan,
           rowGapPx,
           rowHeiPx,
+          consumedFlowNodes,
         );
-        index = nextIndex - 1;
+        for (const consumedIndex of consumedIndexes) {
+          consumedFlowNodes.add(consumedIndex);
+        }
         const placement = placeAt(
           grid,
           slot.rowMasks,
@@ -200,6 +225,11 @@ export const placeNodesOnPages = (
           slot.col,
         );
         pages[pageIndex].push(placement);
+        flowCursor = {
+          pageIndex,
+          row: slot.row + groupedNode.gridRowSpan - 1,
+          col: slot.col + groupedNode.gridColSpan - 1,
+        };
       }
       continue;
     }
@@ -244,21 +274,27 @@ const groupFlowNodes = (
   colSpan: number,
   rowGapPx: number,
   rowHeiPx: number,
-): { groupedNode: Node; nextIndex: number } => {
+  consumedFlowNodes: Set<number>,
+): { groupedNode: Node; consumedIndexes: number[] } => {
   const html: string[] = [];
   let heightPx = 0;
   let rowSpan = 0;
-  let index = startIndex;
+  const consumedIndexes: number[] = [];
 
-  for (; index < nodes.length; index += 1) {
+  for (let index = startIndex; index < nodes.length; index += 1) {
     const node = nodes[index];
-    if (!node.isFlowNode) break;
+    if (!node.isFlowNode) {
+      if (node.canSkipFlowBreak) continue;
+      break;
+    }
+    if (consumedFlowNodes.has(index)) break;
     const nextHeightPx = heightPx + node.heightPx;
     const nextRowSpan = gridRowsForHeight(nextHeightPx, rowGapPx, rowHeiPx);
     if (nextRowSpan > maxRows) break;
     heightPx = nextHeightPx;
     rowSpan = nextRowSpan;
     html.push(node.html);
+    consumedIndexes.push(index);
   }
 
   const groupedNode: Node = {
@@ -270,7 +306,7 @@ const groupFlowNodes = (
     isFlowNode: true,
   };
 
-  return { groupedNode, nextIndex: index };
+  return { groupedNode, consumedIndexes };
 };
 
 const placeAt = (
@@ -298,15 +334,23 @@ const findFirstFlowSlot = (
 	minRows: number,
   pageGridCols: number,
   pageGridRows: number,
+  minCursor: { row: number; col: number } | null,
 ): { row: number; col: number; maxRows: number; rowMasks: number[] } | null => {
   const maxRowStart = pageGridRows - 1;
   const maxColStart = pageGridCols - colSpan;
   if (maxColStart < 0) return null;
   const rowMasks = getRowMasks(grid, pageGridCols);
   const mask = (1 << colSpan) - 1;
+  const isAfterCursor = (row: number, col: number): boolean => {
+    if (!minCursor) return true;
+    if (col > minCursor.col) return true;
+    if (col < minCursor.col) return false;
+    return row > minCursor.row;
+  };
 
   for (let row = 0; row <= maxRowStart; row += 1) {
     for (let col = 0; col <= maxColStart; col += 1) {
+      if (!isAfterCursor(row, col)) continue;
       const shiftedMask = mask << col;
       if (rowMasks[row] & shiftedMask) continue;
       let maxRows = 0;

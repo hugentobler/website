@@ -3,6 +3,6 @@
 	import Typesetter from "$lib/typesetter";
 </script>
 
-<Typesetter height="100svh" debug={true}>
+<Typesetter height="100svh" debug={false}>
    	<Markdown />
 </Typesetter>

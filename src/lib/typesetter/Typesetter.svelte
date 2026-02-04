@@ -216,7 +216,8 @@
 	}
 
 	[data-t8r-root][data-t8r-debug] [data-t8r-source] {
-		color: orange;
+		color: red;
+		opacity: 0.5;
 	}
 
 	[data-t8r-pages] {
