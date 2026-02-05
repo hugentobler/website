@@ -12,8 +12,7 @@ import type { Plugin, ViteDevServer } from "vite";
 const TYPOGRAPHY_SOURCE = "src/lib/typography.ts";
 const TYPOGRAPHY_OUTPUT = "src/styles/typography.css";
 
-// Convert px to rem (assuming 16px root)
-const pxToRem = (px: number) => (px / 16).toFixed(4).replace(/\.?0+$/, "");
+const formatRem = (rem: number) => rem.toFixed(4).replace(/\.?0+$/, "");
 
 type TypeScale = Record<string, { fontSize: number; lineHeight: number }>;
 
@@ -47,15 +46,15 @@ function generateCSS(config: Awaited<ReturnType<typeof loadTypographyConfig>>): 
 	const sizes = Object.keys(TYPE_SCALES.sans);
 
 	// Baseline = base.lineHeight (using sans as the primary/default)
-	const baselinePx = TYPE_SCALES.sans.base.lineHeight;
-	const baselineRem = pxToRem(baselinePx);
+	const baselineRemValue = TYPE_SCALES.sans.base.lineHeight;
+	const baselineRem = formatRem(baselineRemValue);
 
 	const css = `/* =============================================================================
    AUTO-GENERATED - Do not edit manually!
    Source: ${TYPOGRAPHY_SOURCE}
 
    Typography System (Bottom-Up):
-   - baseline = base.lineHeight = ${baselinePx}px (${baselineRem}rem)
+   - baseline = base.lineHeight = ${baselineRem}rem
    - All layout spacing uses baseline multiples
    - Font-size and line-height are optically tuned per size
    - Using rem so spacing scales with user font preferences
@@ -78,11 +77,11 @@ function generateCSS(config: Awaited<ReturnType<typeof loadTypographyConfig>>): 
 
 ${Object.entries(TYPE_SCALES.sans)
 	.map(([size, { fontSize, lineHeight }]) => {
-		const ratio = (lineHeight / fontSize).toFixed(4).replace(/\.?0+$/, "");
-		const multiple = (lineHeight / baselinePx).toFixed(2).replace(/\.?0+$/, "");
-		return `	/* ${size}: ${fontSize}px / ${lineHeight}px (${multiple}× baseline) */
-	--type-${size}: ${pxToRem(fontSize)}rem;
-	--leading-${size}: ${ratio};`;
+		const leadingRem = formatRem(lineHeight);
+		const multiple = (lineHeight / baselineRemValue).toFixed(2).replace(/\.?0+$/, "");
+		return `	/* ${size}: ${formatRem(fontSize)}rem / ${leadingRem}rem (${multiple}× baseline) */
+	--type-${size}: ${formatRem(fontSize)}rem;
+	--leading-${size}: ${leadingRem}rem;`;
 	})
 	.join("\n\n")}
 }
@@ -93,12 +92,12 @@ ${Object.entries(TYPE_SCALES.sans)
 
 ${Object.entries(TYPE_SCALES.mono)
 	.map(([size, { fontSize, lineHeight }]) => {
-		const ratio = (lineHeight / fontSize).toFixed(4).replace(/\.?0+$/, "");
+		const leadingRem = formatRem(lineHeight);
 		const monoBaseline = TYPE_SCALES.mono.base.lineHeight;
 		const multiple = (lineHeight / monoBaseline).toFixed(2).replace(/\.?0+$/, "");
-		return `	/* ${size}: ${fontSize}px / ${lineHeight}px (${multiple}× baseline) */
-	--type-${size}: ${pxToRem(fontSize)}rem;
-	--leading-${size}: ${ratio};`;
+		return `	/* ${size}: ${formatRem(fontSize)}rem / ${leadingRem}rem (${multiple}× baseline) */
+	--type-${size}: ${formatRem(fontSize)}rem;
+	--leading-${size}: ${leadingRem}rem;`;
 	})
 	.join("\n\n")}
 }

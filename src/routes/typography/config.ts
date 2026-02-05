@@ -51,8 +51,3 @@ export function rangeValues(range: { min: number; max: number; step: number }): 
 export function getCenterValue(values: readonly number[]): number {
 	return values[Math.floor(values.length / 2)];
 }
-
-// Convert px to rem (assuming 16px root font size)
-export function pxToRem(px: number): number {
-	return px / 16;
-}

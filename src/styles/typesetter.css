@@ -1,0 +1,71 @@
+@layer base {
+	[data-t8r-root] {
+		color: inherit;
+	}
+
+	[data-t8r-root] {
+		/*
+			Snap padding defaults live here (not in the typography library) to reduce
+			flash before JS measurements apply final values. Use-case: single-line
+			headings in the typesetter where tuned line-heights don't land on baseline
+			multiples. Limitation: multi-line headings need JS to compute the correct
+			snap for the actual line count.
+		*/
+		--snap-lg: 0rem;
+		--snap-md: 1rem;
+		--snap-base: 0rem;
+		--snap-sm: 0.3125rem;
+		--snap-xs: 0.5rem;
+	}
+
+	[data-t8r-root] :where(h1, h2, h3, h4, h5, h6, p, li, blockquote) {
+		margin: 0;
+		padding-bottom: var(--t8r-snap, 0px);
+	}
+
+	[data-t8r-root] :where(h1, h2, h3, h4, h5, h6):not(:first-child) {
+		margin-top: var(--type-baseline);
+	}
+
+	[data-t8r-root] h1 {
+		font-size: var(--type-lg);
+		line-height: var(--leading-lg);
+		--t8r-snap: var(--snap-lg);
+	}
+
+	[data-t8r-root] h2 {
+		font-size: var(--type-md);
+		line-height: var(--leading-md);
+		--t8r-snap: var(--snap-md);
+	}
+
+	[data-t8r-root] h3 {
+		font-size: var(--type-base);
+		line-height: var(--leading-base);
+		--t8r-snap: var(--snap-base);
+	}
+
+	[data-t8r-root] h4 {
+		font-size: var(--type-sm);
+		line-height: var(--leading-sm);
+		--t8r-snap: var(--snap-sm);
+	}
+
+	[data-t8r-root] h5,
+	[data-t8r-root] h6 {
+		font-size: var(--type-xs);
+		line-height: var(--leading-xs);
+		--t8r-snap: var(--snap-xs);
+	}
+
+	[data-t8r-root] p,
+	[data-t8r-root] li {
+		font-size: var(--type-base);
+		line-height: var(--leading-base);
+	}
+
+	[data-t8r-root] blockquote {
+		font-size: var(--type-md);
+		line-height: var(--leading-md);
+	}
+}

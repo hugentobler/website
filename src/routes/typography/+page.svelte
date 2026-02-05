@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { browser } from "$app/environment";
 	import {
 		AnimatedNumber,
 		Button,
@@ -8,13 +9,12 @@
 		Slider,
 		ToggleGroup,
 	} from "$lib/components/ui";
-	import { FONTS, type FontId, getBaseline, type Size, TYPE_SCALES } from "$lib/typography";
+	import { FONTS, type FontId, type Size, TYPE_SCALES } from "$lib/typography";
 	import {
 		BER_SLANT_RANGE,
 		BER_WEIGHT_RANGE,
 		BER_WIDTH_RANGE,
 		getCenterValue,
-		pxToRem,
 		rangeValues,
 		SAMPLE_TEXT,
 		UNI_STRETCH,
@@ -41,6 +41,8 @@
 	// State
 	// =============================================================================
 
+	const rootFontSizeFallback = 16;
+
 	let settings = $state({
 		typeScales: structuredClone(TYPE_SCALES),
 		activeFont: "sans" as FontId,
@@ -53,13 +55,20 @@
 		berWeight: DEFAULT_BER_WEIGHT,
 		berSlant: DEFAULT_BER_SLANT,
 	});
+	let rootFontSizePx = $state(rootFontSizeFallback);
 
 	// =============================================================================
 	// Derived state
 	// =============================================================================
 
-	// Baseline = base.lineHeight (derived from active font)
-	const baseline = $derived(settings.typeScales[settings.activeFont].base.lineHeight);
+	const remToPx = (rem: number): number => rem * rootFontSizePx;
+	const pxToRem = (px: number): number => px / rootFontSizePx;
+	const formatNumber = (value: number, digits = 2): string =>
+		value.toFixed(digits).replace(/\.?0+$/, "");
+
+	// Baseline = base.lineHeight (derived from active font, rem units)
+	const baselineRem = $derived(settings.typeScales[settings.activeFont].base.lineHeight);
+	const baselinePx = $derived(remToPx(baselineRem));
 
 	// Active Univers stretch value
 	const currentStretch = $derived(
@@ -94,7 +103,7 @@
 
 	/** Format baseline multiple (e.g., "2×" or "0.79×") */
 	function formatMultiple(lineHeight: number): string {
-		const multiple = lineHeight / baseline;
+		const multiple = lineHeight / baselineRem;
 		if (multiple === 1) return "1× (baseline)";
 		if (Number.isInteger(multiple)) return `${multiple}×`;
 		return `${multiple.toFixed(2)}×`;
@@ -117,14 +126,22 @@
 	// Actions
 	// =============================================================================
 
-	function updateTypeScale(
+	function updateTypeScalePx(
 		font: FontId,
 		size: Size,
 		field: "fontSize" | "lineHeight",
-		value: number
+		valuePx: number,
 	) {
-		settings.typeScales[font][size][field] = value;
+		settings.typeScales[font][size][field] = pxToRem(valuePx);
 	}
+
+	$effect(() => {
+		if (!browser) return;
+		const computed = Number.parseFloat(
+			getComputedStyle(document.documentElement).fontSize,
+		);
+		rootFontSizePx = Number.isFinite(computed) ? computed : rootFontSizeFallback;
+	});
 </script>
 
 <!-- =============================================================================
@@ -132,10 +149,12 @@
      ============================================================================= -->
 <div
 	class="m-5 grid auto-rows-min grid-cols-[var(--type-baseline)_1fr] divide-x divide-black *:border-black md:grid-cols-[repeat(2,var(--type-baseline)_1fr)] xl:grid-cols-[repeat(3,var(--type-baseline)_1fr)] [&>*:last-child]:border-r"
-	style:--baseline="{baseline}px"
+	style:--baseline="{baselinePx}px"
 >
 	{#each sizes as size}
 		{@const scale = settings.typeScales[settings.activeFont][size]}
+		{@const scaleFontPx = remToPx(scale.fontSize)}
+		{@const scaleLeadingPx = remToPx(scale.lineHeight)}
 		{@const position = sizes.indexOf(size)}
 		{@const isBase = size === "base"}
 
@@ -167,12 +186,12 @@
 				<div class="mt-1 text-xs">
 					<div class="font-mono">
 						<span class="text-gray-500">px:</span>
-						{scale.fontSize} / {scale.lineHeight}
+						{formatNumber(scaleFontPx)} / {formatNumber(scaleLeadingPx)}
 						<span class="text-gray-400">({formatMultiple(scale.lineHeight)})</span>
 					</div>
 					<div class="font-mono text-gray-600">
 						<span class="text-gray-400">rem:</span>
-						{pxToRem(scale.fontSize).toFixed(3)} / {(scale.lineHeight / scale.fontSize).toFixed(3)}
+						{formatNumber(scale.fontSize, 3)} / {formatNumber(scale.lineHeight, 3)}
 					</div>
 				</div>
 
@@ -183,18 +202,18 @@
 						<Button
 							class="size-6 text-lg font-light"
 							onclick={() =>
-								updateTypeScale(settings.activeFont, size, "fontSize", scale.fontSize - 1)}
+								updateTypeScalePx(settings.activeFont, size, "fontSize", scaleFontPx - 1)}
 							aria-label="Decrease font size"
 						>
 							−
 						</Button>
 						<Output class="h-6 px-2">
-							<AnimatedNumber class="text-sm" value={scale.fontSize} />
+							<AnimatedNumber class="text-sm" value={Number(formatNumber(scaleFontPx))} />
 						</Output>
 						<Button
 							class="size-6 text-lg font-light"
 							onclick={() =>
-								updateTypeScale(settings.activeFont, size, "fontSize", scale.fontSize + 1)}
+								updateTypeScalePx(settings.activeFont, size, "fontSize", scaleFontPx + 1)}
 							aria-label="Increase font size"
 						>
 							+
@@ -205,23 +224,28 @@
 						<Button
 							class="size-6 text-lg font-light"
 							onclick={() =>
-								updateTypeScale(
+								updateTypeScalePx(
 									settings.activeFont,
 									size,
 									"lineHeight",
-									Math.max(1, scale.lineHeight - 1)
+									Math.max(1, scaleLeadingPx - 1),
 								)}
 							aria-label="Decrease line height"
 						>
 							−
 						</Button>
 						<Output class="h-6 px-2">
-							<AnimatedNumber class="text-sm" value={scale.lineHeight} />
+							<AnimatedNumber class="text-sm" value={Number(formatNumber(scaleLeadingPx))} />
 						</Output>
 						<Button
 							class="size-6 text-lg font-light"
 							onclick={() =>
-								updateTypeScale(settings.activeFont, size, "lineHeight", scale.lineHeight + 1)}
+								updateTypeScalePx(
+									settings.activeFont,
+									size,
+									"lineHeight",
+									scaleLeadingPx + 1,
+								)}
 							aria-label="Increase line height"
 						>
 							+
@@ -247,8 +271,8 @@
 				<!-- Text preview -->
 				<div
 					class="absolute inset-0 left-4 overflow-hidden"
-					style:font-size="{scale.fontSize}px"
-					style:line-height={scale.lineHeight / scale.fontSize}
+					style:font-size={`${scale.fontSize}rem`}
+					style:line-height={`${scale.lineHeight}rem`}
 					style:font-family={previewFontSettings.fontFamily}
 					style:font-stretch={previewFontSettings.fontStretch}
 					style:font-weight={previewFontSettings.fontWeight}
@@ -280,7 +304,7 @@
 		<div class="flex flex-col gap-1">
 			<p class="text-xs font-medium">Baseline (= base.lineHeight)</p>
 			<div class="font-mono text-sm">
-				{baseline}px
+				{formatNumber(baselinePx)}px / {formatNumber(baselineRem, 3)}rem
 			</div>
 		</div>
 
@@ -388,8 +412,8 @@
 	<!-- Baseline grid overlay -->
 	<div
 		class="pointer-events-none absolute inset-0 pt-8"
-		style:background-image="repeating-linear-gradient( to bottom, transparent, transparent {baseline -
-			1}px, rgba(0, 0, 0, 0.1) {baseline - 1}px, rgba(0, 0, 0, 0.1) {baseline}px )"
+		style:background-image="repeating-linear-gradient( to bottom, transparent, transparent {baselinePx -
+			1}px, rgba(0, 0, 0, 0.1) {baselinePx - 1}px, rgba(0, 0, 0, 0.1) {baselinePx}px )"
 	></div>
 
 	<!-- Left: Header -->

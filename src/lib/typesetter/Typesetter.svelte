@@ -235,7 +235,6 @@
 		padding: 0;
 		margin: 0;
 		overflow: auto;
-		line-height: var(--t8r-baseline);
 	}
 
 	[data-t8r-source] {

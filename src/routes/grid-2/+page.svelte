@@ -3,6 +3,8 @@
 	import Typesetter from "$lib/typesetter";
 </script>
 
-<Typesetter height="100svh" debug={false}>
-   	<Markdown />
-</Typesetter>
+<div class="font-sans type-base">
+	<Typesetter height="100svh" debug={false}>
+		<Markdown />
+	</Typesetter>
+</div>

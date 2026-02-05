@@ -6,9 +6,7 @@
 
 @import './fonts.css';
 @import './typography.css';
-@import './type-helpers.css';
-@import './type-mono.css';
-@import './type-uni.css';
+@import './typesetter.css';
 @import './type-axes.css';
 
 @plugin '@tailwindcss/typography';
