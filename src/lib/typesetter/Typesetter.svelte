@@ -204,6 +204,8 @@
 				{#each pages as pageItems, pageIndex (pageIndex)}
 					<div
 						data-t8r-page
+						data-t8r-cols={pageGrid.cols}
+						data-t8r-rows={pageGrid.rows}
 						style:--grid-cols={pageGrid.cols}
 						style:--grid-row-h={`${pageGrid.rowHeiPx}px`}
 						style:--grid-row-gap={`${pageGrid.rowGapPx}px`}
@@ -211,6 +213,11 @@
 						{#each pageItems as item (item.id)}
 							<div
 								data-t8r-item
+								data-t8r-id={item.id}
+								data-t8r-col-start={item.gridColStart}
+								data-t8r-col-span={item.gridColSpan}
+								data-t8r-row-start={item.gridRowStart}
+								data-t8r-row-span={item.gridRowSpan}
 								style:--col-start={item.gridColStart}
 								style:--col-span={item.gridColSpan}
 								style:--row-start={item.gridRowStart}
