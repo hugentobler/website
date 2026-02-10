@@ -17,7 +17,5 @@
 - **Imports**: Use SvelteKit aliases (`$lib/`, `$app/`)
 - **Formatting**: Use Biome for all formatting
 - **Naming**: camelCase for variables/functions, PascalCase for components
-- **Svelte 5**: Use runes (`$state`, `$props`, `$effect`), render blocks with `{@render}`
-- **Styling**: Tailwind utilities preferred, use `@apply` for complex styles
-- **Comments**: Minimal, only for complex logic or inspiration credits
+- **Svelte 5**: Use runes (`$state`, `$props`, `$effect`), render blocks with `{@render}`- **Comments**: Minimal, only for complex logic or inspiration credits
 - **File structure**: Components in `$lib/components/`, routes follow SvelteKit conventions

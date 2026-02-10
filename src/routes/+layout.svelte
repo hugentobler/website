@@ -17,13 +17,18 @@
 		// Initial theme is either in localStorage or system preference
 		document.documentElement.dataset.theme =
 			localStorage.getItem("theme") === "dark" ||
-			(!("theme" in localStorage) && window.matchMedia(`(prefers-color-scheme: dark)`).matches)
+			(!("theme" in localStorage) &&
+				window.matchMedia(`(prefers-color-scheme: dark)`).matches)
 				? "dark"
 				: "light";
 	</script>
 
 	<!-- Preconnect to CDN -->
-	<link rel="preconnect" href="https://cdn.hugentobler.xyz" crossorigin="anonymous" />
+	<link
+		rel="preconnect"
+		href="https://cdn.hugentobler.xyz"
+		crossorigin="anonymous"
+	/>
 </svelte:head>
 
 {@render children()}

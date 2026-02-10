@@ -1,5 +1,5 @@
 {
-	"$schema": "https://biomejs.dev/schemas/2.3.13/schema.json",
+	"$schema": "https://biomejs.dev/schemas/2.3.14/schema.json",
 	"assist": {
 		"actions": {
 			"source": {
@@ -21,8 +21,8 @@
 		"lineWidth": 100
 	},
 	"html": {
-		"experimentalFullSupportEnabled": true,
-		"formatter": { "enabled": true, "indentScriptAndStyle": true }
+		"experimentalFullSupportEnabled": true, // Enable experimental support to get Biome assist
+		"formatter": { "enabled": false } // Disable formatter because Svelte still unstable
 	},
 	"json": {
 		"parser": { "allowComments": true, "allowTrailingCommas": true }
