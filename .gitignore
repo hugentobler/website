@@ -27,3 +27,6 @@ test-results
 
 # Fonts
 **/fonts/*
+
+# Firecrawl
+.firecrawl/
