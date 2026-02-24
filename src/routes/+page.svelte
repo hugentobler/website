@@ -1,6 +1,6 @@
 <script lang="ts">
 	const POSTER_TEXT_ROWS = 9;
-	const POSTER_CLIP_RECESS = "1.5rem";
+	const POSTER_CLIP_RECESS = "2.5%"; // container-aware: scales with poster size
 	const FILLER = "Lorem ipsum dolor sit amet, consectetur adipiscing elit";
 </script>
 
@@ -8,7 +8,7 @@
 	<div class="poster font-sans">
 		<div class="recess" style:--recess={POSTER_CLIP_RECESS}>
 			{#each Array(POSTER_TEXT_ROWS) as _, i}
-				<div data-row={i} class="row">{FILLER}</div>
+				<div data-row={i} class="row"><p>{FILLER}</p></div>
 			{/each}
 		</div>
 	</div>
@@ -32,7 +32,8 @@
 		background-color: gray;
 	}
 
-	/* Grid slightly larger than poster, centered, edges clipped for a recessed look */
+	/* Grid slightly larger than poster, centered, edges clipped for a recessed look.
+	   Container-aware typesetting: container-type: size enables cqh units below */
 	.recess {
 		width: calc(100% + var(--recess) * 2);
 		height: calc(100% + var(--recess) * 2);
@@ -41,11 +42,18 @@
 		grid-auto-rows: 1fr;
 	}
 
+	/* Container-aware typesetting: font-size and optical adjustment scale with container height */
 	.row {
-		padding-top: 3rem;
-		padding-left: 3rem;
-		font-size: var(--type-lg);
-		line-height: var(--leading-lg);
+		display: flex;
+		align-items: center;
+		font-size: 8cqh;
+		line-height: 1;
+		text-transform: uppercase;
+		white-space: nowrap;
 		border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+
+		p {
+			transform: translateY(1cqh);
+		}
 	}
 </style>

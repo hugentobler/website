@@ -35,7 +35,7 @@ export type ScaleLevel = {
 	lineHeight: number; // CSS line-height in rem
 };
 
-export type Size = "lg" | "md" | "base" | "sm" | "xs";
+export type Size = "2xl" | "xl" | "lg" | "md" | "base" | "sm" | "xs";
 export type FontId = "sans" | "mono";
 
 // =============================================================================
@@ -59,6 +59,8 @@ export const FONTS = {
  */
 export const TYPE_SCALES: Record<FontId, Record<Size, ScaleLevel>> = {
 	sans: {
+		"2xl": { fontSize: 5, lineHeight: 6 },
+		xl: { fontSize: 3.375, lineHeight: 6 },
 		lg: { fontSize: 2.25, lineHeight: 3 },
 		md: { fontSize: 1.5, lineHeight: 2 },
 		base: { fontSize: 1.125, lineHeight: 1.5 }, // ← baseline = 1.5rem (primary)
@@ -67,6 +69,8 @@ export const TYPE_SCALES: Record<FontId, Record<Size, ScaleLevel>> = {
 	},
 	mono: {
 		// TODO: Tune mono to use base.lineHeight = 1.5rem (same as sans)
+		"2xl": { fontSize: 5.5, lineHeight: 5.5 },
+		xl: { fontSize: 4, lineHeight: 4 },
 		lg: { fontSize: 2.75, lineHeight: 2.75 },
 		md: { fontSize: 2, lineHeight: 2 },
 		base: { fontSize: 1.375, lineHeight: 1.375 },

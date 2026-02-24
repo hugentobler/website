@@ -24,6 +24,14 @@
 @utility font-sans {
 	font-family: var(--font-sans);
 
+	/* 2xl: 5rem / 6rem (4× baseline) */
+	--type-2xl: 5rem;
+	--leading-2xl: 6rem;
+
+	/* xl: 3.375rem / 6rem (4× baseline) */
+	--type-xl: 3.375rem;
+	--leading-xl: 6rem;
+
 	/* lg: 2.25rem / 3rem (2× baseline) */
 	--type-lg: 2.25rem;
 	--leading-lg: 3rem;
@@ -49,6 +57,14 @@
 @utility font-mono {
 	font-family: var(--font-mono);
 
+	/* 2xl: 5.5rem / 5.5rem (4× baseline) */
+	--type-2xl: 5.5rem;
+	--leading-2xl: 5.5rem;
+
+	/* xl: 4rem / 4rem (2.91× baseline) */
+	--type-xl: 4rem;
+	--leading-xl: 4rem;
+
 	/* lg: 2.75rem / 2.75rem (2× baseline) */
 	--type-lg: 2.75rem;
 	--leading-lg: 2.75rem;
@@ -73,6 +89,16 @@
 /* =============================================================================
    Type size utilities
    ============================================================================= */
+
+@utility type-2xl {
+	font-size: var(--type-2xl);
+	line-height: var(--leading-2xl);
+}
+
+@utility type-xl {
+	font-size: var(--type-xl);
+	line-height: var(--leading-xl);
+}
 
 @utility type-lg {
 	font-size: var(--type-lg);

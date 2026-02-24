@@ -148,7 +148,7 @@
      Type Scale Preview Grid
      ============================================================================= -->
 <div
-	class="m-5 grid auto-rows-min grid-cols-[var(--type-baseline)_1fr] divide-x divide-black *:border-black md:grid-cols-[repeat(2,var(--type-baseline)_1fr)] xl:grid-cols-[repeat(3,var(--type-baseline)_1fr)] [&>*:last-child]:border-r"
+	class="m-5 grid auto-rows-min grid-cols-[var(--type-baseline)_1fr] divide-x divide-black *:border-black md:grid-cols-[repeat(2,var(--type-baseline)_1fr)] xl:grid-cols-[repeat(3,var(--type-baseline)_1fr)] 2xl:grid-cols-[repeat(4,var(--type-baseline)_1fr)] [&>*:last-child]:border-r"
 	style:--baseline="{baselinePx}px"
 >
 	{#each sizes as size}
