@@ -8,7 +8,7 @@
 	<div class="poster font-sans">
 		<div class="recess" style:--recess={POSTER_CLIP_RECESS}>
 			{#each Array(POSTER_TEXT_ROWS) as _, i}
-				<div class="row">{FILLER}</div>
+				<div data-row={i} class="row">{FILLER}</div>
 			{/each}
 		</div>
 	</div>
