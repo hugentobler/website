@@ -62,19 +62,21 @@
 		aspect-ratio: calc(1 / sqrt(2));
 		overflow: clip;
 		background-color: gray;
-		transform: rotateX(var(--rx)) rotateY(var(--ry));
-		transition: transform 300ms ease-out;
-		will-change: transform;
+		@media (hover: hover) {
+			transform: rotateX(var(--rx)) rotateY(var(--ry));
+			transition: transform 300ms ease-out;
+			will-change: transform;
+		}
 	}
 
 	/* Grid slightly larger than poster, centered, edges clipped for a recessed look.
 	   Container-aware typesetting: container-type: size enables cqh units below */
 	.recess {
+		display: grid;
+		grid-auto-rows: 1fr;
 		width: calc(100% + var(--recess) * 2);
 		height: calc(100% + var(--recess) * 2);
 		container-type: size;
-		display: grid;
-		grid-auto-rows: 1fr;
 	}
 
 	/* Container-aware typesetting: font-size and optical adjustment scale with container height */
