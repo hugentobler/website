@@ -1,0 +1,31 @@
+@layer base {
+	:root {
+		/* Mono (variable) axes */
+		--mono-wght: 400; /* 100–900 */
+		--mono-stretch: 100%; /* 60%–100% */
+		--mono-slnt: 0; /* -16–0 (slnt axis value) */
+		--mono-tracking: 0em; /* letter-spacing */
+
+		/* Sans (Univers) axes */
+		--sans-weight: 400; /* 300, 400, 600 */
+		--sans-stretch: normal; /* normal | condensed | expanded | ultra-condensed */
+		--sans-tracking: 0em; /* letter-spacing */
+	}
+}
+
+/* Apply axes to Mono containers */
+@utility bm-axes {
+	font-weight: var(--mono-wght);
+	font-stretch: var(--mono-stretch);
+	/* Apply slant via the variable font axis */
+	font-variation-settings: "slnt" var(--mono-slnt);
+	letter-spacing: var(--mono-tracking);
+}
+
+/* Apply axes to Sans containers */
+@utility uni-axes {
+	font-weight: var(--sans-weight);
+	font-stretch: var(--sans-stretch);
+	font-style: var(--sans-style, normal);
+	letter-spacing: var(--sans-tracking);
+}

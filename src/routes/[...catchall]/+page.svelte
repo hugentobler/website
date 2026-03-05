@@ -1,14 +1,11 @@
 <script lang="ts">
-  import Render from '$lib/markdoc/render.svelte';
-  import type { MarkdocPageProps } from '$lib/markdoc/types';
+import type { PageProps } from "./$types";
 
-  let { components = {}, data }: MarkdocPageProps = $props();
-  const { content, frontmatter } = data;
+let { data }: PageProps = $props();
 </script>
 
 <svelte:head>
-  <title>{frontmatter.title}</title>
-  <meta name="description" content={frontmatter.description} />
+    <title>{data.markdown.frontmatter?.title ?? "Undefined title"}</title>
 </svelte:head>
 
-<Render children={content.children} {components} />
+<div class="prose"><data.markdown.default /></div>

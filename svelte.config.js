@@ -1,34 +1,50 @@
-import adapter from '@sveltejs/adapter-cloudflare';
-import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
+import adapter from "@sveltejs/adapter-cloudflare";
+import { vitePreprocess } from "@sveltejs/vite-plugin-svelte";
+import { markdocPreprocess } from "markdoc-svelte";
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
-  extensions: ['.svelte'],
-  // File extensions that should be treated as Svelte files
+	// File extensions to treat as Svelte files
+	extensions: [".svelte", ".md"],
 
-  preprocess: [
-    // Ref: https://svelte.dev/docs/svelte/svelte-compiler#preprocess
-    vitePreprocess()
-    // TypeScript, PostCSS etc as needed by Tailwind in Svelte
-    // Ref: https://github.com/sveltejs/vite-plugin-svelte/blob/main/docs/preprocess.md
-  ],
+	kit: {
+		// Cloudflare Pages adapter
+		// https://svelte.dev/docs/kit/adapter-cloudflare
+		adapter: adapter({
+			platformProxy: {
+				configPath: "wrangler.toml",
+				environment: undefined,
+				persist: true,
+			},
+			routes: {
+				exclude: ["<all>"],
+				include: ["/*"],
+			},
+		}),
 
-  kit: {
-    // Cloudflare Pages adapter
-    // https://svelte.dev/docs/kit/adapter-cloudflare
-    adapter: adapter({
-      routes: {
-        include: ['/*'],
-        exclude: ['<all>']
-      },
-      platformProxy: {
-        configPath: 'wrangler.toml',
-        environment: undefined,
-        experimentalJsonConfig: false,
-        persist: false
-      }
-    })
-  }
+		alias: {
+			$data: "src/data",
+			$styles: "src/styles",
+		},
+
+		// Global prerender configuration
+		prerender: {
+			handleHttpError: "warn",
+			handleMissingId: "warn",
+		},
+	},
+
+	preprocess: [
+		// Process Markdown files with Markdoc
+		markdocPreprocess({
+			linkify: true,
+			schema: "./src/lib/markdoc",
+		}),
+		// Ref: https://svelte.dev/docs/svelte/svelte-compiler#preprocess
+		// TypeScript, PostCSS etc as needed by Tailwind in Svelte
+		// Ref: https://github.com/sveltejs/vite-plugin-svelte/blob/main/docs/preprocess.md
+		vitePreprocess(),
+	],
 };
 
 export default config;

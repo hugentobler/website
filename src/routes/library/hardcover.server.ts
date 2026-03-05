@@ -1,0 +1,98 @@
+import { HARDCOVER_API_BEARER_TOKEN } from "$env/static/private";
+import { handleApiResponse, handleGraphQLResponse } from "$lib/api-error-handler";
+
+const HARDCOVER_API = "https://api.hardcover.app/v1/graphql";
+
+export const getHardcoverBooks = async () => {
+	const res = await fetch(HARDCOVER_API, {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+			Authorization: `${HARDCOVER_API_BEARER_TOKEN}`,
+		},
+		body: JSON.stringify({
+			query: `
+        query {
+          me {
+            activities(
+              where: {event: {_eq: "UserBookActivity"}, data: {}}
+              distinct_on: book_id
+            ) {
+              event
+              data
+              book {
+                title
+                subtitle
+                release_year
+                editions(
+                  order_by: {release_date: desc}
+                  limit: 3
+                  where: {isbn_13: {_is_null: false}}
+                ) {
+                  isbn_13
+                }
+              }
+            }
+          }
+        }
+      `,
+		}),
+	});
+
+	await handleApiResponse(res, {
+		serviceName: "Hardcover",
+		operation: "getHardcoverBooks",
+	});
+
+	const {
+		data,
+		errors,
+	}: {
+		data: {
+			me: Array<{
+				activities: Array<{
+					data: {
+						userBook: {
+							edition?: {
+								title: string;
+								pages: number;
+							};
+							reviewSlate?: {
+								document: {
+									children: Array<{
+										children: Array<{
+											text: string;
+										}>;
+									}>;
+								};
+							};
+						};
+					};
+					book: {
+						title: string;
+						subtitle: string | null;
+						release_year: number;
+						editions: Array<{
+							isbn_13: string;
+						}>;
+					};
+				}>;
+			}>;
+		};
+		errors: any;
+	} = await res.json();
+
+	handleGraphQLResponse(data, errors, {
+		serviceName: "Hardcover",
+		operation: "getHardcoverBooks",
+	});
+
+	return data.me[0].activities.map((activity) => ({
+		title: activity.book.title,
+		subtitle: activity.book.subtitle,
+		releaseYear: activity.book.release_year,
+		editionIsbns: activity.book.editions.map((edition) => edition.isbn_13),
+		reviewText: activity.data.userBook.reviewSlate?.document.children[0].children[0].text,
+		pages: activity.data.userBook.edition?.pages, // Keep for createItem processing
+	}));
+};

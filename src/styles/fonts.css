@@ -8,7 +8,7 @@
   font-stretch: 60% 100%;
   font-style: oblique -16deg 0deg;
   src:
-    url('https://cdn.hugentobler.xyz/bm-variable-1.woff2') format('woff2-variations'),
+    url('https://cdn.hugentobler.xyz/bm-variable.woff2') format('woff2-variations'),
     url('https://cdn.hugentobler.xyz/bm-variable.otf') format('opentype-variations');
 }
 
@@ -248,6 +248,15 @@
   font-style: normal;
   font-weight: 400;
   src: url('https://cdn.hugentobler.xyz/uni-condensed-regular.woff2') format('woff2');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: 'Univers';
+  font-stretch: condensed;
+  font-style: oblique;
+  font-weight: 400;
+  src: url('https://cdn.hugentobler.xyz/uni-condensed-italic.woff2') format('woff2');
 }
 
 @font-face {

@@ -4,38 +4,33 @@ Renders a dynamic layout if a valid layout name is defined in the frontmatter. O
 -->
 
 <script lang="ts">
-  import type { Component } from 'svelte';
+import type { Component } from "svelte";
 
-  import DecoratedLink from '$lib/components/decorated-link.svelte';
-  import { getNavbar } from '$lib/components/navbars.svelte';
-  import type { MarkdocPageData } from '$lib/markdoc/types';
+import type { MarkdocModule } from "markdoc-svelte";
 
-  import { page } from '$app/state';
+import { getNavbar } from "$lib/components/Navbars.svelte";
 
-  import Page from './+page.svelte';
+import { page } from "$app/state";
 
-  // Access frontmatter from child page data
-  const data = page.data as MarkdocPageData;
-  const { frontmatter } = data;
+import Page from "./+page.svelte";
 
-  // Get the correct navbar, fallsback to default
-  const navbar = getNavbar(frontmatter.layout);
+// Access frontmatter from child page data
+const data = page.data as { markdown: MarkdocModule };
+const { frontmatter } = data.markdown;
 
-  // Import the layout from the same folder as the current file
-  // Rollup prefers specifying a filename pattern when importing from the same folder https://github.com/rollup/plugins/tree/master/packages/dynamic-import-vars#limitations
-  let importLayout = frontmatter.layout
-    ? import(`./_${frontmatter.layout}.svelte`)
-        .then((m): Component => m.default)
-        .catch((error) => {
-          console.error(`Error loading layout: "${frontmatter.layout}"`, error);
-          return null;
-        })
-    : null;
+// Get the correct navbar, fallsback to default
+const navbar = getNavbar(frontmatter?.layout);
 
-  // Set default components for all layouts
-  const components = {
-    a: DecoratedLink
-  };
+// Import the layout from the same folder as the current file
+// Rollup prefers specifying a filename pattern when importing from the same folder https://github.com/rollup/plugins/tree/master/packages/dynamic-import-vars#limitations
+let importLayout = frontmatter?.layout
+	? import(`./_${frontmatter.layout}.svelte`)
+			.then((m): Component => m.default)
+			.catch((error) => {
+				console.error(`Error loading layout: "${frontmatter?.layout}"`, error);
+				return null;
+			})
+	: null;
 </script>
 
 <!--
@@ -44,14 +39,14 @@ Directly renders the page component with the default components.
 -->
 {#snippet DefaultLayout()}
   <span>I am the default layout!</span>
-  <Page {components} {data} />
+  <Page {data} />
 {/snippet}
 
 <!--
   Each child page may have it's own custom navbar
 -->
 <nav
-  class="fixed inset-x-0 bottom-0 z-30 mx-auto grid h-(--navbar-height) max-w-[calc(var(--container-5xl)*2)] grid-cols-32"
+  class="fixed inset-x-1 bottom-0 z-30 mx-auto flex h-(--navbar-height) max-w-[calc(var(--container-5xl)*2)] gap-1 py-1"
 >
   {@render navbar()}
 </nav>
@@ -69,7 +64,7 @@ Directly renders the page component with the default components.
   -->
   {#await importLayout then DynamicLayout}
     {#if DynamicLayout}
-      <DynamicLayout {components} {data} />
+      <DynamicLayout {data} />
     {:else}
       {@render DefaultLayout()}
     {/if}

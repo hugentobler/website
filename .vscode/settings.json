@@ -1,16 +1,9 @@
 {
-  // editor
-  "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "explicit"
-  },
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
-  "editor.insertSpaces": true,
-  "editor.formatOnSave": true,
-  "editor.tabSize": 2,
-  // eslint
-  "eslint.validate": ["javascript", "javascriptreact", "svelte"],
-  // prettier
-  "prettier.requireConfig": true,
-  "prettier.documentSelectors": ["**/*.svelte"],
-  "css.validate": false
+	"editor.insertSpaces": false,
+	"editor.tabSize": 2,
+	"editor.codeActionsOnSave": {
+		"source.fixAll.biome": "explicit",
+		"source.organizeImports.biome": "explicit"
+	},
+	"editor.defaultFormatter": "biomejs.biome"
 }

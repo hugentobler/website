@@ -1,4 +1,6 @@
 node_modules
+.ralph
+RALPH.md
 
 # Output
 .output
@@ -20,5 +22,14 @@ Thumbs.db
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 
+# Playwright
+test-results
+
 # Fonts
 **/fonts/*
+
+# Wrangler
+.wrangler/
+
+# Firecrawl
+.firecrawl/
