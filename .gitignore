@@ -28,5 +28,8 @@ test-results
 # Fonts
 **/fonts/*
 
+# Wrangler
+.wrangler/
+
 # Firecrawl
 .firecrawl/

@@ -43,7 +43,7 @@
 		"format": "biome format",
 		"lint": "biome check",
 		"pages:deploy": "bun run build && wrangler pages deploy .svelte-kit/cloudflare",
-		"pages:dev": "wrangler pages dev -- bun run dev",
+		"pages:dev": "wrangler pages dev",
 		"prepare": "svelte-kit sync || echo ''",
 		"preview": "vite preview",
 		"test": "vitest run",

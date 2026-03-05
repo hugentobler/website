@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { ElementSize, useMousePosition } from "runed";
+	import VisitorFeed from "$lib/components/VisitorFeed.svelte";
 	import Portrait from "./home/noguchi.png?enhanced";
 
 	// Poster size and cursor position
@@ -63,15 +64,37 @@
 			</div>
 		</div>
 	</div>
+	<VisitorFeed>
+		{#snippet children({ total, city, country })}
+			<div class="visitor-feed font-sans">
+				{#if total}{total.toLocaleString()} visitors{/if}
+				{#if total && city} · {/if}
+				{#if city}Latest from {city}, {country}{/if}
+			</div>
+		{/snippet}
+	</VisitorFeed>
 </div>
 
 <style lang="postcss">
 	.page-container {
 		display: flex;
+		flex-direction: column;
 		align-items: center;
 		justify-content: center;
 		height: 100svh;
 		perspective: 800px;
+	}
+
+	.visitor-feed {
+		margin-top: 1rem;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		font-size: 0.7rem;
+		font-weight: 400;
+		color: oklch(41.59% 0.0132 95.38 / 0.5);
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		white-space: nowrap;
 	}
 
 	/* 3D tilt: --cursor-x/y (-1..1) drive rotation, clamped to --tilt */
