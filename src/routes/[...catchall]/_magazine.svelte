@@ -109,7 +109,7 @@ onMount(() => {
 </article>
 
 <style lang="postcss">
-  @reference "../../app.css";
+  @reference "$styles/app.css";
 
   article {
     /* grid */
