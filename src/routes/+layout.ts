@@ -1,6 +1,7 @@
 /*
-  Root layout settings
+  Root layout settings.
+  Prerender by default. Individual routes can opt out with prerender = false.
+  hooks.server.ts runs during prerendering (build time) to produce .md files
+  and inject <link rel="alternate"> tags into static HTML.
 */
-
-// prerender everything except pages that are explicitly marked as not prerenderable
 export const prerender = true;

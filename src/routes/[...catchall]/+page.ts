@@ -12,19 +12,20 @@ export const load: PageLoad = async ({ params }) => {
 		const markdown = (await import(`$lib/markdown/${slug}.md`)) as MarkdocModule;
 		return { markdown };
 	} catch {
-		throw error(404, `Markdown file not found for slug "${slug}"`);
+		throw error(404, `No content for "${slug}"`);
 	}
 };
 
-// Export entries for static generation (prerendering enabled globally)
+// Generate entries for prerendering: both HTML pages and .md versions.
+// During the prerender pass, /{slug}.md requests are intercepted by
+// handle in hooks.server.ts, which returns raw markdown content.
 export const entries: EntryGenerator = async () => {
-	const content = await Promise.all(
+	const slugs = await Promise.all(
 		Object.values(markdownModules).map(async (importModule) => {
 			const module = (await importModule()) as MarkdocModule;
-			return {
-				catchall: module.slug,
-			};
+			return module.slug;
 		}),
 	);
-	return content;
+
+	return slugs.flatMap((slug) => [{ catchall: slug }, { catchall: `${slug}.md` }]);
 };

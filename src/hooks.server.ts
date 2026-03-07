@@ -1,148 +1,96 @@
 /**
- * Server hook: bot-friendly markdown serving + visit recording.
+ * Server hook: markdown serving + bot detection.
  *
- * This site has two types of pages:
+ * Runs at build time (prerendering) and at runtime (SSR pages only —
+ * prerendered pages are served by the CDN and bypass this hook).
  *
- *   Content pages (/bowtie, /luxor, …)
- *     Source markdown lives in src/lib/markdown/.
- *     - Humans see HTML — markdoc-svelte compiles .md → Svelte component.
- *     - Bots are 302-redirected to /{slug}.md, which serves the raw markdown.
- *     - Anyone can access /{slug}.md directly.
+ * Build time + runtime:
+ *   - Serves raw markdown for /{slug}.md requests. At build time this
+ *     produces prerendered .md static files alongside the HTML versions.
+ *   - Injects <link rel="alternate" type="text/markdown"> into <head>
+ *     via transformPageChunk. Baked into prerendered HTML too.
  *
- *   Non-content pages (/, /library, …)
- *     Built as custom Svelte components with no markdown source.
- *     - Hand-written summaries should be placed in static/ (e.g. static/home.md).
- *       These are served by the CDN (production) or Vite's static handler (dev)
- *       and never reach this hook.
- *     - Bots are always redirected to .md — missing summaries naturally 404.
+ * Runtime only (guarded by !building):
+ *   - 302-redirects bots to /{slug}.md (user-agent detection via
+ *     crawler-user-agents: https://github.com/monperrus/crawler-user-agents).
  *
- * Bot detection uses the community-maintained crawler-user-agents list
- * (https://github.com/monperrus/crawler-user-agents), matched as a single
- * compiled regex against the request's User-Agent header.
- * In dev, append ?bot to any URL to simulate bot behavior.
+ * Analytics are handled by the client-side beacon (POST /api/visit),
+ * not by this hook, so they work for both SSR and SSG pages.
  *
- * Visit recording writes pathname + geo (city/country from Cloudflare) to D1.
- * Failures are swallowed — analytics must never break the site.
+ * Dev: append ?bot to any URL to simulate bot detection.
  */
 
 import type { Handle } from "@sveltejs/kit";
 import crawlers from "crawler-user-agents";
-import { dev } from "$app/environment";
+import { building, dev } from "$app/environment";
 
-/* ------------------------------------------------------------------ */
-/*  Raw markdown content (eager, build-time)                          */
-/* ------------------------------------------------------------------ */
-
+// Raw markdown content, loaded at build time via Vite's ?raw query.
+// markdoc-svelte processes the same files separately for HTML rendering.
 const rawModules = import.meta.glob("/src/lib/markdown/*.md", {
-  eager: true,
-  import: "default",
-  query: "?raw",
+	eager: true,
+	import: "default",
+	query: "?raw",
 }) as Record<string, string>;
 
-/** Content markdown keyed by slug, e.g. "bowtie" → raw markdown string. */
 const markdownBySlug = new Map<string, string>();
 for (const [path, content] of Object.entries(rawModules)) {
-  const slug = path.match(/\/([^/]+)\.md$/)?.[1];
-  if (slug) markdownBySlug.set(slug, content);
+	const slug = path.match(/\/([^/]+)\.md$/)?.[1];
+	if (slug) markdownBySlug.set(slug, content);
 }
 
-/* ------------------------------------------------------------------ */
-/*  Bot detection (user-agent based)                                  */
-/* ------------------------------------------------------------------ */
-
-/** Single regex compiled from all crawler-user-agents patterns. */
-const botPattern = new RegExp(
-  crawlers.map((c) => `(?:${c.pattern})`).join("|"),
-  "i",
-);
+// Bot detection: single compiled regex from all crawler-user-agents patterns.
+const botPattern = new RegExp(crawlers.map((c) => `(?:${c.pattern})`).join("|"), "i");
 
 function isBot(userAgent: string): boolean {
-  return botPattern.test(userAgent);
+	return botPattern.test(userAgent);
 }
-
-/* ------------------------------------------------------------------ */
-/*  Platform helpers                                                  */
-/* ------------------------------------------------------------------ */
-
-/** Safe accessor — platform.env throws on prerenderable routes. */
-function getDB(platform: App.Platform | undefined): D1Database | null {
-  try {
-    return platform?.env?.DB ?? null;
-  } catch {
-    return null;
-  }
-}
-
-/** Safe accessor — platform.cf unavailable in dev and on prerenderable routes. */
-function getCf(platform: App.Platform | undefined): CfProperties | undefined {
-  try {
-    return platform?.cf;
-  } catch {
-    return undefined;
-  }
-}
-
-/* ------------------------------------------------------------------ */
-/*  Hook                                                              */
-/* ------------------------------------------------------------------ */
 
 export const handle: Handle = async ({ event, resolve }) => {
-  const { platform, url, request } = event;
-  const pathname = url.pathname;
+	const { url, request } = event;
+	const pathname = url.pathname;
 
-  // Serve raw markdown for /{slug}.md URLs (available to anyone).
-  // Only content pages (those in src/lib/markdown/) are handled here.
-  // Static summaries like /home.md are served by the CDN/Vite before this runs.
-  if (pathname.endsWith(".md")) {
-    const slug = pathname.slice(1, -3); // "/bowtie.md" → "bowtie"
-    const content = markdownBySlug.get(slug);
-    if (content) {
-      return new Response(content, {
-        headers: { "Content-Type": "text/markdown; charset=utf-8" },
-      });
-    }
-  }
+	// Serve raw markdown for /{slug}.md URLs (available to anyone).
+	// At build time, this produces prerendered .md static files.
+	// At runtime, serves .md for SSR pages (SSG .md files are on the CDN).
+	// Static summaries (e.g. /home.md) are served by the CDN/Vite before
+	// reaching this hook.
+	if (pathname.endsWith(".md")) {
+		const slug = pathname.slice(1, -3); // "/bowtie.md" → "bowtie"
+		const content = markdownBySlug.get(slug);
+		if (content) {
+			return new Response(content, {
+				headers: { "Content-Type": "text/markdown; charset=utf-8" },
+			});
+		}
+	}
 
-  // Record visit to D1 (pathname only — query params / hashes not stored).
-  const db = getDB(platform);
-  const cf = getCf(platform);
-  if (db) {
-    try {
-      await db
-        .prepare(
-          "INSERT INTO visits (path, city, country, timestamp) VALUES (?, ?, ?, ?)",
-        )
-        .bind(
-          pathname,
-          (cf?.city as string) ?? "",
-          (cf?.country as string) ?? "",
-          Date.now(),
-        )
-        .run();
-    } catch {
-      // Non-blocking — analytics failures must not break the site
-    }
-  }
+	// Runtime only: redirect bots to /{slug}.md.
+	// Skipped during prerendering (building) since there's no real user-agent.
+	if (!building) {
+		const ua = request.headers.get("user-agent") ?? "";
+		if (
+			!pathname.endsWith(".md") &&
+			!pathname.startsWith("/api/") &&
+			(isBot(ua) || (dev && url.searchParams.has("bot")))
+		) {
+			const slug = pathname === "/" ? "home" : pathname.replace(/^\//, "").replace(/\/$/, "");
+			return new Response(null, {
+				headers: { Location: `/${slug}.md` },
+				status: 302,
+			});
+		}
+	}
 
-  // Redirect bots to /{slug}.md unconditionally.
-  // Content pages are served from the build-time glob above.
-  // Non-content pages need a hand-written summary in static/ (e.g. static/home.md).
-  // Missing .md files naturally 404 — that's our signal to add one.
-  // In dev, append ?bot to simulate: http://localhost:5173/bowtie?bot
-  const ua = request.headers.get("user-agent") ?? "";
-  if (
-    !pathname.endsWith(".md") &&
-    (isBot(ua) || (dev && url.searchParams.has("bot")))
-  ) {
-    const slug =
-      pathname === "/"
-        ? "home"
-        : pathname.replace(/^\//, "").replace(/\/$/, "");
-    return new Response(null, {
-      headers: { Location: `/${slug}.md` },
-      status: 302,
-    });
-  }
+	// Inject <link rel="alternate"> into <head> for all HTML pages.
+	// Runs during both prerendering and SSR, so the tag is baked into
+	// all static HTML and present on all SSR pages.
+	const slug = pathname === "/" ? "home" : pathname.replace(/^\//, "").replace(/\/$/, "");
 
-  return resolve(event);
+	return resolve(event, {
+		transformPageChunk: ({ html }) =>
+			html.replace(
+				"</head>",
+				`<link rel="alternate" type="text/markdown" href="/${slug}.md">\n</head>`,
+			),
+	});
 };
