@@ -29,6 +29,15 @@
 	},
 	"overrides": [
 		{
+			"assist": {
+				"actions": {
+					"source": { "useSortedProperties": "off" }
+				}
+			},
+			"formatter": { "enabled": false },
+			"includes": ["src/styles/typography.css"]
+		},
+		{
 			"includes": ["**/*.svelte", "**/*.astro", "**/*.vue"],
 			"linter": {
 				"rules": {

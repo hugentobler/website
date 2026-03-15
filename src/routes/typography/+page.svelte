@@ -71,7 +71,11 @@
 
 	const lerp = (min: number, max: number) => min + (max - min) * interpolation;
 
-	const fmt = (v: number, d = 2) => v.toFixed(d).replace(/(\.\d*?)0+$/, "$1").replace(/\.$/, "");
+	const fmt = (v: number, d = 2) =>
+		v
+			.toFixed(d)
+			.replace(/(\.\d*?)0+$/, "$1")
+			.replace(/\.$/, "");
 
 	// =============================================================================
 	// Grid-lock detection
@@ -190,7 +194,7 @@
 	);
 
 	const fontUtilityClass = $derived(
-		settings.activeFont === "sans" ? "font-sans" : "font-mono",
+		settings.activeFont === "sans" ? "sans" : "mono",
 	);
 
 	// =============================================================================
@@ -244,7 +248,9 @@
 	{#each sizes as size}
 		{@const r = resolved.sizes[size]}
 		{@const isBase = size === "base"}
-		{@const linesPerRow = Math.round(4 * resolved.baseline.rem / r.lineHeightRem)}
+		{@const linesPerRow = Math.round(
+			(4 * resolved.baseline.rem) / r.lineHeightRem,
+		)}
 
 		<!-- Spacer column (baseline width) -->
 		<div>
@@ -311,11 +317,9 @@
 				{#each Array(PREVIEW_ROWS) as _}
 					<div class="grid-row preview-row">
 						<!-- Sub-grid lines -->
-						<div class="sub-grid">
+						<div class="sub-grid {fontUtilityClass}">
 							{#each Array(linesPerRow) as _}
-								<div
-									style:height={`calc(var(--type-baseline) * 4 / ${linesPerRow})`}
-								></div>
+								<div style:height={`var(--leading-${size})`}></div>
 							{/each}
 						</div>
 					</div>
@@ -460,12 +464,12 @@
 
 	<!-- Left: Header -->
 	<div>
-		<h2 class="type-lg font-sans">A new approach to typography</h2>
+		<h2 class="type-lg sans">A new approach to typography</h2>
 	</div>
 
 	<!-- Right: Body text -->
 	<div>
-		<p class="type-base font-sans">
+		<p class="type-base sans">
 			Typography serves language, not the convenience of a system. The strongest
 			type systems are specific, opinionated, and crafted with care for the
 			context they serve. For many designers, typography is a first love. In the
@@ -501,7 +505,7 @@
 
 	.scale-grid {
 		display: grid;
-		grid-template-columns: var(--type-baseline) 1fr;
+		grid-template-columns: var(--baseline) 1fr;
 		grid-auto-rows: min-content;
 		margin: 1.25rem;
 
@@ -516,13 +520,13 @@
 		}
 
 		@media (min-width: 768px) {
-			grid-template-columns: repeat(2, var(--type-baseline) 1fr);
+			grid-template-columns: repeat(2, var(--baseline) 1fr);
 		}
 		@media (min-width: 1280px) {
-			grid-template-columns: repeat(3, var(--type-baseline) 1fr);
+			grid-template-columns: repeat(3, var(--baseline) 1fr);
 		}
 		@media (min-width: 1536px) {
-			grid-template-columns: repeat(4, var(--type-baseline) 1fr);
+			grid-template-columns: repeat(4, var(--baseline) 1fr);
 		}
 	}
 
@@ -542,7 +546,7 @@
 	}
 
 	.grid-row {
-		height: calc(var(--type-baseline) * 4);
+		height: calc(var(--baseline) * 4);
 	}
 
 	/* --- Typography column --- */
@@ -723,7 +727,7 @@
 		position: relative;
 		display: grid;
 		grid-template-columns: 1fr 2fr;
-		gap: var(--type-baseline);
+		gap: var(--baseline);
 		padding-top: 2rem;
 		margin: 1.25rem;
 		margin-top: 4rem;

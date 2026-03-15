@@ -13,150 +13,150 @@
 /* @plugin "@tailwindcss/forms"; */
 
 /* override default dark mode utilities based on 'prefers-color-scheme' */
-@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
 
 /* register custom properties for transitions */
 @property --gradient-stop {
-  syntax: '<percentage>';
-  initial-value: 0%;
-  inherits: false;
+	syntax: '<percentage>';
+	initial-value: 0%;
+	inherits: false;
 }
 
 @theme {
-  /* baseline spacing utility (uses --type-baseline from typography.css) */
-  --spacing-baseline: var(--type-baseline);
+	/* baseline spacing utility (uses --baseline from typography.css) */
+	--spacing-baseline: var(--baseline);
 
-  /* animation utilities */
-  --animate-fade-in: fade-in 300ms ease;
-  --animate-underline: underline 100ms ease-out;
-  --animate-underline-vertical: underline-vertical 100ms ease-out;
-  --animate-flip-in: flip-in 600ms;
+	/* animation utilities */
+	--animate-fade-in: fade-in 300ms ease;
+	--animate-underline: underline 100ms ease-out;
+	--animate-underline-vertical: underline-vertical 100ms ease-out;
+	--animate-flip-in: flip-in 600ms;
 
-  /* breakpoint utilities */
-  --breakpoint-3xl: 120rem;
-  --breakpoint-4xl: 150rem;
+	/* breakpoint utilities */
+	--breakpoint-3xl: 120rem;
+	--breakpoint-4xl: 150rem;
 
-  /* font family utilities */
-  --font-mono: Berkeley Mono Variable, Berkeley Mono, monospace;
-  --font-sans: Univers, sans-serif;
+	/* font family utilities */
+	--font-mono: Berkeley Mono Variable, Berkeley Mono, monospace;
+	--font-sans: Univers, sans-serif;
 
-  /* animation keyframes */
-  @keyframes fade-in {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
-  }
+	/* animation keyframes */
+	@keyframes fade-in {
+		from {
+			opacity: 0;
+		}
+		to {
+			opacity: 1;
+		}
+	}
 
-  @keyframes flip-in {
-    from {
-      transform: rotateX(-36deg);
-    }
-    to {
-      transform: rotateX(0deg);
-    }
-  }
+	@keyframes flip-in {
+		from {
+			transform: rotateX(-36deg);
+		}
+		to {
+			transform: rotateX(0deg);
+		}
+	}
 
-  @keyframes underline {
-    from {
-      background-size: 0 1px;
-    }
-    to {
-      background-size: 100% 1px;
-    }
-  }
+	@keyframes underline {
+		from {
+			background-size: 0 1px;
+		}
+		to {
+			background-size: 100% 1px;
+		}
+	}
 
-  @keyframes underline-vertical {
-    from {
-      background-size: '0 0';
-    }
-    to {
-      background-size: '1px 100%';
-    }
-  }
+	@keyframes underline-vertical {
+		from {
+			background-size: '0 0';
+		}
+		to {
+			background-size: '1px 100%';
+		}
+	}
 }
 
 @layer base {
-  :root {
-    /* light theme variables */
+	:root {
+		/* light theme variables */
 
-    /* navbar - we provide this default to child layouts */
-    --navbar-height: calc(var(--spacing) * 16);
+		/* navbar - we provide this default to child layouts */
+		--navbar-height: calc(var(--spacing) * 16);
 
-    /* scrollbar variables - auto-adapt to theme via --foreground/--background */
-    --scrollbar-color-thumb: var(--foreground);
-    --scrollbar-color-track: var(--background);
-    --scrollbar-width: auto;
-    --scrollbar-width-legacy: var(--text-base);
+		/* scrollbar variables - auto-adapt to theme via --foreground/--background */
+		--scrollbar-color-thumb: var(--foreground);
+		--scrollbar-color-track: var(--background);
+		--scrollbar-width: auto;
+		--scrollbar-width-legacy: var(--text-base);
 
-    /* scroll timeline variables */
-    --scroll-timeline: --scroll-timeline;
-  }
+		/* scroll timeline variables */
+		--scroll-timeline: --scroll-timeline;
+	}
 }
 
 /* default scrollbar styling */
 /* https://developer.chrome.com/docs/css-ui/scrollbar-styling */
 @supports (scrollbar-width: auto) {
-  * {
-    scrollbar-color: var(--scrollbar-color-thumb) var(--scrollbar-color-track);
-    scrollbar-width: var(--scrollbar-width);
-  }
+	* {
+		scrollbar-color: var(--scrollbar-color-thumb) var(--scrollbar-color-track);
+		scrollbar-width: var(--scrollbar-width);
+	}
 }
 
 /* fallback scrollbar styling */
 @supports not (scrollbar-color: auto) {
-  ::-webkit-scrollbar {
-    -webkit-appearance: none;
-    height: var(--scrollbar-width-legacy);
-    width: var(--scrollbar-width-legacy);
-  }
+	::-webkit-scrollbar {
+		width: var(--scrollbar-width-legacy);
+		height: var(--scrollbar-width-legacy);
+		-webkit-appearance: none;
+	}
 
-  ::-webkit-scrollbar-thumb {
-    background: var(--scrollbar-color-thumb);
-    border-radius: var(--radius-lg);
-    border: var(--spacing) solid var(--scrollbar-color-track);
-  }
+	::-webkit-scrollbar-thumb {
+		background: var(--scrollbar-color-thumb);
+		border: var(--spacing) solid var(--scrollbar-color-track);
+		border-radius: var(--radius-lg);
+	}
 
-  ::-webkit-scrollbar-track {
-    background: var(--scrollbar-color-track);
-  }
+	::-webkit-scrollbar-track {
+		background: var(--scrollbar-color-track);
+	}
 
-  ::-webkit-scrollbar-corner {
-    background: var(--scrollbar-color-track);
-  }
+	::-webkit-scrollbar-corner {
+		background: var(--scrollbar-color-track);
+	}
 }
 
 /* scroll timeline utilities */
 @utility scroll-timeline-y {
-  animation-timeline: scroll(); /* Modern */
-  animation-timeline: --scroll-timeline; /* Legacy */
-  scroll-timeline-name: --scroll-timeline;
-  scroll-timeline-axis: block; /* Modern syntax for vertical */
+	animation-timeline: scroll(); /* Modern */
+	animation-timeline: --scroll-timeline; /* Legacy */
+	scroll-timeline-name: --scroll-timeline;
+	scroll-timeline-axis: block; /* Modern syntax for vertical */
 }
 
 @utility scroll-timeline-x {
-  animation-timeline: scroll(); /* Modern */
-  animation-timeline: --scroll-timeline; /* Legacy */
-  scroll-timeline-name: --scroll-timeline;
-  scroll-timeline-axis: inline; /* Modern syntax for horizontal */
+	animation-timeline: scroll(); /* Modern */
+	animation-timeline: --scroll-timeline; /* Legacy */
+	scroll-timeline-name: --scroll-timeline;
+	scroll-timeline-axis: inline; /* Modern syntax for horizontal */
 }
 
 @utility animate-scroll-timeline {
-  animation: scroll-progress linear;
-  animation-timeline: scroll();
-  animation-range:
-    entry 0%,
-    exit 100%;
-  animation-duration: 1ms; /* Firefox */
+	animation: scroll-progress linear;
+	animation-timeline: scroll();
+	animation-range:
+		entry 0%,
+		exit 100%;
+	animation-duration: 1ms; /* Firefox */
 }
 
 @keyframes scroll-progress {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
 }

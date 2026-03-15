@@ -1,3 +1,4 @@
+// biome-ignore-all assist/source/useSortedKeys: key order is load-bearing
 // Typography preview UI configuration
 // Font variation controls and helpers specific to the preview tool
 
@@ -27,9 +28,9 @@ export const UNI_WEIGHTS: readonly number[] = Array.from(
 // =============================================================================
 
 // Berkeley Mono: variable font axis ranges for UI controls
-export const BER_WEIGHT_RANGE = { min: 100, max: 900, step: 50 } as const;
-export const BER_WIDTH_RANGE = { min: 60, max: 100, step: 10 } as const;
-export const BER_SLANT_RANGE = { min: -16, max: 0, step: 1 } as const;
+export const BER_WEIGHT_RANGE = { max: 900, min: 100, step: 50 } as const;
+export const BER_WIDTH_RANGE = { max: 100, min: 60, step: 10 } as const;
+export const BER_SLANT_RANGE = { max: 0, min: -16, step: 1 } as const;
 
 // =============================================================================
 // UI Helpers

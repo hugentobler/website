@@ -8,4 +8,4 @@ let { data }: PageProps = $props();
     <title>{data.markdown.frontmatter?.title ?? "Undefined title"}</title>
 </svelte:head>
 
-<div class="prose"><data.markdown.default /></div>
+<div class="font-sans" data-t8r-root><data.markdown.default /></div>

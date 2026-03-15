@@ -148,7 +148,7 @@
 	}
 
 	.viewport {
-		--type-baseline: 24px;
+		--baseline: 24px;
 		overflow: hidden;
 		font-family: system-ui, sans-serif;
 		font-size: 16px;

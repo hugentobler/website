@@ -19,7 +19,7 @@
 
 <div class="page-container">
 	<div
-		class="poster font-sans"
+		class="poster sans"
 		bind:this={poster}
 		style:--cursor-x={cursorX}
 		style:--cursor-y={cursorY}
@@ -66,7 +66,7 @@
 	</div>
 	<VisitorFeed>
 		{#snippet children({ total, city, country })}
-			<div class="visitor-feed font-sans">
+			<div class="visitor-feed sans type-xs">
 				{#if total}{total.toLocaleString()} visitors{/if}
 				{#if total && city} · {/if}
 				{#if city}Latest from {city}, {country}{/if}
@@ -75,7 +75,7 @@
 	</VisitorFeed>
 </div>
 
-<style lang="postcss">
+<style>
 	.page-container {
 		display: flex;
 		flex-direction: column;
@@ -89,7 +89,6 @@
 		margin-top: 1rem;
 		overflow: hidden;
 		text-overflow: ellipsis;
-		font-size: 0.7rem;
 		font-weight: 400;
 		color: oklch(41.59% 0.0132 95.38 / 0.5);
 		text-transform: uppercase;

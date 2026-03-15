@@ -235,7 +235,7 @@
 
 <style>
 	[data-t8r-root] {
-		--t8r-baseline: var(--type-baseline, 1.5rem);
+		--t8r-baseline: var(--baseline, 1.5rem);
 		position: relative;
 		width: 100%;
 		height: 100%; /* root takes full height of parent */
