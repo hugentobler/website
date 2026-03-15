@@ -92,7 +92,7 @@
 		--scrollbar-width-legacy: var(--text-base);
 
 		/* scroll timeline variables */
-		--scroll-timeline: --scroll-timeline;
+		--scroll-timeline: var(--scroll-timeline);
 	}
 }
 

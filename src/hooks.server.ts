@@ -45,9 +45,23 @@ function isBot(userAgent: string): boolean {
 	return botPattern.test(userAgent);
 }
 
+// Production routes — only these paths are live. Everything else 404s.
+const ALLOWED_PATHS = new Set(["/"]);
+
 export const handle: Handle = async ({ event, resolve }) => {
 	const { url, request } = event;
 	const pathname = url.pathname;
+
+	// Production route guard: 404 anything not explicitly allowed.
+	// Skipped in dev so all routes remain accessible during development.
+	if (
+		!dev &&
+		!ALLOWED_PATHS.has(pathname) &&
+		!pathname.endsWith(".md") &&
+		!pathname.startsWith("/api/")
+	) {
+		return new Response("Not found", { status: 404 });
+	}
 
 	// Serve raw markdown for /{slug}.md URLs (available to anyone).
 	// At build time, this produces prerendered .md static files.

@@ -1,7 +1,6 @@
 /*
   Root layout settings.
-  Prerender by default. Individual routes can opt out with prerender = false.
-  hooks.server.ts runs during prerendering (build time) to produce .md files
-  and inject <link rel="alternate"> tags into static HTML.
+  Prerender off by default — only explicitly opted-in routes get prerendered.
+  In production, hooks.server.ts 404s any route not in ALLOWED_PATHS.
 */
-export const prerender = true;
+export const prerender = false;
