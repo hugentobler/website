@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { ElementSize, useMousePosition } from "runed";
 	import VisitorFeed from "$lib/components/VisitorFeed.svelte";
+	import LondonTelephone from "./home/london-telephone-josef-müller-brockmann.jpg?enhanced";
 	import Portrait from "./home/noguchi.png?enhanced";
 
 	// Poster size and cursor position
@@ -15,74 +16,170 @@
 	const cursorY = $derived(
 		size.height ? (mouse.elementY / size.height) * 2 - 1 : 0,
 	);
+
+	let showInspo = $state(false);
 </script>
 
 <div class="page-container">
-	<div
-		class="poster sans"
-		bind:this={poster}
-		style:--cursor-x={cursorX}
-		style:--cursor-y={cursorY}
-		style:--recess={2.4}
-	>
-		<div class="recess">
-			<div class="row" style:--indent={-10}>
-				<p>Hong Kong <em>A</em> Economics</p>
-			</div>
-			<div class="row" style:--indent={-23}>
-				<p>Inspect <em>Technologist</em> Element</p>
-			</div>
-			<div class="row" style:--indent={-5}>
-				<p>Taipei <em>In Pursuit</em> Curiosity</p>
-			</div>
-			<div class="row" style:--indent={-15}>
-				<p>Insurance <em>Of The</em> Access</p>
-			</div>
-			<div class="row" style:--indent={-15}>
-				<p>Long <em>Evergreen</em> Material</p>
-			</div>
-			<div class="row" style:--indent={-15}>
-				<p>High Surplus Education</p>
-				<div style:--indent={18}>for the unorthodox</div>
-			</div>
-			<div class="row" style:--indent={-10}>
-				<p>Circularity Los Angeles</p>
-				<div style:--indent={12}>and for industry</div>
-			</div>
-			<div class="row" style:--indent={-5}>
-				<p>Seed Agency Boundary</p>
-			</div>
-			<div class="row" style:--indent={-6}>
-				<p>Commons Hong Kong</p>
-			</div>
-			<div class="img">
+	<div class="left">
+		<VisitorFeed>
+			{#snippet children({ total, city, country })}
+				<div class="visitor-feed sans type-xs">
+					{#if total}{total.toLocaleString()} visitors{/if}
+					{#if total && city}
+						·
+					{/if}
+					{#if city}Latest from {city}, {country}{/if}
+				</div>
+			{/snippet}
+		</VisitorFeed>
+	</div>
+	<div class="right">
+		{#if showInspo}
+			<button
+				type="button"
+				class="poster inspo-full"
+				onclick={() => (showInspo = false)}
+			>
 				<enhanced:img
-					src={Portrait}
-					alt="Christopher Hugentobler in Noguchi Garden"
+					src={LondonTelephone}
+					alt="London Telephone poster by Josef Müller-Brockmann"
 				/>
-				<enhanced:img src={Portrait} alt="" aria-hidden="true" />
+			</button>
+		{:else}
+			<div
+				class="poster sans"
+				bind:this={poster}
+				style:--cursor-x={cursorX}
+				style:--cursor-y={cursorY}
+				style:--recess={2.4}
+			>
+				<div class="recess">
+					<div class="row" style:--indent={-10}>
+						<p>Hong Kong <em>A</em> Economics</p>
+					</div>
+					<div class="row" style:--indent={-23}>
+						<p>Inspect <em>Technologist</em> Element</p>
+					</div>
+					<div class="row" style:--indent={-5}>
+						<p>Taipei <em>In Pursuit</em> Curiosity</p>
+					</div>
+					<div class="row" style:--indent={-15}>
+						<p>Insurance <em>Of The</em> Access</p>
+					</div>
+					<div class="row" style:--indent={-15}>
+						<p>Long <em>Evergreen</em> Material</p>
+					</div>
+					<div class="row" style:--indent={-15}>
+						<p>High Surplus Education</p>
+						<div style:--indent={18}>for the unorthodox</div>
+					</div>
+					<div class="row" style:--indent={-10}>
+						<p>Circularity Los Angeles</p>
+						<div style:--indent={12}>and for industry</div>
+					</div>
+					<div class="row" style:--indent={-5}>
+						<p>Seed Agency Boundary</p>
+					</div>
+					<div class="row" style:--indent={-6}>
+						<p>Commons Hong Kong</p>
+					</div>
+					<div class="img">
+						<enhanced:img
+							src={Portrait}
+							alt="Christopher Hugentobler in Noguchi Garden"
+						/>
+						<enhanced:img src={Portrait} alt="" aria-hidden="true" />
+					</div>
+				</div>
 			</div>
+		{/if}
+		<div class="inspo-bar">
+			{#if showInspo}
+				<p
+					class="sans type-base"
+					style:font-stretch="ultra-condensed"
+					style:font-weight={300}
+				>
+					<span style:font-weight={400}>London Telephone</span>, 1957<br />Josef
+					Müller-Brockmann (1914–96)
+				</p>
+			{/if}
+			<button
+				type="button"
+				class="inspo"
+				onclick={() => (showInspo = !showInspo)}
+			>
+				<enhanced:img
+					src={LondonTelephone}
+					alt="London Telephone poster by Josef Müller-Brockmann"
+				/>
+			</button>
 		</div>
 	</div>
-	<VisitorFeed>
-		{#snippet children({ total, city, country })}
-			<div class="visitor-feed sans type-xs">
-				{#if total}{total.toLocaleString()} visitors{/if}
-				{#if total && city} · {/if}
-				{#if city}Latest from {city}, {country}{/if}
-			</div>
-		{/snippet}
-	</VisitorFeed>
 </div>
 
 <style>
 	.page-container {
+		display: grid;
+		grid-template-columns: 1fr auto;
+		height: 100svh;
+	}
+
+	.left {
+		/* placeholder */
+	}
+
+	.right {
+		--padding-top: calc(1 * var(--baseline));
+		--padding-bottom: calc(4 * var(--baseline));
 		display: flex;
 		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		height: 100svh;
+		gap: var(--baseline);
+		align-items: end;
+		padding: var(--padding-top) var(--baseline) var(--padding-bottom);
 		perspective: 800px;
+	}
+
+	.inspo-full {
+		padding: 0;
+		overflow: hidden;
+		cursor: zoom-out;
+		background: none;
+		border: none;
+
+		:global(picture) {
+			width: 100%;
+			height: 100%;
+		}
+
+		:global(img) {
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+		}
+	}
+
+	.inspo-bar {
+		display: flex;
+		gap: var(--baseline);
+	}
+
+	.inspo {
+		padding: 0;
+		cursor: zoom-in;
+		background: none;
+		border: none;
+
+		:global(img) {
+			width: auto;
+			height: auto;
+			max-height: calc(var(--baseline) * 2);
+			filter: grayscale();
+			&:hover {
+				filter: none;
+			}
+		}
 	}
 
 	.visitor-feed {
@@ -114,7 +211,7 @@
 		position: relative;
 		display: grid;
 		place-items: center;
-		width: min(calc(100svw - 6rem), calc((100svh - 6rem) / sqrt(2)));
+		height: calc(100svh - var(--padding-top) - var(--padding-bottom));
 		aspect-ratio: calc(1 / sqrt(2));
 		overflow: clip;
 		background-color: oklch(85.85% 0.0315 96.92);
@@ -131,8 +228,8 @@
 			z-index: 1;
 			/* Span ~4 of 9 rows */
 			height: calc(4 / 9 * 100%);
-
 			overflow: hidden;
+			pointer-events: none;
 
 			@media (hover: hover) {
 				--shift: 0.8%;
