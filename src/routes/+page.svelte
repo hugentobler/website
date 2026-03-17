@@ -20,11 +20,24 @@
 	let showInspo = $state(false);
 </script>
 
-<div class="page-container">
+<svelte:window
+	onpointerdown={(e) => {
+		if (
+			showInspo &&
+			!(e.target as Element).closest(
+				"a, button, input, select, textarea, p, span, li",
+			)
+		) {
+			showInspo = false;
+		}
+	}}
+/>
+
+<div class="page">
 	<div class="left">
 		<VisitorFeed>
 			{#snippet children({ total, city, country })}
-				<div class="visitor-feed sans type-xs">
+				<div class="visitors sans type-xs">
 					{#if total}{total.toLocaleString()} visitors{/if}
 					{#if total && city}
 						·
@@ -38,7 +51,7 @@
 		{#if showInspo}
 			<button
 				type="button"
-				class="poster inspo-full"
+				class="poster expanded"
 				onclick={() => (showInspo = false)}
 			>
 				<enhanced:img
@@ -84,7 +97,7 @@
 					<div class="row" style:--indent={-6}>
 						<p>Commons Hong Kong</p>
 					</div>
-					<div class="img">
+					<div class="portrait">
 						<enhanced:img
 							src={Portrait}
 							alt="Christopher Hugentobler in Noguchi Garden"
@@ -94,7 +107,7 @@
 				</div>
 			</div>
 		{/if}
-		<div class="inspo-bar">
+		<div class="toolbar">
 			{#if showInspo}
 				<p
 					class="sans type-base"
@@ -107,7 +120,7 @@
 			{/if}
 			<button
 				type="button"
-				class="inspo"
+				class="thumbnail"
 				onclick={() => (showInspo = !showInspo)}
 			>
 				<enhanced:img
@@ -120,69 +133,22 @@
 </div>
 
 <style>
-	.page-container {
-		display: grid;
-		grid-template-columns: 1fr auto;
-		height: 100svh;
+	.page {
+		--padding-top: calc(1 * var(--baseline));
+		--padding-bottom: calc(4 * var(--baseline));
+		--poster-w: calc(
+			(100svh - var(--padding-top) - var(--padding-bottom)) / sqrt(2)
+		);
+		display: flex;
+		flex-wrap: wrap;
 	}
 
 	.left {
-		/* placeholder */
+		flex: 1 1 var(--poster-w);
+		background-color: black;
 	}
 
-	.right {
-		--padding-top: calc(1 * var(--baseline));
-		--padding-bottom: calc(4 * var(--baseline));
-		display: flex;
-		flex-direction: column;
-		gap: var(--baseline);
-		align-items: end;
-		padding: var(--padding-top) var(--baseline) var(--padding-bottom);
-		perspective: 800px;
-	}
-
-	.inspo-full {
-		padding: 0;
-		overflow: hidden;
-		cursor: zoom-out;
-		background: none;
-		border: none;
-
-		:global(picture) {
-			width: 100%;
-			height: 100%;
-		}
-
-		:global(img) {
-			width: 100%;
-			height: 100%;
-			object-fit: cover;
-		}
-	}
-
-	.inspo-bar {
-		display: flex;
-		gap: var(--baseline);
-	}
-
-	.inspo {
-		padding: 0;
-		cursor: zoom-in;
-		background: none;
-		border: none;
-
-		:global(img) {
-			width: auto;
-			height: auto;
-			max-height: calc(var(--baseline) * 2);
-			filter: grayscale();
-			&:hover {
-				filter: none;
-			}
-		}
-	}
-
-	.visitor-feed {
+	.visitors {
 		margin-top: 1rem;
 		overflow: hidden;
 		text-overflow: ellipsis;
@@ -191,6 +157,18 @@
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
 		white-space: nowrap;
+	}
+
+	.right {
+		display: flex;
+		flex-direction: column;
+		gap: var(--baseline);
+		align-items: end;
+		padding: var(--padding-top) var(--baseline) var(--padding-bottom);
+		perspective: 800px;
+		@media (width < 48rem) {
+			margin: 0 auto;
+		}
 	}
 
 	/* 3D tilt: --cursor-x/y (-1..1) drive rotation, clamped to --tilt */
@@ -216,7 +194,6 @@
 		height: calc(100svh - var(--padding-top) - var(--padding-bottom));
 		aspect-ratio: calc(1 / sqrt(2));
 		overflow: clip;
-		/*background-color: oklch(85.85% 0.0315 96.92);*/
 		background-color: var(--tana);
 		@media (hover: hover) {
 			transform: rotateX(var(--rx)) rotateY(var(--ry));
@@ -224,7 +201,7 @@
 			will-change: transform;
 		}
 
-		.img :global {
+		.portrait :global {
 			position: absolute;
 			right: 0;
 			bottom: 0;
@@ -304,7 +281,7 @@
 			position: absolute;
 			bottom: -0.5cqh;
 			font-size: 3cqh;
-			font-weight: 600;
+			font-weight: 400;
 			font-stretch: expanded;
 			color: var(--accent);
 			text-indent: calc(var(--indent, 0) * 1cqw);
@@ -317,6 +294,47 @@
 
 		p:has(+ div) {
 			transform: translateY(-0.75cqh);
+		}
+	}
+
+	.expanded {
+		padding: 0;
+		overflow: hidden;
+		cursor: zoom-out;
+		background: none;
+		border: none;
+
+		:global(picture) {
+			width: 100%;
+			height: 100%;
+		}
+
+		:global(img) {
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+		}
+	}
+
+	.toolbar {
+		display: flex;
+		gap: var(--baseline);
+	}
+
+	.thumbnail {
+		padding: 0;
+		cursor: zoom-in;
+		background: none;
+		border: none;
+
+		:global(img) {
+			width: auto;
+			height: auto;
+			max-height: calc(var(--baseline) * 2);
+			filter: grayscale();
+			&:hover {
+				filter: none;
+			}
 		}
 	}
 </style>
