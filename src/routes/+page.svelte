@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { ElementSize, useMousePosition } from "runed";
+	import { dev } from "$app/environment";
 	import VisitorFeed from "$lib/components/VisitorFeed.svelte";
 	import LondonTelephone from "./home/london-telephone-josef-müller-brockmann.jpg?enhanced";
 	import Portrait from "./home/noguchi.png?enhanced";
@@ -38,7 +39,7 @@
 		<VisitorFeed>
 			{#snippet children({ total, city, country })}
 				<div class="visitors sans type-xs">
-					{#if total}{total.toLocaleString()} visitors{/if}
+					{#if total && dev}{total.toLocaleString()} visitors{/if}
 					{#if total && city}
 						·
 					{/if}
@@ -46,6 +47,18 @@
 				</div>
 			{/snippet}
 		</VisitorFeed>
+		<p class="placeholder">
+			Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod
+			tempor incididunt ut labore et dolore magna aliqua.
+		</p>
+		<p class="placeholder">
+			Ut enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut
+			aliquip ex ea commodo consequat.
+		</p>
+		<p class="placeholder">
+			Duis aute irure dolor in reprehenderit in voluptate velit esse cillum
+			dolore eu fugiat nulla pariatur.
+		</p>
 	</div>
 	<div class="right">
 		{#if showInspo}
@@ -148,6 +161,11 @@
 		background-color: black;
 	}
 
+	.placeholder {
+		padding: 1rem;
+		color: oklch(50% 0 0 / 0.3);
+	}
+
 	.visitors {
 		margin-top: 1rem;
 		overflow: hidden;
@@ -167,13 +185,13 @@
 		padding: var(--padding-top) var(--baseline) var(--padding-bottom);
 		perspective: 800px;
 		@media (width < 48rem) {
-			margin: 0 auto;
+			flex-direction: row;
+			width: 100%;
 		}
 	}
 
 	/* 3D tilt: --cursor-x/y (-1..1) drive rotation, clamped to --tilt */
 	.poster {
-		/*--accent: oklch(56.97% 0.1394 41.7);*/
 		--accent: oklch(59.65% 0.1557 40.96);
 		--fuscous: oklch(41.59% 0.0132 95.38);
 		--tana: oklch(89.92% 0.0314 94.92);
@@ -195,6 +213,10 @@
 		aspect-ratio: calc(1 / sqrt(2));
 		overflow: clip;
 		background-color: var(--tana);
+		@media (width < 48rem) {
+			width: 100%;
+			height: auto;
+		}
 		@media (hover: hover) {
 			transform: rotateX(var(--rx)) rotateY(var(--ry));
 			transition: transform 300ms ease-out;
@@ -318,19 +340,25 @@
 
 	.toolbar {
 		display: flex;
+		flex-shrink: 0;
 		gap: var(--baseline);
 	}
 
 	.thumbnail {
+		height: calc(var(--baseline) * 2);
 		padding: 0;
 		cursor: zoom-in;
 		background: none;
 		border: none;
 
+		:global(picture) {
+			display: block;
+			height: 100%;
+		}
+
 		:global(img) {
 			width: auto;
-			height: auto;
-			max-height: calc(var(--baseline) * 2);
+			height: 100%;
 			filter: grayscale();
 			&:hover {
 				filter: none;
