@@ -72,11 +72,11 @@
 					</div>
 					<div class="row" style:--indent={-15}>
 						<p>High Surplus Education</p>
-						<div style:--indent={18}>for the unorthodox</div>
+						<div style:--indent={12}>for the unorthodox</div>
 					</div>
 					<div class="row" style:--indent={-10}>
 						<p>Circularity Los Angeles</p>
-						<div style:--indent={12}>and for industry</div>
+						<div style:--indent={8}>and for industry</div>
 					</div>
 					<div class="row" style:--indent={-5}>
 						<p>Seed Agency Boundary</p>
@@ -98,11 +98,11 @@
 			{#if showInspo}
 				<p
 					class="sans type-base"
-					style:font-stretch="ultra-condensed"
-					style:font-weight={300}
+					style:font-stretch="condensed"
+					style:font-weight="normal"
 				>
-					<span style:font-weight={400}>London Telephone</span>, 1957<br />Josef
-					Müller-Brockmann (1914–96)
+					<span style:font-weight="bold">London Telephone</span>, 1957<br
+					/>Josef Müller-Brockmann (1914–96)
 				</p>
 			{/if}
 			<button
@@ -195,8 +195,10 @@
 
 	/* 3D tilt: --cursor-x/y (-1..1) drive rotation, clamped to --tilt */
 	.poster {
-		--accent: oklch(56.97% 0.1394 41.7);
+		/*--accent: oklch(56.97% 0.1394 41.7);*/
+		--accent: oklch(59.65% 0.1557 40.96);
 		--fuscous: oklch(41.59% 0.0132 95.38);
+		--tana: oklch(89.92% 0.0314 94.92);
 		--tilt: 3deg;
 		--rx: clamp(
 			calc(-1 * var(--tilt)),
@@ -214,7 +216,8 @@
 		height: calc(100svh - var(--padding-top) - var(--padding-bottom));
 		aspect-ratio: calc(1 / sqrt(2));
 		overflow: clip;
-		background-color: oklch(85.85% 0.0315 96.92);
+		/*background-color: oklch(85.85% 0.0315 96.92);*/
+		background-color: var(--tana);
 		@media (hover: hover) {
 			transform: rotateX(var(--rx)) rotateY(var(--ry));
 			transition: transform 300ms ease-out;
@@ -256,7 +259,9 @@
 				z-index: -1;
 
 				img {
-					filter: drop-shadow(0 1000px 0 oklch(85.85% 0.0315 96.92));
+					filter: drop-shadow(
+						0 1000px 0 oklch(from var(--tana) calc(l + 0.3) c h)
+					);
 					transform: translateY(-1000px);
 				}
 			}
@@ -272,6 +277,7 @@
 		width: calc(100% + var(--recess) * 1% * 2);
 		height: calc(100% + var(--recess) * 1% * 2);
 		container-type: size;
+		user-select: none;
 	}
 
 	/* Container-aware typesetting: font-size and optical adjustment scale with container height */
@@ -296,17 +302,17 @@
 
 		> div {
 			position: absolute;
-			bottom: 0cqh;
+			bottom: -0.5cqh;
 			font-size: 3cqh;
-			font-weight: 400;
-			font-stretch: normal;
+			font-weight: 600;
+			font-stretch: expanded;
 			color: var(--accent);
 			text-indent: calc(var(--indent, 0) * 1cqw);
 			text-transform: lowercase;
 		}
 
 		p {
-			transform: translateY(1cqh);
+			text-box: cap alphabetic;
 		}
 
 		p:has(+ div) {
