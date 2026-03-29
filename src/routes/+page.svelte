@@ -5,12 +5,26 @@
 	import LondonTelephone from "./home/london-telephone-josef-müller-brockmann.jpg?enhanced";
 	import Portrait from "./home/noguchi.png?enhanced";
 
-	// Poster size and cursor position
+	// Window dimensions for layout calculations
+	let innerWidth = $state(0);
+	let innerHeight = $state(0);
+
+	// CSS --baseline (uses vw, changes with viewport width)
+	let baseline = $state(24);
+	$effect(() => {
+		void innerWidth;
+		baseline =
+			parseFloat(
+				getComputedStyle(document.documentElement).getPropertyValue(
+					"--baseline",
+				),
+			) || 24;
+	});
+
+	// Poster element, size tracking, and cursor-driven 3D tilt
 	let poster = $state<HTMLDivElement>();
 	const mouse = useMousePosition(() => poster);
 	const size = new ElementSize(() => poster);
-
-	// Cursor position normalized to -1..1 from poster center, fed to CSS for 3D tilt
 	const cursorX = $derived(
 		size.width ? (mouse.elementX / size.width) * 2 - 1 : 0,
 	);
@@ -18,10 +32,35 @@
 		size.height ? (mouse.elementY / size.height) * 2 - 1 : 0,
 	);
 
+	// Layout measurement — JS polyfill for style() container queries
+	// Future: @container style(--toolbar-beside: true)
+	let asideEl = $state<HTMLElement>();
+	let toolbarEl = $state<HTMLDivElement>();
+	const asideSize = new ElementSize(() => asideEl);
+	const toolbarSize = new ElementSize(() => toolbarEl);
+
+	// Poster's natural width (without toolbar inset) — stable reference to avoid feedback loops
+	// Mirrors CSS: min((100svh - baseline * 3) / sqrt(2), 100vw - baseline * 2)
+	const naturalPosterW = $derived(
+		Math.min(
+			(innerHeight - baseline * 3) / Math.SQRT2,
+			innerWidth - baseline * 2,
+		),
+	);
+
+	const measured = $derived(asideSize.width > 0);
+	// Page is stacked when viewport can't fit two grid columns
+	const stacked = $derived(
+		innerWidth < 2 * (naturalPosterW + baseline * 2) + baseline,
+	);
+	const posterInset = $derived(stacked ? toolbarSize.height : 0);
+
 	let showInspo = $state(false);
 </script>
 
 <svelte:window
+	bind:innerWidth
+	bind:innerHeight
 	onpointerdown={(e) => {
 		if (
 			showInspo &&
@@ -34,8 +73,13 @@
 	}}
 />
 
-<div class="page">
-	<div class="left">
+<div
+	class="page"
+	style:--poster-inset="{posterInset}px"
+	data-stacked={stacked || undefined}
+	class:measured
+>
+	<main>
 		<VisitorFeed>
 			{#snippet children({ total, city, country })}
 				<div class="visitors sans type-xs">
@@ -59,74 +103,73 @@
 			Duis aute irure dolor in reprehenderit in voluptate velit esse cillum
 			dolore eu fugiat nulla pariatur.
 		</p>
-	</div>
-	<div class="right">
-		{#if showInspo}
-			<button
-				type="button"
-				class="poster expanded"
-				onclick={() => (showInspo = false)}
-			>
-				<enhanced:img
-					src={LondonTelephone}
-					alt="London Telephone poster by Josef Müller-Brockmann"
-				/>
-			</button>
-		{:else}
-			<div
-				class="poster sans"
-				bind:this={poster}
-				style:--cursor-x={cursorX}
-				style:--cursor-y={cursorY}
-				style:--recess={2.4}
-			>
-				<div class="recess">
-					<div class="row" style:--indent={-10}>
-						<p>Hong Kong <em>A</em> Economics</p>
-					</div>
-					<div class="row" style:--indent={-23}>
-						<p>Inspect <em>Technologist</em> Element</p>
-					</div>
-					<div class="row" style:--indent={-5}>
-						<p>Taipei <em>In Pursuit</em> Curiosity</p>
-					</div>
-					<div class="row" style:--indent={-15}>
-						<p>Insurance <em>Of The</em> Access</p>
-					</div>
-					<div class="row" style:--indent={-15}>
-						<p>Long <em>Evergreen</em> Material</p>
-					</div>
-					<div class="row" style:--indent={-15}>
-						<p>High Surplus Education</p>
-						<div style:--indent={12}>for the unorthodox</div>
-					</div>
-					<div class="row" style:--indent={-10}>
-						<p>Circularity Los Angeles</p>
-						<div style:--indent={8}>and for industry</div>
-					</div>
-					<div class="row" style:--indent={-5}>
-						<p>Seed Agency Boundary</p>
-					</div>
-					<div class="row" style:--indent={-6}>
-						<p>Commons Hong Kong</p>
-					</div>
-					<div class="portrait">
-						<enhanced:img
-							src={Portrait}
-							alt="Christopher Hugentobler in Noguchi Garden"
-						/>
-						<enhanced:img src={Portrait} alt="" aria-hidden="true" />
-					</div>
+	</main>
+	<footer>
+		<p class="placeholder">Footer content</p>
+	</footer>
+	<aside bind:this={asideEl}>
+		<button
+			type="button"
+			class="poster expanded"
+			class:hidden={!showInspo}
+			aria-label="Close expanded poster"
+			onclick={() => (showInspo = false)}
+		>
+			<enhanced:img
+				src={LondonTelephone}
+				alt="London Telephone poster by Josef Müller-Brockmann"
+			/>
+		</button>
+		<div
+			class="poster sans"
+			class:hidden={showInspo}
+			bind:this={poster}
+			style:--cursor-x={cursorX}
+			style:--cursor-y={cursorY}
+			style:--recess={2.4}
+		>
+			<div class="recess">
+				<div class="row" style:--indent={-10}>
+					<p>Hong Kong <em>A</em> Economics</p>
+				</div>
+				<div class="row" style:--indent={-23}>
+					<p>Inspect <em>Technologist</em> Element</p>
+				</div>
+				<div class="row" style:--indent={-5}>
+					<p>Taipei <em>In Pursuit</em> Curiosity</p>
+				</div>
+				<div class="row" style:--indent={-15}>
+					<p>Insurance <em>Of The</em> Access</p>
+				</div>
+				<div class="row" style:--indent={-15}>
+					<p>Long <em>Evergreen</em> Material</p>
+				</div>
+				<div class="row" style:--indent={-15}>
+					<p>High Surplus Education</p>
+					<div style:--indent={12}>for the unorthodox</div>
+				</div>
+				<div class="row" style:--indent={-10}>
+					<p>Circularity Los Angeles</p>
+					<div style:--indent={8}>and for industry</div>
+				</div>
+				<div class="row" style:--indent={-5}>
+					<p>Seed Agency Boundary</p>
+				</div>
+				<div class="row" style:--indent={-6}>
+					<p>Commons Hong Kong</p>
+				</div>
+				<div class="portrait">
+					<enhanced:img
+						src={Portrait}
+						alt="Christopher Hugentobler in Noguchi Garden"
+					/>
+					<enhanced:img src={Portrait} alt="" aria-hidden="true" />
 				</div>
 			</div>
-		{/if}
-		<div class="toolbar">
+		</div>
+		<div class="toolbar" bind:this={toolbarEl}>
 			{#if showInspo}
-				<p
-					class="sans type-base"
-					style:font-stretch="condensed"
-					style:font-weight="normal"
-				>
+				<p class="caption sans type-base">
 					<span style:font-weight="bold">London Telephone</span>, 1957<br
 					/>Josef Müller-Brockmann (1914–96)
 				</p>
@@ -134,6 +177,7 @@
 			<button
 				type="button"
 				class="thumbnail"
+				aria-label="London Telephone by Josef Müller-Brockmann"
 				onclick={() => (showInspo = !showInspo)}
 			>
 				<enhanced:img
@@ -142,25 +186,78 @@
 				/>
 			</button>
 		</div>
-	</div>
+	</aside>
 </div>
 
 <style>
 	.page {
-		--padding-top: calc(1 * var(--baseline));
-		--padding-bottom: calc(4 * var(--baseline));
-		--poster-w: calc(
-			(100svh - var(--padding-top) - var(--padding-bottom)) / sqrt(2)
+		/* Poster width: height-derived vs width-derived, whichever is smaller.
+		   --poster-inset (set by JS) reserves space for the toolbar when below the poster.
+		   3 baselines = top padding + bottom padding + flex gap */
+		--poster-w: min(
+			(100svh - var(--baseline) * 3 - var(--poster-inset, 0px)) / sqrt(2),
+			100vw - var(--baseline) * 2
 		);
-		display: flex;
-		flex-wrap: wrap;
-		row-gap: var(--padding-bottom);
+		display: grid;
+		grid-template-rows: 1fr auto;
+		grid-template-columns: 1fr auto;
+		gap: var(--baseline);
+		height: 100svh;
+		opacity: 0;
+
+		&.measured {
+			opacity: 1;
+		}
+
+		&[data-stacked] {
+			--thumbnail-scale: 3;
+			grid-template-rows: auto;
+			grid-template-columns: 1fr;
+			height: auto;
+		}
 	}
 
-	.left {
-		flex: 1 1 var(--poster-w);
-		/*flex: 1 0 calc(var(--poster-w) + 2 * var(--baseline));*/
+	main {
+		grid-row: 1;
+		grid-column: 1;
+		min-height: 0;
+		overflow: auto;
 		background-color: black;
+	}
+
+	footer {
+		grid-row: 2;
+		grid-column: 1;
+
+		:global([data-stacked]) & {
+			grid-row: auto;
+			grid-column: auto;
+			order: 3;
+		}
+	}
+
+	aside {
+		position: relative;
+		display: flex;
+		flex-direction: row;
+		flex-wrap: wrap;
+		grid-row: 1 / -1;
+		grid-column: 2;
+		gap: var(--baseline);
+		align-content: end;
+		align-items: end;
+		padding: var(--baseline);
+		perspective: 800px;
+
+		:global([data-stacked]) & {
+			flex-direction: column;
+			flex-wrap: nowrap;
+			grid-row: auto;
+			grid-column: auto;
+			align-content: normal;
+			align-items: start;
+			order: 2;
+		}
 	}
 
 	.placeholder {
@@ -177,15 +274,6 @@
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
 		white-space: nowrap;
-	}
-
-	.right {
-		display: flex;
-		flex-direction: column;
-		gap: var(--baseline);
-		align-items: end;
-		padding: var(--padding-top) var(--baseline);
-		perspective: 800px;
 	}
 
 	/* 3D tilt: --cursor-x/y (-1..1) drive rotation, clamped to --tilt */
@@ -207,10 +295,16 @@
 		position: relative;
 		display: grid;
 		place-items: center;
-		height: calc(100svh - var(--padding-top) - var(--padding-bottom));
+		height: calc(var(--poster-w) * sqrt(2));
 		aspect-ratio: calc(1 / sqrt(2));
 		overflow: clip;
 		background-color: var(--tana);
+
+		&.hidden {
+			position: absolute;
+			visibility: hidden;
+			pointer-events: none;
+		}
 		@media (hover: hover) {
 			transform: rotateX(var(--rx)) rotateY(var(--ry));
 			transition: transform 300ms ease-out;
@@ -332,14 +426,33 @@
 		}
 	}
 
+	.caption {
+		position: absolute;
+		right: var(--baseline);
+		bottom: calc(
+			var(--baseline) * 2 + var(--baseline) * var(--thumbnail-scale, 2)
+		);
+		padding: 0.5em 0.75em;
+		font-weight: normal;
+		font-stretch: condensed;
+		background-color: oklch(100% 0 0 / 0.85);
+
+		:global([data-stacked]) & {
+			position: static;
+			order: 1;
+			padding: 0;
+			background-color: transparent;
+		}
+	}
+
 	.toolbar {
 		display: flex;
-		flex-shrink: 0;
 		gap: var(--baseline);
+		align-items: start;
 	}
 
 	.thumbnail {
-		height: calc(var(--baseline) * 2);
+		height: calc(var(--baseline) * var(--thumbnail-scale, 2));
 		padding: 0;
 		cursor: zoom-in;
 		background: none;
