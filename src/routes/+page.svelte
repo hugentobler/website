@@ -364,7 +364,7 @@
 		--accent: oklch(59.65% 0.1557 40.96);
 		--fuscous: oklch(41.59% 0.0132 95.38);
 		--tana: oklch(89.92% 0.0314 94.92);
-		--tilt: 3deg;
+		--tilt: 8deg;
 		--rx: clamp(
 			calc(-1 * var(--tilt)),
 			calc(var(--cursor-y) * -1 * var(--tilt)),
