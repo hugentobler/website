@@ -10,37 +10,49 @@
 	let innerHeight = $state(0);
 
 	// Device orientation for mobile tilt (hover: none devices)
+	type DOEWithPermission = typeof DeviceOrientationEvent & {
+		requestPermission?: () => Promise<"granted" | "denied">;
+	};
+
 	let orientationX = $state(0);
 	let orientationY = $state(0);
 	let hasOrientation = $state(false);
+	let betaBaseline = $state<number | null>(null);
 	let orientationPermission = $state<"prompt" | "granted" | "denied" | "unsupported">("prompt");
 	const isTouchDevice = $derived(
 		typeof matchMedia !== "undefined" && matchMedia("(hover: none)").matches,
 	);
 
+	// Throttle orientation events to one update per animation frame
+	let orientationFrame = 0;
 	function handleOrientation(e: DeviceOrientationEvent) {
 		if (e.gamma == null || e.beta == null) return;
-		hasOrientation = true;
-		// gamma: left-right tilt (-90..90) → map to -1..1
-		orientationX = Math.max(-1, Math.min(1, e.gamma / 45));
-		// beta: front-back tilt (0..180, ~90 when upright) → map to -1..1
-		orientationY = Math.max(-1, Math.min(1, (e.beta - 60) / 30));
+		cancelAnimationFrame(orientationFrame);
+		orientationFrame = requestAnimationFrame(() => {
+			if (e.gamma == null || e.beta == null) return;
+			// Calibrate neutral tilt from first reading (user's natural hold angle)
+			if (betaBaseline === null) betaBaseline = e.beta;
+			hasOrientation = true;
+			// gamma: left-right tilt (-90..90) → map to -1..1
+			orientationX = Math.max(-1, Math.min(1, e.gamma / 45));
+			// beta: offset from user's natural hold angle → map to -1..1
+			orientationY = Math.max(-1, Math.min(1, (e.beta - (betaBaseline ?? 0)) / 30));
+		});
+	}
+
+	function startListening() {
+		window.addEventListener("deviceorientation", handleOrientation);
 	}
 
 	async function requestOrientationPermission() {
-		const DOE = DeviceOrientationEvent as unknown as {
-			requestPermission?: () => Promise<"granted" | "denied">;
-		};
-		if (typeof DOE.requestPermission === "function") {
-			try {
-				const result = await DOE.requestPermission();
-				orientationPermission = result;
-				if (result === "granted") {
-					window.addEventListener("deviceorientation", handleOrientation);
-				}
-			} catch {
-				orientationPermission = "denied";
-			}
+		const DOE = DeviceOrientationEvent as DOEWithPermission;
+		if (typeof DOE.requestPermission !== "function") return;
+		try {
+			const result = await DOE.requestPermission();
+			orientationPermission = result;
+			if (result === "granted") startListening();
+		} catch {
+			orientationPermission = "denied";
 		}
 	}
 
@@ -50,20 +62,16 @@
 			orientationPermission = "unsupported";
 			return;
 		}
-		// iOS 13+ requires permission via user gesture
-		const DOE = DeviceOrientationEvent as unknown as {
-			requestPermission?: () => Promise<string>;
-		};
+		const DOE = DeviceOrientationEvent as DOEWithPermission;
 		if (typeof DOE.requestPermission === "function") {
-			// Permission will be requested on first interaction with the poster
 			orientationPermission = "prompt";
 		} else {
-			// Non-iOS: just start listening
 			orientationPermission = "granted";
-			window.addEventListener("deviceorientation", handleOrientation);
+			startListening();
 		}
 		return () => {
 			window.removeEventListener("deviceorientation", handleOrientation);
+			cancelAnimationFrame(orientationFrame);
 		};
 	});
 
@@ -186,7 +194,6 @@
 				alt="London Telephone poster by Josef Müller-Brockmann"
 			/>
 		</button>
-		<!-- svelte-ignore a11y_no_static_element_interactions -->
 		<div
 			class="poster sans"
 			class:hidden={showInspo}
@@ -195,8 +202,15 @@
 			style:--cursor-x={cursorX}
 			style:--cursor-y={cursorY}
 			style:--recess={2.4}
-			onclick={orientationPermission === "prompt" ? requestOrientationPermission : undefined}
 		>
+			{#if orientationPermission === "prompt"}
+				<button
+					type="button"
+					class="orientation-prompt"
+					aria-label="Enable motion tilt effect"
+					onclick={requestOrientationPermission}
+				></button>
+			{/if}
 			<div class="recess">
 				<div class="row" style:--indent={-10}>
 					<p>Hong Kong <em>A</em> Economics</p>
@@ -374,6 +388,18 @@
 			visibility: hidden;
 			pointer-events: none;
 		}
+
+		.orientation-prompt {
+			position: absolute;
+			inset: 0;
+			z-index: 2;
+			padding: 0;
+			cursor: pointer;
+			background: none;
+			border: none;
+			opacity: 0;
+		}
+
 		@media (hover: hover) {
 			transform: rotateX(var(--rx)) rotateY(var(--ry));
 			transition: transform 300ms ease-out;
@@ -388,6 +414,7 @@
 		}
 
 		.portrait :global {
+			--shift: 0.8%;
 			position: absolute;
 			right: 0;
 			bottom: 0;
@@ -396,8 +423,6 @@
 			height: calc(4 / 9 * 100%);
 			overflow: hidden;
 			pointer-events: none;
-
-			--shift: 0.8%;
 			translate: calc(var(--cursor-x) * var(--shift))
 				calc(var(--cursor-y) * var(--shift));
 			transition: translate 300ms ease-out;
