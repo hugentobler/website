@@ -9,6 +9,64 @@
 	let innerWidth = $state(0);
 	let innerHeight = $state(0);
 
+	// Device orientation for mobile tilt (hover: none devices)
+	let orientationX = $state(0);
+	let orientationY = $state(0);
+	let hasOrientation = $state(false);
+	let orientationPermission = $state<"prompt" | "granted" | "denied" | "unsupported">("prompt");
+	const isTouchDevice = $derived(
+		typeof matchMedia !== "undefined" && matchMedia("(hover: none)").matches,
+	);
+
+	function handleOrientation(e: DeviceOrientationEvent) {
+		if (e.gamma == null || e.beta == null) return;
+		hasOrientation = true;
+		// gamma: left-right tilt (-90..90) → map to -1..1
+		orientationX = Math.max(-1, Math.min(1, e.gamma / 45));
+		// beta: front-back tilt (0..180, ~90 when upright) → map to -1..1
+		orientationY = Math.max(-1, Math.min(1, (e.beta - 60) / 30));
+	}
+
+	async function requestOrientationPermission() {
+		const DOE = DeviceOrientationEvent as unknown as {
+			requestPermission?: () => Promise<"granted" | "denied">;
+		};
+		if (typeof DOE.requestPermission === "function") {
+			try {
+				const result = await DOE.requestPermission();
+				orientationPermission = result;
+				if (result === "granted") {
+					window.addEventListener("deviceorientation", handleOrientation);
+				}
+			} catch {
+				orientationPermission = "denied";
+			}
+		}
+	}
+
+	$effect(() => {
+		if (!isTouchDevice) return;
+		if (typeof DeviceOrientationEvent === "undefined") {
+			orientationPermission = "unsupported";
+			return;
+		}
+		// iOS 13+ requires permission via user gesture
+		const DOE = DeviceOrientationEvent as unknown as {
+			requestPermission?: () => Promise<string>;
+		};
+		if (typeof DOE.requestPermission === "function") {
+			// Permission will be requested on first interaction with the poster
+			orientationPermission = "prompt";
+		} else {
+			// Non-iOS: just start listening
+			orientationPermission = "granted";
+			window.addEventListener("deviceorientation", handleOrientation);
+		}
+		return () => {
+			window.removeEventListener("deviceorientation", handleOrientation);
+		};
+	});
+
 	// CSS --baseline (uses vw, changes with viewport width)
 	let baseline = $state(24);
 	$effect(() => {
@@ -26,10 +84,18 @@
 	const mouse = useMousePosition(() => poster);
 	const size = new ElementSize(() => poster);
 	const cursorX = $derived(
-		size.width ? (mouse.elementX / size.width) * 2 - 1 : 0,
+		isTouchDevice && hasOrientation
+			? orientationX
+			: size.width
+				? (mouse.elementX / size.width) * 2 - 1
+				: 0,
 	);
 	const cursorY = $derived(
-		size.height ? (mouse.elementY / size.height) * 2 - 1 : 0,
+		isTouchDevice && hasOrientation
+			? orientationY
+			: size.height
+				? (mouse.elementY / size.height) * 2 - 1
+				: 0,
 	);
 
 	// Layout measurement — JS polyfill for style() container queries
@@ -120,13 +186,16 @@
 				alt="London Telephone poster by Josef Müller-Brockmann"
 			/>
 		</button>
+		<!-- svelte-ignore a11y_no_static_element_interactions -->
 		<div
 			class="poster sans"
 			class:hidden={showInspo}
+			class:has-orientation={hasOrientation}
 			bind:this={poster}
 			style:--cursor-x={cursorX}
 			style:--cursor-y={cursorY}
 			style:--recess={2.4}
+			onclick={orientationPermission === "prompt" ? requestOrientationPermission : undefined}
 		>
 			<div class="recess">
 				<div class="row" style:--indent={-10}>
@@ -310,6 +379,13 @@
 			transition: transform 300ms ease-out;
 			will-change: transform;
 		}
+		@media (hover: none) {
+			&.has-orientation {
+				transform: rotateX(var(--rx)) rotateY(var(--ry));
+				transition: transform 150ms ease-out;
+				will-change: transform;
+			}
+		}
 
 		.portrait :global {
 			position: absolute;
@@ -321,11 +397,13 @@
 			overflow: hidden;
 			pointer-events: none;
 
-			@media (hover: hover) {
-				--shift: 0.8%;
-				translate: calc(var(--cursor-x) * var(--shift))
-					calc(var(--cursor-y) * var(--shift));
-				transition: translate 300ms ease-out;
+			--shift: 0.8%;
+			translate: calc(var(--cursor-x) * var(--shift))
+				calc(var(--cursor-y) * var(--shift));
+			transition: translate 300ms ease-out;
+
+			@media (hover: none) {
+				transition-duration: 150ms;
 			}
 
 			/* Transparent image tinting via drop-shadow offset trick
