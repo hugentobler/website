@@ -3,138 +3,24 @@
 	import { dev } from "$app/environment";
 	import VisitorFeed from "$lib/components/VisitorFeed.svelte";
 	import LondonTelephone from "./home/london-telephone-josef-müller-brockmann.jpg?enhanced";
-	import Portrait from "./home/noguchi.png?enhanced";
+	import MyPortrait from "./home/noguchi.png?enhanced";
 
-	// Window dimensions for layout calculations
-	let innerWidth = $state(0);
-	let innerHeight = $state(0);
-
-	// Device orientation for mobile tilt (hover: none devices)
-	type DOEWithPermission = typeof DeviceOrientationEvent & {
-		requestPermission?: () => Promise<"granted" | "denied">;
-	};
-
-	let orientationX = $state(0);
-	let orientationY = $state(0);
-	let hasOrientation = $state(false);
-	let betaBaseline = $state<number | null>(null);
-	let orientationPermission = $state<"prompt" | "granted" | "denied" | "unsupported">("prompt");
-	const isTouchDevice = $derived(
-		typeof matchMedia !== "undefined" && matchMedia("(hover: none)").matches,
-	);
-
-	// Throttle orientation events to one update per animation frame
-	let orientationFrame = 0;
-	function handleOrientation(e: DeviceOrientationEvent) {
-		if (e.gamma == null || e.beta == null) return;
-		cancelAnimationFrame(orientationFrame);
-		orientationFrame = requestAnimationFrame(() => {
-			if (e.gamma == null || e.beta == null) return;
-			// Calibrate neutral tilt from first reading (user's natural hold angle)
-			if (betaBaseline === null) betaBaseline = e.beta;
-			hasOrientation = true;
-			// gamma: left-right tilt (-90..90) → map to -1..1
-			orientationX = Math.max(-1, Math.min(1, e.gamma / 45));
-			// beta: offset from user's natural hold angle → map to -1..1
-			orientationY = Math.max(-1, Math.min(1, (e.beta - (betaBaseline ?? 0)) / 30));
-		});
-	}
-
-	function startListening() {
-		window.addEventListener("deviceorientation", handleOrientation);
-	}
-
-	async function requestOrientationPermission() {
-		const DOE = DeviceOrientationEvent as DOEWithPermission;
-		if (typeof DOE.requestPermission !== "function") return;
-		try {
-			const result = await DOE.requestPermission();
-			orientationPermission = result;
-			if (result === "granted") startListening();
-		} catch {
-			orientationPermission = "denied";
-		}
-	}
-
-	$effect(() => {
-		if (!isTouchDevice) return;
-		if (typeof DeviceOrientationEvent === "undefined") {
-			orientationPermission = "unsupported";
-			return;
-		}
-		const DOE = DeviceOrientationEvent as DOEWithPermission;
-		if (typeof DOE.requestPermission === "function") {
-			orientationPermission = "prompt";
-		} else {
-			orientationPermission = "granted";
-			startListening();
-		}
-		return () => {
-			window.removeEventListener("deviceorientation", handleOrientation);
-			cancelAnimationFrame(orientationFrame);
-		};
-	});
-
-	// CSS --baseline (uses vw, changes with viewport width)
-	let baseline = $state(24);
-	$effect(() => {
-		void innerWidth;
-		baseline =
-			parseFloat(
-				getComputedStyle(document.documentElement).getPropertyValue(
-					"--baseline",
-				),
-			) || 24;
-	});
-
-	// Poster element, size tracking, and cursor-driven 3D tilt
+	// Poster element, size tracking, and cursor-driven 3D tilt (desktop).
+	// On touch devices, scroll-driven CSS animation handles tilt instead.
 	let poster = $state<HTMLDivElement>();
 	const mouse = useMousePosition(() => poster);
 	const size = new ElementSize(() => poster);
 	const cursorX = $derived(
-		isTouchDevice && hasOrientation
-			? orientationX
-			: size.width
-				? (mouse.elementX / size.width) * 2 - 1
-				: 0,
+		size.width ? (mouse.elementX / size.width) * 2 - 1 : 0,
 	);
 	const cursorY = $derived(
-		isTouchDevice && hasOrientation
-			? orientationY
-			: size.height
-				? (mouse.elementY / size.height) * 2 - 1
-				: 0,
+		size.height ? (mouse.elementY / size.height) * 2 - 1 : 0,
 	);
-
-	// Layout measurement — JS polyfill for style() container queries
-	// Future: @container style(--toolbar-beside: true)
-	let asideEl = $state<HTMLElement>();
-	let toolbarEl = $state<HTMLDivElement>();
-	const asideSize = new ElementSize(() => asideEl);
-	const toolbarSize = new ElementSize(() => toolbarEl);
-
-	// Poster's natural width (without toolbar inset) — stable reference to avoid feedback loops
-	// Mirrors CSS: min((100svh - baseline * 3) / sqrt(2), 100vw - baseline * 2)
-	const naturalPosterW = $derived(
-		Math.min(
-			(innerHeight - baseline * 3) / Math.SQRT2,
-			innerWidth - baseline * 2,
-		),
-	);
-
-	const measured = $derived(asideSize.width > 0);
-	// Page is stacked when viewport can't fit two grid columns
-	const stacked = $derived(
-		innerWidth < 2 * (naturalPosterW + baseline * 2) + baseline,
-	);
-	const posterInset = $derived(stacked ? toolbarSize.height : 0);
 
 	let showInspo = $state(false);
 </script>
 
 <svelte:window
-	bind:innerWidth
-	bind:innerHeight
 	onpointerdown={(e) => {
 		if (
 			showInspo &&
@@ -147,16 +33,11 @@
 	}}
 />
 
-<div
-	class="page"
-	style:--poster-inset="{posterInset}px"
-	data-stacked={stacked || undefined}
-	class:measured
->
-	<main>
+<div class="page">
+	<main class="sans" data-t8r-root>
 		<VisitorFeed>
 			{#snippet children({ total, city, country })}
-				<div class="visitors sans type-xs">
+				<div class="visitors type-xs">
 					{#if total && dev}{total.toLocaleString()} visitors{/if}
 					{#if total && city}
 						·
@@ -178,13 +59,13 @@
 			dolore eu fugiat nulla pariatur.
 		</p>
 	</main>
-	<footer>
+	<footer class="sans type-sm">
 		<p class="placeholder">Footer content</p>
 	</footer>
-	<aside bind:this={asideEl}>
+	<aside>
 		<button
 			type="button"
-			class="poster expanded"
+			class="poster inspo"
 			class:hidden={!showInspo}
 			aria-label="Close expanded poster"
 			onclick={() => (showInspo = false)}
@@ -197,20 +78,11 @@
 		<div
 			class="poster sans"
 			class:hidden={showInspo}
-			class:has-orientation={hasOrientation}
 			bind:this={poster}
 			style:--cursor-x={cursorX}
 			style:--cursor-y={cursorY}
 			style:--recess={2.4}
 		>
-			{#if orientationPermission === "prompt"}
-				<button
-					type="button"
-					class="orientation-prompt"
-					aria-label="Enable motion tilt effect"
-					onclick={requestOrientationPermission}
-				></button>
-			{/if}
 			<div class="recess">
 				<div class="row" style:--indent={-10}>
 					<p>Hong Kong <em>A</em> Economics</p>
@@ -243,14 +115,14 @@
 				</div>
 				<div class="portrait">
 					<enhanced:img
-						src={Portrait}
+						src={MyPortrait}
 						alt="Christopher Hugentobler in Noguchi Garden"
 					/>
-					<enhanced:img src={Portrait} alt="" aria-hidden="true" />
+					<enhanced:img src={MyPortrait} alt="" aria-hidden="true" />
 				</div>
 			</div>
 		</div>
-		<div class="toolbar" bind:this={toolbarEl}>
+		<div class="toolbar">
 			{#if showInspo}
 				<p class="caption sans type-base">
 					<span style:font-weight="bold">London Telephone</span>, 1957<br
@@ -275,10 +147,9 @@
 <style>
 	.page {
 		/* Poster width: height-derived vs width-derived, whichever is smaller.
-		   --poster-inset (set by JS) reserves space for the toolbar when below the poster.
-		   3 baselines = top padding + bottom padding + flex gap */
+		   2 baselines = aside top + bottom padding */
 		--poster-w: min(
-			(100svh - var(--baseline) * 3 - var(--poster-inset, 0px)) / sqrt(2),
+			(100svh - var(--baseline) * 2) / sqrt(2),
 			100vw - var(--baseline) * 2
 		);
 		display: grid;
@@ -286,13 +157,11 @@
 		grid-template-columns: 1fr auto;
 		gap: var(--baseline);
 		height: 100svh;
-		opacity: 0;
 
-		&.measured {
-			opacity: 1;
-		}
-
-		&[data-stacked] {
+		/* Stacked when viewport aspect ratio ≤ sqrt(2) — the point where
+		   two poster-width columns no longer fit side by side */
+		@media (max-aspect-ratio: 1.414) {
+			--poster-w: min(100svh / sqrt(2), 100vw - var(--baseline) * 2);
 			--thumbnail-scale: 3;
 			grid-template-rows: auto;
 			grid-template-columns: 1fr;
@@ -304,6 +173,7 @@
 		grid-row: 1;
 		grid-column: 1;
 		min-height: 0;
+		padding: var(--baseline);
 		overflow: auto;
 		background-color: black;
 	}
@@ -311,8 +181,9 @@
 	footer {
 		grid-row: 2;
 		grid-column: 1;
+		padding: 0 var(--baseline) var(--baseline);
 
-		:global([data-stacked]) & {
+		@media (max-aspect-ratio: 1.414) {
 			grid-row: auto;
 			grid-column: auto;
 			order: 3;
@@ -332,7 +203,7 @@
 		padding: var(--baseline);
 		perspective: 800px;
 
-		:global([data-stacked]) & {
+		@media (max-aspect-ratio: 1.414) {
 			flex-direction: column;
 			flex-wrap: nowrap;
 			grid-row: auto;
@@ -344,12 +215,10 @@
 	}
 
 	.placeholder {
-		padding: 1rem;
 		color: oklch(50% 0 0 / 0.3);
 	}
 
 	.visitors {
-		margin-top: 1rem;
 		overflow: hidden;
 		text-overflow: ellipsis;
 		font-weight: 400;
@@ -359,22 +228,23 @@
 		white-space: nowrap;
 	}
 
-	/* 3D tilt: --cursor-x/y (-1..1) drive rotation, clamped to --tilt */
+	/* Scroll-driven tilt for touch/no-hover devices.
+	   Poster tilts forward/back as it scrolls through the viewport. */
+	@keyframes scroll-tilt {
+		from { transform: rotateX(var(--tilt)); }
+		to { transform: rotateX(calc(-1 * var(--tilt))); }
+	}
+	@keyframes scroll-shift {
+		from { translate: 0 calc(-1 * var(--shift)); }
+		to { translate: 0 var(--shift); }
+	}
+
+	/* 3D tilt: cursor-driven on desktop, scroll-driven on touch */
 	.poster {
 		--accent: oklch(59.65% 0.1557 40.96);
 		--fuscous: oklch(41.59% 0.0132 95.38);
 		--tana: oklch(89.92% 0.0314 94.92);
-		--tilt: 8deg;
-		--rx: clamp(
-			calc(-1 * var(--tilt)),
-			calc(var(--cursor-y) * -1 * var(--tilt)),
-			var(--tilt)
-		);
-		--ry: clamp(
-			calc(-1 * var(--tilt)),
-			calc(var(--cursor-x) * var(--tilt)),
-			var(--tilt)
-		);
+		--tilt: 3deg;
 		position: relative;
 		display: grid;
 		place-items: center;
@@ -389,28 +259,26 @@
 			pointer-events: none;
 		}
 
-		.orientation-prompt {
-			position: absolute;
-			inset: 0;
-			z-index: 2;
-			padding: 0;
-			cursor: pointer;
-			background: none;
-			border: none;
-			opacity: 0;
-		}
-
 		@media (hover: hover) {
+			--rx: clamp(
+				calc(-1 * var(--tilt)),
+				calc(var(--cursor-y) * -1 * var(--tilt)),
+				var(--tilt)
+			);
+			--ry: clamp(
+				calc(-1 * var(--tilt)),
+				calc(var(--cursor-x) * var(--tilt)),
+				var(--tilt)
+			);
 			transform: rotateX(var(--rx)) rotateY(var(--ry));
 			transition: transform 300ms ease-out;
 			will-change: transform;
 		}
 		@media (hover: none) {
-			&.has-orientation {
-				transform: rotateX(var(--rx)) rotateY(var(--ry));
-				transition: transform 150ms ease-out;
-				will-change: transform;
-			}
+			--tilt: 12deg;
+			animation: scroll-tilt linear;
+			animation-timeline: view();
+			animation-range: cover;
 		}
 
 		.portrait :global {
@@ -428,7 +296,9 @@
 			transition: translate 300ms ease-out;
 
 			@media (hover: none) {
-				transition-duration: 150ms;
+				animation: scroll-shift linear;
+				animation-timeline: view();
+				animation-range: cover;
 			}
 
 			/* Transparent image tinting via drop-shadow offset trick
@@ -510,7 +380,7 @@
 		}
 	}
 
-	.expanded {
+	.inspo {
 		padding: 0;
 		overflow: hidden;
 		cursor: zoom-out;
@@ -540,7 +410,7 @@
 		font-stretch: condensed;
 		background-color: oklch(100% 0 0 / 0.85);
 
-		:global([data-stacked]) & {
+		@media (max-aspect-ratio: 1.414) {
 			position: static;
 			order: 1;
 			padding: 0;
