@@ -18,6 +18,33 @@
 	);
 
 	let showInspo = $state(false);
+
+	const projects = [
+		{ headline: "Insurance for the underserved", name: "Mātū", year: 2024 },
+		{
+			headline: "Circular economy material passport",
+			name: "Cambium",
+			year: 2023,
+		},
+		{
+			headline: "Decentralized education marketplace",
+			name: "Tōkō",
+			year: 2023,
+		},
+		{
+			headline: "Supply chain transparency platform",
+			name: "Meridian",
+			year: 2022,
+		},
+		{
+			headline: "Community resource sharing network",
+			name: "Pūkeko",
+			year: 2021,
+		},
+		{ headline: "Regenerative forestry analytics", name: "Kauri", year: 2020 },
+		{ headline: "Open source design system", name: "Whetū", year: 2019 },
+		{ headline: "Algorithmic decision auditing", name: "Tātai", year: 2018 },
+	];
 </script>
 
 <!-- Click outside the inspiration poster to close it -->
@@ -43,6 +70,16 @@
 			Technologist pursuing the evergreen at the intersection of design,
 			economics, and circularity.
 		</p>
+		{#each projects as project}
+			<article class="project">
+				<div class="project-image">
+					<enhanced:img src={LondonTelephone} alt={project.name} />
+				</div>
+				<h3 class="project-name">{project.name}</h3>
+				<p class="project-desc">{project.headline}</p>
+				<time class="project-year">{project.year}</time>
+			</article>
+		{/each}
 	</main>
 	<footer class="sans type-md">
 		<p class="visitors">
@@ -155,7 +192,7 @@
 		grid-template-rows: 1fr auto;
 		grid-template-columns: 1fr auto;
 		gap: var(--baseline);
-		height: 100svh;
+		min-height: 100svh;
 
 		/* Stacked when viewport aspect ratio ≤ sqrt(2) — the point where
 		   two poster-width columns no longer fit side by side */
@@ -164,7 +201,6 @@
 			--thumbnail-scale: 3;
 			grid-template-rows: auto;
 			grid-template-columns: 1fr;
-			height: auto;
 		}
 	}
 
@@ -173,10 +209,8 @@
 		grid-row: 1;
 		grid-column: 1;
 		grid-auto-rows: calc(var(--baseline) * 4);
-		min-height: 0;
 		padding: var(--baseline);
 		container-type: inline-size;
-		overflow: auto;
 	}
 
 	footer {
@@ -195,7 +229,8 @@
 	}
 
 	aside {
-		position: relative;
+		position: sticky;
+		top: 0;
 		display: flex;
 		flex-direction: row;
 		flex-wrap: wrap;
@@ -204,10 +239,12 @@
 		gap: var(--baseline);
 		align-content: end;
 		align-items: end;
+		height: 100svh;
 		padding: var(--baseline);
 		perspective: 800px;
 
 		@media (max-aspect-ratio: 1.414) {
+			position: static;
 			flex-direction: column;
 			flex-wrap: nowrap;
 			grid-row: auto;
@@ -215,6 +252,7 @@
 			align-content: normal;
 			align-items: start;
 			order: 2;
+			height: auto;
 		}
 	}
 
@@ -465,5 +503,63 @@
 				filter: none;
 			}
 		}
+	}
+
+	/* Project list entries — each spans 2 baseline-grid rows (8 baselines) */
+	.project {
+		display: grid;
+		grid-template-rows: auto auto;
+		grid-template-columns: calc(var(--baseline) * 5) 1fr auto;
+		grid-row: span 2;
+		column-gap: var(--baseline);
+		align-content: center;
+	}
+
+	/* Reset typesetter auto-sizing inside project entries */
+	.project :is(h3, p, time) {
+		--t8r-snap: 0;
+		padding-bottom: 0;
+		margin-top: 0;
+	}
+
+	.project-image {
+		grid-row: 1 / -1;
+		overflow: hidden;
+
+		:global(picture) {
+			display: block;
+			width: 100%;
+			height: 100%;
+		}
+
+		:global(img) {
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+		}
+	}
+
+	.project-name {
+		align-self: end;
+		font-size: var(--type-base);
+		font-weight: bold;
+		line-height: var(--leading-base);
+	}
+
+	.project-desc {
+		align-self: start;
+		font-size: var(--type-sm);
+		font-weight: 300;
+		font-stretch: condensed;
+		line-height: var(--leading-sm);
+	}
+
+	.project-year {
+		grid-row: 1 / -1;
+		align-self: center;
+		font-size: var(--type-sm);
+		font-weight: 300;
+		font-stretch: condensed;
+		line-height: var(--leading-sm);
 	}
 </style>
