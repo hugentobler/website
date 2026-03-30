@@ -20,6 +20,7 @@
 	let showInspo = $state(false);
 </script>
 
+<!-- Click outside the inspiration poster to close it -->
 <svelte:window
 	onpointerdown={(e) => {
 		if (
@@ -35,17 +36,12 @@
 
 <div class="page">
 	<main class="sans" data-t8r-root>
-		<p class="placeholder">
-			Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod
-			tempor incididunt ut labore et dolore magna aliqua.
-		</p>
-		<p class="placeholder">
-			Ut enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut
-			aliquip ex ea commodo consequat.
-		</p>
-		<p class="placeholder">
-			Duis aute irure dolor in reprehenderit in voluptate velit esse cillum
-			dolore eu fugiat nulla pariatur.
+		<h1 class="nameplate">
+			Christopher Hugentobler <span lang="zh">姚思陶</span>
+		</h1>
+		<p class="type-lg">
+			Technologist pursuing the evergreen at the intersection of design,
+			economics, and circularity.
 		</p>
 	</main>
 	<footer class="sans type-md">
@@ -173,12 +169,14 @@
 	}
 
 	main {
+		display: grid;
 		grid-row: 1;
 		grid-column: 1;
+		grid-auto-rows: calc(var(--baseline) * 4);
 		min-height: 0;
 		padding: var(--baseline);
+		container-type: inline-size;
 		overflow: auto;
-		background-color: black;
 	}
 
 	footer {
@@ -220,8 +218,20 @@
 		}
 	}
 
-	.placeholder {
-		color: oklch(50% 0 0 / 0.3);
+	.nameplate {
+		overflow: clip;
+		font-size: min(var(--type-2xl), 6.5cqi);
+		font-weight: bold;
+		font-stretch: expanded;
+		line-height: var(--leading-2xl);
+		letter-spacing: -0.06em;
+		white-space: nowrap;
+
+		[lang="zh"] {
+			font-family: "PingFang SC", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+			font-size: 0.7em;
+			vertical-align: 0.05em;
+		}
 	}
 
 	.visitors {

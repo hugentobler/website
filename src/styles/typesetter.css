@@ -3,21 +3,6 @@
 		color: inherit;
 	}
 
-	[data-t8r-root] {
-		/*
-			Snap padding defaults live here (not in the typography library) to reduce
-			flash before JS measurements apply final values. Use-case: single-line
-			headings in the typesetter where tuned line-heights don't land on baseline
-			multiples. Limitation: multi-line headings need JS to compute the correct
-			snap for the actual line count.
-		*/
-		--snap-lg: 0rem;
-		--snap-md: 1rem;
-		--snap-base: 0rem;
-		--snap-sm: 0.3125rem;
-		--snap-xs: 0.5rem;
-	}
-
 	[data-t8r-root] :where(h1, h2, h3, h4, h5, h6, p, li, blockquote) {
 		padding-bottom: var(--t8r-snap, 0px);
 		margin: 0;
