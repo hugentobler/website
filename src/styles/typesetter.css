@@ -60,11 +60,13 @@
 
 	[data-t8r-root] p,
 	[data-t8r-root] li {
+		--t8r-snap: var(--snap-base);
 		font-size: var(--type-base);
 		line-height: var(--leading-base);
 	}
 
 	[data-t8r-root] blockquote {
+		--t8r-snap: var(--snap-md);
 		font-size: var(--type-md);
 		line-height: var(--leading-md);
 	}

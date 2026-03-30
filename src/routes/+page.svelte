@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { ElementSize, useMousePosition } from "runed";
-	import { dev } from "$app/environment";
+	import DecoratedLink from "$lib/components/DecoratedLink.svelte";
 	import VisitorFeed from "$lib/components/VisitorFeed.svelte";
 	import LondonTelephone from "./home/london-telephone-josef-müller-brockmann.jpg?enhanced";
 	import MyPortrait from "./home/noguchi.png?enhanced";
@@ -35,17 +35,6 @@
 
 <div class="page">
 	<main class="sans" data-t8r-root>
-		<VisitorFeed>
-			{#snippet children({ total, city, country })}
-				<div class="visitors type-xs">
-					{#if total && dev}{total.toLocaleString()} visitors{/if}
-					{#if total && city}
-						·
-					{/if}
-					{#if city}Latest from {city}, {country}{/if}
-				</div>
-			{/snippet}
-		</VisitorFeed>
 		<p class="placeholder">
 			Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod
 			tempor incididunt ut labore et dolore magna aliqua.
@@ -59,8 +48,22 @@
 			dolore eu fugiat nulla pariatur.
 		</p>
 	</main>
-	<footer class="sans type-sm">
-		<p class="placeholder">Footer content</p>
+	<footer class="sans type-md">
+		<p class="visitors">
+			Last visitor from
+			<VisitorFeed>
+				{#snippet children({ city, country })}
+					{#if city}{city}, {country}{/if}
+				{/snippet}
+			</VisitorFeed>
+		</p>
+		<p>
+			<DecoratedLink
+				target="_blank"
+				href="https://github.com/hugentobler/website/blob/master/LICENSE"
+				>Open source</DecoratedLink
+			>
+		</p>
 	</footer>
 	<aside>
 		<button
@@ -182,11 +185,14 @@
 		grid-row: 2;
 		grid-column: 1;
 		padding: 0 var(--baseline) var(--baseline);
+		font-weight: 300;
+		font-stretch: condensed;
 
 		@media (max-aspect-ratio: 1.414) {
 			grid-row: auto;
 			grid-column: auto;
 			order: 3;
+			padding-bottom: 50svh;
 		}
 	}
 
@@ -219,24 +225,29 @@
 	}
 
 	.visitors {
+		min-height: 1lh;
 		overflow: hidden;
 		text-overflow: ellipsis;
-		font-weight: 400;
-		color: oklch(41.59% 0.0132 95.38 / 0.5);
-		text-transform: uppercase;
-		letter-spacing: 0.05em;
 		white-space: nowrap;
 	}
 
 	/* Scroll-driven tilt for touch/no-hover devices.
 	   Poster tilts forward/back as it scrolls through the viewport. */
 	@keyframes scroll-tilt {
-		from { transform: rotateX(var(--tilt)); }
-		to { transform: rotateX(calc(-1 * var(--tilt))); }
+		from {
+			transform: rotateX(var(--tilt));
+		}
+		to {
+			transform: rotateX(calc(-1 * var(--tilt)));
+		}
 	}
 	@keyframes scroll-shift {
-		from { translate: 0 calc(-1 * var(--shift)); }
-		to { translate: 0 var(--shift); }
+		from {
+			translate: 0 calc(-1 * var(--shift));
+		}
+		to {
+			translate: 0 var(--shift);
+		}
 	}
 
 	/* 3D tilt: cursor-driven on desktop, scroll-driven on touch */
