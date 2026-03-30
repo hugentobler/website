@@ -257,18 +257,24 @@
 	}
 
 	.nameplate {
-		overflow: clip;
+		display: flex;
+		align-items: baseline;
+		justify-content: space-between;
 		font-size: min(var(--type-2xl), 6.5cqi);
 		font-weight: bold;
 		font-stretch: expanded;
 		line-height: var(--leading-2xl);
+		color: oklch(0.787 0.011 256.7);
 		letter-spacing: -0.06em;
 		white-space: nowrap;
 
 		[lang="zh"] {
-			font-family: "PingFang SC", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+			font-family:
+				"Mochiy Pop P One", "PingFang SC", "Noto Sans SC", "Microsoft YaHei",
+				sans-serif;
 			font-size: 0.7em;
-			vertical-align: 0.05em;
+			font-weight: normal;
+			translate: 0 -0.05em;
 		}
 	}
 

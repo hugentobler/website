@@ -5,6 +5,7 @@
 @import './colors.css';
 
 @import './fonts.css';
+@import '@fontsource/mochiy-pop-p-one';
 @import './typography.css';
 @import './typesetter.css';
 @import './type-axes.css';
