@@ -62,42 +62,17 @@
 />
 
 <div class="page">
-	<main class="sans" data-t8r-root>
-		<h1 class="nameplate">
-			Christopher Hugentobler <span lang="zh">姚思陶</span>
-		</h1>
-		<p class="type-lg">
-			Technologist pursuing the evergreen at the intersection of design,
-			economics, and circularity.
-		</p>
-		{#each projects as project}
-			<article class="project">
-				<div class="project-image">
-					<enhanced:img src={LondonTelephone} alt={project.name} />
-				</div>
-				<h3 class="project-name">{project.name}</h3>
-				<p class="project-desc">{project.headline}</p>
-				<time class="project-year">{project.year}</time>
-			</article>
-		{/each}
+	<main class="sidebar sans type-xs">
+		<h1 class="name">Christopher Hugentobler <span lang="zh">姚思陶</span></h1>
+		<h2 class="subheader">About</h2>
+		<p class="content">Technologist pursuing the evergreen at the intersection of design, economics, and circularity.</p>
+		<h2 class="subheader">Projects</h2>
+		<ul class="content">
+			{#each projects as project}
+				<li>{project.name} — {project.headline}, {project.year}</li>
+			{/each}
+		</ul>
 	</main>
-	<footer class="sans type-md">
-		<p class="visitors">
-			Last visitor from
-			<VisitorFeed>
-				{#snippet children({ city, country })}
-					{#if city}{city}, {country}{/if}
-				{/snippet}
-			</VisitorFeed>
-		</p>
-		<p>
-			<DecoratedLink
-				target="_blank"
-				href="https://github.com/hugentobler/website/blob/master/LICENSE"
-				>Open source</DecoratedLink
-			>
-		</p>
-	</footer>
 	<aside>
 		<button
 			type="button"
@@ -160,10 +135,10 @@
 		</div>
 		<div class="toolbar">
 			{#if showInspo}
-				<p class="caption sans type-base">
-					<span style:font-weight="bold">London Telephone</span>, 1957<br
-					/>Josef Müller-Brockmann (1914–96)
-				</p>
+				<div class="caption sans type-base">
+					<span><span style:font-weight="bold">London Telephone</span>, 1957</span>
+					<span>Josef Müller-Brockmann (1914–96)</span>
+				</div>
 			{/if}
 			<button
 				type="button"
@@ -178,6 +153,23 @@
 			</button>
 		</div>
 	</aside>
+	<footer class="sans type-md">
+		<p class="visitors">
+			Last visitor from
+			<VisitorFeed>
+				{#snippet children({ city, country })}
+					{#if city}{city}, {country}{/if}
+				{/snippet}
+			</VisitorFeed>
+		</p>
+		<p>
+			<DecoratedLink
+				target="_blank"
+				href="https://github.com/hugentobler/website/blob/master/LICENSE"
+				>Open source</DecoratedLink
+			>
+		</p>
+	</footer>
 </div>
 
 <style>
@@ -196,7 +188,7 @@
 
 		/* Stacked when viewport aspect ratio ≤ sqrt(2) — the point where
 		   two poster-width columns no longer fit side by side */
-		@media (max-aspect-ratio: 1.414) {
+		@media (max-aspect-ratio: 1.65) {
 			--poster-w: min(100svh / sqrt(2), 100vw - var(--baseline) * 2);
 			--thumbnail-scale: 3;
 			grid-template-rows: auto;
@@ -204,13 +196,33 @@
 		}
 	}
 
-	main {
+	.sidebar {
 		display: grid;
+		grid-template-columns: auto 1fr;
 		grid-row: 1;
 		grid-column: 1;
-		grid-auto-rows: calc(var(--baseline) * 4);
+		gap: var(--baseline);
+		align-content: start;
 		padding: var(--baseline);
-		container-type: inline-size;
+
+		@media (max-aspect-ratio: 1.65) {
+			box-sizing: content-box;
+			width: var(--poster-w);
+		}
+	}
+
+	.name {
+		grid-column: 1 / -1;
+
+		[lang="zh"] {
+			font-family: "Iansui", "PingFang SC", "Noto Sans SC", "Microsoft YaHei",
+				sans-serif;
+			font-weight: normal;
+		}
+	}
+
+	.subheader {
+		color: oklch(0.6 0.01 256.7);
 	}
 
 	footer {
@@ -220,12 +232,19 @@
 		font-weight: 300;
 		font-stretch: condensed;
 
-		@media (max-aspect-ratio: 1.414) {
+		@media (max-aspect-ratio: 1.65) {
 			grid-row: auto;
 			grid-column: auto;
 			order: 3;
 			padding-bottom: 50svh;
 		}
+	}
+
+	.visitors {
+		min-height: 1lh;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
 	}
 
 	aside {
@@ -241,9 +260,11 @@
 		align-items: end;
 		height: 100svh;
 		padding: var(--baseline);
+		padding-left: calc(3 * var(--baseline));
+		background-color: white;
 		perspective: 800px;
 
-		@media (max-aspect-ratio: 1.414) {
+		@media (max-aspect-ratio: 1.65) {
 			position: static;
 			flex-direction: column;
 			flex-wrap: nowrap;
@@ -253,36 +274,8 @@
 			align-items: start;
 			order: 2;
 			height: auto;
+			padding-left: var(--baseline);
 		}
-	}
-
-	.nameplate {
-		display: flex;
-		align-items: baseline;
-		justify-content: space-between;
-		font-size: min(var(--type-2xl), 6.5cqi);
-		font-weight: bold;
-		font-stretch: expanded;
-		line-height: var(--leading-2xl);
-		color: oklch(0.787 0.011 256.7);
-		letter-spacing: -0.06em;
-		white-space: nowrap;
-
-		[lang="zh"] {
-			font-family:
-				"Mochiy Pop P One", "PingFang SC", "Noto Sans SC", "Microsoft YaHei",
-				sans-serif;
-			font-size: 0.7em;
-			font-weight: normal;
-			translate: 0 -0.05em;
-		}
-	}
-
-	.visitors {
-		min-height: 1lh;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
 	}
 
 	/* Scroll-driven tilt for touch/no-hover devices.
@@ -470,12 +463,16 @@
 		bottom: calc(
 			var(--baseline) * 2 + var(--baseline) * var(--thumbnail-scale, 2)
 		);
-		padding: 0.5em 0.75em;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		height: calc(2.4 * var(--baseline));
+		padding: 0 calc(var(--baseline) / 3);
 		font-weight: normal;
 		font-stretch: condensed;
-		background-color: oklch(100% 0 0 / 0.85);
+		background-color: white;
 
-		@media (max-aspect-ratio: 1.414) {
+		@media (max-aspect-ratio: 1.65) {
 			position: static;
 			order: 1;
 			padding: 0;
@@ -511,61 +508,4 @@
 		}
 	}
 
-	/* Project list entries — each spans 2 baseline-grid rows (8 baselines) */
-	.project {
-		display: grid;
-		grid-template-rows: auto auto;
-		grid-template-columns: calc(var(--baseline) * 5) 1fr auto;
-		grid-row: span 2;
-		column-gap: var(--baseline);
-		align-content: center;
-	}
-
-	/* Reset typesetter auto-sizing inside project entries */
-	.project :is(h3, p, time) {
-		--t8r-snap: 0;
-		padding-bottom: 0;
-		margin-top: 0;
-	}
-
-	.project-image {
-		grid-row: 1 / -1;
-		overflow: hidden;
-
-		:global(picture) {
-			display: block;
-			width: 100%;
-			height: 100%;
-		}
-
-		:global(img) {
-			width: 100%;
-			height: 100%;
-			object-fit: cover;
-		}
-	}
-
-	.project-name {
-		align-self: end;
-		font-size: var(--type-base);
-		font-weight: bold;
-		line-height: var(--leading-base);
-	}
-
-	.project-desc {
-		align-self: start;
-		font-size: var(--type-sm);
-		font-weight: 300;
-		font-stretch: condensed;
-		line-height: var(--leading-sm);
-	}
-
-	.project-year {
-		grid-row: 1 / -1;
-		align-self: center;
-		font-size: var(--type-sm);
-		font-weight: 300;
-		font-stretch: condensed;
-		line-height: var(--leading-sm);
-	}
 </style>
