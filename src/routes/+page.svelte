@@ -19,8 +19,15 @@
 
 	let showInspo = $state(false);
 
+	const thumbs = import.meta.glob('./home/*.svg', { eager: true, import: 'default', query: '?url' }) as Record<string, string>;
+	const thumb = (name: string) => thumbs[`./home/${name.toLowerCase()}.svg`];
+
 	const projects = [
-		{ headline: "Insurance for the underserved", name: "Mātū", year: 2024 },
+		{ headline: "Insurance for the underserved", name: "Macre", thumb: { h: 50 }, year: 2024 },
+		{ headline: "Insurance for the underserved", name: "Moonwalk", thumb: { h: 50 }, year: 2024 },
+		{ headline: "Insurance for the underserved", name: "Sofasoda", thumb: { h: 50 }, year: 2024 },
+		{ headline: "Insurance for the underserved", name: "Foundlost", thumb: { h: 50 }, year: 2024 },
+		{ headline: "Insurance for the underserved", name: "Mātū", thumb: { h: 50 }, year: 2024 },
 		{
 			headline: "Circular economy material passport",
 			name: "Cambium",
@@ -68,22 +75,29 @@
 <div class="page">
 	<main class="sidebar sans type-sm">
 		<p class="name">Christopher Hugentobler <span lang="zh">姚思陶</span></p>
-		<p class="subheader">About</p>
+		<span class="subheader">About</span>
 		<p>Technologist pursuing the evergreen at the intersection of design, economics, and circularity.</p>
-		<p class="subheader">Affairs</p>
+		<span class="subheader">Affairs</span>
 		<div>
 			<p>Computer agents</p>
 			<p>Insurance chatbots</p>
 		</div>
-		<p class="subheader">Abode</p>
+		<span class="subheader">Abode</span>
 		<p>Long Beach</p>
 	</main>
 	<section class="archives sans type-sm">
-		<p class="subheader">Archives</p>
+		<span class="subheader">Archives</span>
 		{#each projects.slice(0, 3) as project}
 			<article class="archive">
 				<div class="archive-thumb">
-					<enhanced:img src={LondonTelephone} alt={project.name} />
+					{#if thumb(project.name)}
+						<img
+							src={thumb(project.name)}
+							alt={project.name}
+							style:height={project.thumb?.h ? `${project.thumb.h}%` : undefined}
+							style:width={project.thumb?.w ? `${project.thumb.w}%` : undefined}
+						/>
+					{/if}
 				</div>
 				<div class="archive-text">
 					<p class="archive-name">{project.name}</p>
@@ -94,11 +108,18 @@
 		{/each}
 	</section>
 	<section class="archives archives-bottom sans type-sm">
-		<p class="subheader stacked-only">Archives continued</p>
+		<span class="subheader stacked-only">Archives continued</span>
 		{#each projects.slice(3) as project}
 			<article class="archive">
 				<div class="archive-thumb">
-					<enhanced:img src={LondonTelephone} alt={project.name} />
+					{#if thumb(project.name)}
+						<img
+							src={thumb(project.name)}
+							alt={project.name}
+							style:height={project.thumb?.h ? `${project.thumb.h}%` : undefined}
+							style:width={project.thumb?.w ? `${project.thumb.w}%` : undefined}
+						/>
+					{/if}
 				</div>
 				<div class="archive-text">
 					<p class="archive-name">{project.name}</p>
@@ -171,8 +192,8 @@
 		<div class="toolbar">
 			{#if showInspo}
 				<div class="caption sans type-sm">
-					<span><span style:font-weight="bold">London Telephone</span>, <span class="mono">1957</span></span>
-					<span>Josef Müller-Brockmann <span class="mono">(1914–96)</span></span>
+					<p><span style:font-weight="bold">London Telephone</span>, <span class="mono">1957</span></p>
+					<p>Josef Müller-Brockmann <span class="mono">(1914–96)</span></p>
 				</div>
 			{/if}
 			<button
@@ -209,7 +230,7 @@
 
 <style>
 	.page {
-		--label-w: 5ch;
+		--label-w: 8ch;
 		--primary: var(--color-charcoal-900);
 		--secondary: var(--color-charcoal-500);
 
@@ -272,6 +293,10 @@
 		color: var(--secondary);
 	}
 
+	:global(.type-sm) p {
+		padding-bottom: var(--snap-sm);
+	}
+
 	.stacked-only {
 		display: none;
 
@@ -285,15 +310,21 @@
 		grid-template-columns: var(--label-w) 1fr auto;
 		gap: var(--baseline);
 		align-items: center;
+		height: calc(var(--baseline) * 2);
 	}
 
 	.archive-thumb {
+		display: grid;
+		place-items: center;
+		align-self: stretch;
+		height: calc(var(--baseline) * 2);
 		overflow: hidden;
+		background-color: oklch(from white l c h / 0.5);
 
-		:global(img) {
-			width: 100%;
-			height: 100%;
-			object-fit: cover;
+		img {
+			max-width: 100%;
+			max-height: 100%;
+			object-fit: contain;
 		}
 	}
 
