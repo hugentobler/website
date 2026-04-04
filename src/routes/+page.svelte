@@ -61,18 +61,53 @@
 	}}
 />
 
+<svelte:head>
+	<title>Christopher Hugentobler 姚思陶</title>
+</svelte:head>
+
 <div class="page">
-	<main class="sidebar sans type-xs">
-		<h1 class="name">Christopher Hugentobler <span lang="zh">姚思陶</span></h1>
-		<h2 class="subheader">About</h2>
-		<p class="content">Technologist pursuing the evergreen at the intersection of design, economics, and circularity.</p>
-		<h2 class="subheader">Projects</h2>
-		<ul class="content">
-			{#each projects as project}
-				<li>{project.name} — {project.headline}, {project.year}</li>
-			{/each}
-		</ul>
+	<main class="sidebar sans type-sm">
+		<p class="name">Christopher Hugentobler <span lang="zh">姚思陶</span></p>
+		<p class="subheader">About</p>
+		<p>Technologist pursuing the evergreen at the intersection of design, economics, and circularity.</p>
+		<p class="subheader">Affairs</p>
+		<div>
+			<p>Computer agents</p>
+			<p>Insurance chatbots</p>
+		</div>
+		<p class="subheader">Abode</p>
+		<p>Long Beach</p>
 	</main>
+	<section class="archives sans type-sm">
+		<p class="subheader">Archives</p>
+		{#each projects.slice(0, 3) as project}
+			<article class="archive">
+				<div class="archive-thumb">
+					<enhanced:img src={LondonTelephone} alt={project.name} />
+				</div>
+				<div class="archive-text">
+					<p class="archive-name">{project.name}</p>
+					<p class="archive-headline">{project.headline}</p>
+				</div>
+				<time class="archive-year mono">{project.year}</time>
+			</article>
+		{/each}
+	</section>
+	<section class="archives archives-bottom sans type-sm">
+		<p class="subheader stacked-only">Archives continued</p>
+		{#each projects.slice(3) as project}
+			<article class="archive">
+				<div class="archive-thumb">
+					<enhanced:img src={LondonTelephone} alt={project.name} />
+				</div>
+				<div class="archive-text">
+					<p class="archive-name">{project.name}</p>
+					<p class="archive-headline">{project.headline}</p>
+				</div>
+				<time class="archive-year mono">{project.year}</time>
+			</article>
+		{/each}
+	</section>
 	<aside>
 		<button
 			type="button"
@@ -135,9 +170,9 @@
 		</div>
 		<div class="toolbar">
 			{#if showInspo}
-				<div class="caption sans type-base">
-					<span><span style:font-weight="bold">London Telephone</span>, 1957</span>
-					<span>Josef Müller-Brockmann (1914–96)</span>
+				<div class="caption sans type-sm">
+					<span><span style:font-weight="bold">London Telephone</span>, <span class="mono">1957</span></span>
+					<span>Josef Müller-Brockmann <span class="mono">(1914–96)</span></span>
 				</div>
 			{/if}
 			<button
@@ -174,6 +209,10 @@
 
 <style>
 	.page {
+		--label-w: 5ch;
+		--primary: var(--color-charcoal-900);
+		--secondary: var(--color-charcoal-500);
+
 		/* Poster width: height-derived vs width-derived, whichever is smaller.
 		   2 baselines = aside top + bottom padding */
 		--poster-w: min(
@@ -181,13 +220,18 @@
 			100vw - var(--baseline) * 2
 		);
 		display: grid;
-		grid-template-rows: 1fr auto;
+		grid-template-rows: auto auto 1fr auto;
 		grid-template-columns: 1fr auto;
 		gap: var(--baseline);
 		min-height: 100svh;
+		color: var(--primary);
 
-		/* Stacked when viewport aspect ratio ≤ sqrt(2) — the point where
-		   two poster-width columns no longer fit side by side */
+		::selection {
+			color: white;
+			background-color: var(--primary);
+		}
+
+		/* Stacked when viewport is narrower than 1.65:1 aspect ratio */
 		@media (max-aspect-ratio: 1.65) {
 			--poster-w: min(100svh / sqrt(2), 100vw - var(--baseline) * 2);
 			--thumbnail-scale: 3;
@@ -197,36 +241,107 @@
 	}
 
 	.sidebar {
+		box-sizing: content-box;
 		display: grid;
-		grid-template-columns: auto 1fr;
+		grid-template-columns: var(--label-w) 1fr;
 		grid-row: 1;
 		grid-column: 1;
 		gap: var(--baseline);
 		align-content: start;
+		align-self: start;
+		width: var(--poster-w);
 		padding: var(--baseline);
-
-		@media (max-aspect-ratio: 1.65) {
-			box-sizing: content-box;
-			width: var(--poster-w);
-		}
 	}
 
 	.name {
 		grid-column: 1 / -1;
+		font-weight: normal;
+		font-stretch: expanded;
+		color: var(--secondary);
+		text-transform: uppercase;
 
 		[lang="zh"] {
-			font-family: "Iansui", "PingFang SC", "Noto Sans SC", "Microsoft YaHei",
+			font-family: "M PLUS 1 Variable", "PingFang SC", "Noto Sans SC", "Microsoft YaHei",
 				sans-serif;
-			font-weight: normal;
+			font-weight: 400;
+			font-stretch: unset;
 		}
 	}
 
 	.subheader {
-		color: oklch(0.6 0.01 256.7);
+		color: var(--secondary);
+	}
+
+	.stacked-only {
+		display: none;
+
+		@media (max-aspect-ratio: 1.65) {
+			display: block;
+		}
+	}
+
+	.archive {
+		display: grid;
+		grid-template-columns: var(--label-w) 1fr auto;
+		gap: var(--baseline);
+		align-items: center;
+	}
+
+	.archive-thumb {
+		overflow: hidden;
+
+		:global(img) {
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+		}
+	}
+
+	.archive-name {
+		font-weight: bold;
+	}
+
+	.archive-headline {
+		color: var(--secondary);
+	}
+
+	:global(.mono) {
+		font-size: var(--type-sm);
+		font-stretch: 88%;
+		line-height: var(--leading-sm);
+	}
+
+	.archive-year {
+		color: var(--secondary);
+	}
+
+	.archives {
+		box-sizing: content-box;
+		display: flex;
+		flex-direction: column;
+		grid-row: 2;
+		grid-column: 1;
+		gap: var(--baseline);
+		width: var(--poster-w);
+		padding: 0 var(--baseline);
+
+		@media (max-aspect-ratio: 1.65) {
+			grid-row: auto;
+			grid-column: auto;
+		}
+	}
+
+	.archives-bottom {
+		grid-row: 3;
+
+		@media (max-aspect-ratio: 1.65) {
+			grid-row: auto;
+			order: 2;
+		}
 	}
 
 	footer {
-		grid-row: 2;
+		grid-row: 4;
 		grid-column: 1;
 		padding: 0 var(--baseline) var(--baseline);
 		font-weight: 300;
@@ -272,7 +387,7 @@
 			grid-column: auto;
 			align-content: normal;
 			align-items: start;
-			order: 2;
+			order: 1;
 			height: auto;
 			padding-left: var(--baseline);
 		}
@@ -471,6 +586,10 @@
 		font-weight: normal;
 		font-stretch: condensed;
 		background-color: white;
+
+		:global(.mono) {
+			font-weight: 450;
+		}
 
 		@media (max-aspect-ratio: 1.65) {
 			position: static;

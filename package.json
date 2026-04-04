@@ -1,6 +1,6 @@
 {
 	"dependencies": {
-		"@fontsource/iansui": "^5.2.8",
+		"@fontsource-variable/m-plus-1": "^5.2.9",
 		"bits-ui": "^2.16.2",
 		"clsx": "^2.1.1",
 		"crawler-user-agents": "^1.32.0",

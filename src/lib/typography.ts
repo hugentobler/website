@@ -112,14 +112,13 @@ export const TYPE_SCALES: Record<FontId, Record<Size, ScaleLevel>> = {
 		xs: { fontSize: 0.875, lineHeight: 1 },
 	},
 	mono: {
-		// TODO: Tune mono to share base.lineHeight = 1.5rem with sans
-		"2xl": { fontSize: 5.5, lineHeight: 5.5 },
-		xl: { fontSize: 4, lineHeight: 4 },
-		lg: { fontSize: 2.75, lineHeight: 2.75 },
-		md: { fontSize: 2, lineHeight: 2 },
-		base: { fontSize: 1.375, lineHeight: 1.375 },
-		sm: { fontSize: 1, lineHeight: 1 },
-		xs: { fontSize: 0.6875, lineHeight: 0.6875 },
+		"2xl": { fontSize: 4.5, lineHeight: 6 }, // 4× baseline
+		xl: { fontSize: 3, lineHeight: 4.5 }, // 3× baseline
+		lg: { fontSize: 2, lineHeight: 3 }, // 2× baseline
+		md: { fontSize: 1.375, lineHeight: 1.5 }, // 1× baseline
+		base: { fontSize: 1, lineHeight: 1.5 }, // 1× baseline ← shared grid
+		sm: { fontSize: 0.875, lineHeight: 1.1875 },
+		xs: { fontSize: 0.75, lineHeight: 1 },
 	},
 };
 
@@ -138,6 +137,15 @@ export const TYPE_SCALES_MIN: Partial<Record<FontId, Record<Size, ScaleLevel>>> 
 		base: { fontSize: 1, lineHeight: 1.375 },
 		sm: { fontSize: 0.875, lineHeight: 1.0625 },
 		xs: { fontSize: 0.8125, lineHeight: 0.875 },
+	},
+	mono: {
+		"2xl": { fontSize: 2.25, lineHeight: 3 }, // 2× baseline (min)
+		xl: { fontSize: 1.75, lineHeight: 4.125 },
+		lg: { fontSize: 1.25, lineHeight: 2.75 },
+		md: { fontSize: 1.125, lineHeight: 1.375 },
+		base: { fontSize: 0.875, lineHeight: 1.375 }, // ← matches sans min baseline
+		sm: { fontSize: 0.75, lineHeight: 1.0625 },
+		xs: { fontSize: 0.625, lineHeight: 0.875 },
 	},
 };
 

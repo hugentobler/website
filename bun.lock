@@ -5,7 +5,7 @@
     "": {
       "name": "hvgentobler.com",
       "dependencies": {
-        "@fontsource/iansui": "^5.2.8",
+        "@fontsource-variable/m-plus-1": "^5.2.9",
         "bits-ui": "^2.16.2",
         "clsx": "^2.1.1",
         "crawler-user-agents": "^1.32.0",
@@ -184,7 +184,7 @@
 
     "@floating-ui/utils": ["@floating-ui/utils@0.2.10", "", {}, "sha512-aGTxbpbg8/b5JfU1HXSrbH3wXZuLPJcNEcZQFMxLs3oSzgtVu6nFPkbbGGUvBcUjKV2YyB9Wxxabo+HEH9tcRQ=="],
 
-    "@fontsource/iansui": ["@fontsource/iansui@5.2.8", "", {}, "sha512-wVixkutedO531O4X4114s0EjuHEQgzlOhVIvELFhIV7FaaWKu6yaNT4LZOduj//n0dHKVlVEaSOswxG6FGLxWw=="],
+    "@fontsource-variable/m-plus-1": ["@fontsource-variable/m-plus-1@5.2.9", "", {}, "sha512-Ywv6bYdJiBa9TCctTQlggsKkI8y6UiHpofVTik8fUJajIS90INYFhL69eK8DUzmcNQJxGUVmGcb5cZr6g7FAxw=="],
 
     "@humanfs/core": ["@humanfs/core@0.19.1", "", {}, "sha512-5DyQ4+1JEUzejeK1JGICcideyfUbGixgS9jNgex5nqkW+cY7WZhxBigmieN5Qnw9ZosSNVC9KQKyb+GUaGyKUA=="],
 

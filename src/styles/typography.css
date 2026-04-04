@@ -60,33 +60,33 @@
 .mono {
 	font-family: var(--font-mono);
 
-	/* 2xl: 5.5rem / 5.5rem (4× baseline) */
-	--type-2xl: 5.5rem;
-	--leading-2xl: 5.5rem;
+	/* 2xl: 4.5rem / 6rem (4× baseline) */
+	--type-2xl: clamp(2.25rem, 1.3295rem + 4.0909vw, 4.5rem);
+	--leading-2xl: clamp(3rem, 1.7727rem + 5.4545vw, 6rem);
 
-	/* xl: 4rem / 4rem (2.9091× baseline) */
-	--type-xl: 4rem;
-	--leading-xl: 4rem;
+	/* xl: 3rem / 4.5rem (3× baseline, locked) */
+	--type-xl: clamp(1.75rem, 1.2386rem + 2.2727vw, 3rem);
+	--leading-xl: calc(var(--baseline) * 3);
 
-	/* lg: 2.75rem / 2.75rem (2× baseline) */
-	--type-lg: 2.75rem;
-	--leading-lg: 2.75rem;
+	/* lg: 2rem / 3rem (2× baseline, locked) */
+	--type-lg: clamp(1.25rem, 0.9432rem + 1.3636vw, 2rem);
+	--leading-lg: calc(var(--baseline) * 2);
 
-	/* md: 2rem / 2rem (1.4545× baseline) */
-	--type-md: 2rem;
-	--leading-md: 2rem;
+	/* md: 1.375rem / 1.5rem (1× baseline, locked) */
+	--type-md: clamp(1.125rem, 1.0227rem + 0.4545vw, 1.375rem);
+	--leading-md: var(--baseline);
 
-	/* base: 1.375rem / 1.375rem (1× baseline) */
-	--type-base: 1.375rem;
-	--leading-base: 1.375rem;
+	/* base: 1rem / 1.5rem (1× baseline) */
+	--type-base: clamp(0.875rem, 0.8239rem + 0.2273vw, 1rem);
+	--leading-base: 1.5rem;
 
-	/* sm: 1rem / 1rem (0.7273× baseline) */
-	--type-sm: 1rem;
-	--leading-sm: 1rem;
+	/* sm: 0.875rem / 1.1875rem (0.7917× baseline) */
+	--type-sm: clamp(0.75rem, 0.6989rem + 0.2273vw, 0.875rem);
+	--leading-sm: clamp(1.0625rem, 1.0114rem + 0.2273vw, 1.1875rem);
 
-	/* xs: 0.6875rem / 0.6875rem (0.5× baseline) */
-	--type-xs: 0.6875rem;
-	--leading-xs: 0.6875rem;
+	/* xs: 0.75rem / 1rem (0.6667× baseline) */
+	--type-xs: clamp(0.625rem, 0.5739rem + 0.2273vw, 0.75rem);
+	--leading-xs: clamp(0.875rem, 0.8239rem + 0.2273vw, 1rem);
 }
 
 /* =============================================================================
