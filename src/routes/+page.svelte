@@ -19,13 +19,17 @@
 
 	let showInspo = $state(false);
 
-	const thumbs = import.meta.glob('./home/*.svg', { eager: true, import: 'default', query: '?url' }) as Record<string, string>;
-	const thumb = (name: string) => thumbs[`./home/${name.toLowerCase()}.svg`];
+	const thumbs = import.meta.glob('./home/*.{svg,png}', { eager: true, import: 'default', query: '?url' }) as Record<string, string>;
+	const thumb = (name: string) => {
+		const base = `./home/${name.toLowerCase()}`;
+		return thumbs[`${base}.svg`] ?? thumbs[`${base}.png`];
+	};
 
 	const projects = [
 		{ headline: "Insurance for the underserved", name: "Macre", thumb: { h: 50 }, year: 2024 },
-		{ headline: "Insurance for the underserved", name: "Moonwalk", thumb: { h: 50 }, year: 2024 },
-		{ headline: "Insurance for the underserved", name: "Sofasoda", thumb: { h: 50 }, year: 2024 },
+		{ headline: "Prospecting software for targeting ecommerce sellers", name: "Moonwalk", thumb: { h: 40 }, year: 2024 },
+		{ headline: "Insurance for the underserved", name: "sofasoda", thumb: { h: 45 }, year: 2024 },
+		{ headline: "Insurance for the underserved", name: "Snapask", thumb: { w: 45 }, year: 2024 },
 		{ headline: "Insurance for the underserved", name: "Foundlost", thumb: { h: 50 }, year: 2024 },
 		{ headline: "Insurance for the underserved", name: "Mātū", thumb: { h: 50 }, year: 2024 },
 		{
@@ -76,11 +80,11 @@
 	<main class="sidebar sans type-sm">
 		<p class="name">Christopher Hugentobler <span lang="zh">姚思陶</span></p>
 		<span class="subheader">About</span>
-		<p>Technologist pursuing the evergreen at the intersection of design, economics, and circularity.</p>
+		<p>Economics by training, operator by necessity, creative-engineer by vocation.</p>
 		<span class="subheader">Affairs</span>
 		<div>
 			<p>Computer agents</p>
-			<p>Insurance chatbots</p>
+			<p>Smarter healthcare</p>
 		</div>
 		<span class="subheader">Abode</span>
 		<p>Long Beach</p>
@@ -314,18 +318,21 @@
 	}
 
 	.archive-thumb {
-		display: grid;
-		place-items: center;
-		align-self: stretch;
-		height: calc(var(--baseline) * 2);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		height: 100%;
 		overflow: hidden;
 		background-color: oklch(from white l c h / 0.5);
 
 		img {
-			max-width: 100%;
 			max-height: 100%;
 			object-fit: contain;
 		}
+	}
+
+	.archive-text {
+		min-width: 0;
 	}
 
 	.archive-name {
@@ -333,7 +340,10 @@
 	}
 
 	.archive-headline {
+		overflow: hidden;
+		text-overflow: ellipsis;
 		color: var(--secondary);
+		white-space: nowrap;
 	}
 
 	:global(.mono) {
