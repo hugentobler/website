@@ -254,7 +254,7 @@
 			</button>
 		</div>
 	</aside>
-	<footer class="sans type-md">
+	<footer class="sans type-sm">
 		<p class="visitors">
 			Last visitor from
 			<VisitorFeed>
@@ -270,6 +270,13 @@
 				>Open source</DecoratedLink
 			>
 		</p>
+		<p>
+			<DecoratedLink
+				target="_blank"
+				href="https://linkedin.com/in/hugentobler"
+				>LinkedIn</DecoratedLink
+			>
+		</p>
 	</footer>
 </div>
 
@@ -277,7 +284,7 @@
 	.page {
 		--label-w: 7ch;
 		--primary: var(--color-charcoal-900);
-		--secondary: var(--color-charcoal-500);
+		--secondary: var(--color-charcoal-400);
 
 		/* Poster width: height-derived vs width-derived, whichever is smaller.
 		   2 baselines = aside top + bottom padding */
@@ -439,11 +446,15 @@
 	}
 
 	footer {
+		--foreground: var(--primary);
 		grid-row: 4;
 		grid-column: 1;
-		padding: 0 var(--baseline) var(--baseline);
-		font-weight: 300;
-		font-stretch: condensed;
+		padding: var(--baseline) var(--baseline) var(--baseline);
+		color: var(--secondary);
+
+		:global(a:hover), :global(a:focus) {
+			color: var(--primary);
+		}
 
 		@media (max-aspect-ratio: 1.65) {
 			grid-row: auto;
