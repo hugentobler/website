@@ -21,40 +21,41 @@
 
 	const thumbs = import.meta.glob('./home/*.{svg,png}', { eager: true, import: 'default', query: '?url' }) as Record<string, string>;
 	const thumb = (name: string) => {
-		const base = `./home/${name.toLowerCase()}`;
+		const base = `./home/${name.toLowerCase().replace(/\s+/g, '-')}`;
 		return thumbs[`${base}.svg`] ?? thumbs[`${base}.png`];
 	};
 
 	const projects = [
-		{ headline: "Insurance for the underserved", name: "Macre", thumb: { h: 50 }, year: 2024 },
-		{ headline: "Prospecting software for targeting ecommerce sellers", name: "Moonwalk", thumb: { h: 40 }, year: 2024 },
-		{ headline: "Insurance for the underserved", name: "sofasoda", thumb: { h: 45 }, year: 2024 },
-		{ headline: "Insurance for the underserved", name: "Snapask", thumb: { w: 45 }, year: 2024 },
-		{ headline: "Insurance for the underserved", name: "Foundlost", thumb: { h: 60 }, year: 2024 },
-		{ headline: "Insurance for the underserved", name: "pokayoke", thumb: { w: 95 }, year: 2024 },
 		{
-			headline: "Circular economy material passport",
-			name: "Cambium",
-			year: 2023,
+			headline: "Hawker-centre hackathon for hungry AI tinkerers",
+			name: "Inter-faces",
+			thumb: {h: 60},
+			year: 2024
+		},
+		{ headline: "Un-gatekeeping circular materials for design and manufacturing", name: "Macre", thumb: { h: 50 }, year: 2023 },
+		{ headline: "Open supplier sourcing marketplace for sustainable products", name: "pokayoke", thumb: { w: 95 }, year: 2022 },
+		{ headline: "Prospecting software for targeting ecommerce sellers", name: "Moonwalk", thumb: { h: 40 }, year: 2022 },
+		{
+			headline: "$1m software devshop, 100 founders network",
+			name: "Inspect Element",
+			thumb: {h: 45},
+			year: 2021
+		},
+		{ headline: "Outdoor expeditions that stretch the comfort zone", name: "FoundLost", thumb: { h: 55 }, year: 2020 },
+		{ headline: "Digital literacy courses for knowledge workers", name: "sofasoda", thumb: { h: 45 }, year: 2019 },
+		{ headline: "Tutor matchmaker for 3m students, $50m raised", name: "Snapask", thumb: { w: 45 }, year: 2016 },
+		{
+			headline: "Dating app for intrepid wagies",
+			name: "TAB",
+			thumb: {w: 45},
+			year: 2015
 		},
 		{
-			headline: "Decentralized education marketplace",
-			name: "Tōkō",
-			year: 2023,
+			headline: "$1m donated, 100k alums in human trafficking fight",
+			name: "24 Hour Race",
+			thumb: {h: 55},
+			year: 2014
 		},
-		{
-			headline: "Supply chain transparency platform",
-			name: "Meridian",
-			year: 2022,
-		},
-		{
-			headline: "Community resource sharing network",
-			name: "Pūkeko",
-			year: 2021,
-		},
-		{ headline: "Regenerative forestry analytics", name: "Kauri", year: 2020 },
-		{ headline: "Open source design system", name: "Whetū", year: 2019 },
-		{ headline: "Algorithmic decision auditing", name: "Tātai", year: 2018 },
 	];
 </script>
 
@@ -88,11 +89,32 @@
 		</div>
 		<span class="subheader">Abode</span>
 		<p>Long Beach</p>
+		<!-- <span class="subheader">Agenda</span>
+		<p>Abundance</p> -->
 	</main>
 	<section class="archives sans type-sm">
 		<span class="subheader">Archives</span>
-		{#each projects.slice(0, 3) as project}
-			<article class="archive">
+		{#each projects.slice(0, Math.ceil(projects.length / 2)) as project}
+			<div
+				class="archive"
+				role="button"
+				tabindex="0"
+				onclick={(e) => {
+					const el = e.currentTarget;
+					el.classList.toggle('expanded');
+					if (el.classList.contains('expanded')) {
+						setTimeout(() => el.classList.remove('expanded'), 900);
+					}
+				}}
+				onkeydown={(e) => {
+					if (e.key !== 'Enter') return;
+					const el = e.currentTarget;
+					el.classList.toggle('expanded');
+					if (el.classList.contains('expanded')) {
+						setTimeout(() => el.classList.remove('expanded'), 900);
+					}
+				}}
+			>
 				<div class="archive-thumb">
 					{#if thumb(project.name)}
 						<img
@@ -108,13 +130,32 @@
 					<p class="archive-headline">{project.headline}</p>
 				</div>
 				<time class="archive-year mono">{project.year}</time>
-			</article>
+			</div>
 		{/each}
 	</section>
 	<section class="archives archives-bottom sans type-sm">
 		<span class="subheader stacked-only">Archives continued</span>
-		{#each projects.slice(3) as project}
-			<article class="archive">
+		{#each projects.slice(Math.ceil(projects.length / 2)) as project}
+			<div
+				class="archive"
+				role="button"
+				tabindex="0"
+				onclick={(e) => {
+					const el = e.currentTarget;
+					el.classList.toggle('expanded');
+					if (el.classList.contains('expanded')) {
+						setTimeout(() => el.classList.remove('expanded'), 900);
+					}
+				}}
+				onkeydown={(e) => {
+					if (e.key !== 'Enter') return;
+					const el = e.currentTarget;
+					el.classList.toggle('expanded');
+					if (el.classList.contains('expanded')) {
+						setTimeout(() => el.classList.remove('expanded'), 900);
+					}
+				}}
+			>
 				<div class="archive-thumb">
 					{#if thumb(project.name)}
 						<img
@@ -130,7 +171,7 @@
 					<p class="archive-headline">{project.headline}</p>
 				</div>
 				<time class="archive-year mono">{project.year}</time>
-			</article>
+			</div>
 		{/each}
 	</section>
 	<aside>
@@ -234,7 +275,7 @@
 
 <style>
 	.page {
-		--label-w: 8ch;
+		--label-w: 7ch;
 		--primary: var(--color-charcoal-900);
 		--secondary: var(--color-charcoal-500);
 
@@ -258,6 +299,7 @@
 
 		/* Stacked when viewport is narrower than 1.65:1 aspect ratio */
 		@media (max-aspect-ratio: 1.65) {
+			--label-w: 6ch;
 			--poster-w: min(100svh / sqrt(2), 100vw - var(--baseline) * 2);
 			--thumbnail-scale: 3;
 			grid-template-rows: auto;
@@ -294,11 +336,9 @@
 	}
 
 	.subheader {
+		padding-top: var(--snap-sm);
+		font-stretch: condensed;
 		color: var(--secondary);
-	}
-
-	:global(.type-sm) p {
-		padding-bottom: var(--snap-sm);
 	}
 
 	.stacked-only {
@@ -315,13 +355,15 @@
 		gap: var(--baseline);
 		align-items: center;
 		height: calc(var(--baseline) * 2);
+		cursor: pointer;
 	}
 
 	.archive-thumb {
 		display: flex;
 		align-items: center;
+		align-self: flex-start;
 		justify-content: center;
-		height: 100%;
+		height: calc(var(--baseline) * 2);
 		overflow: hidden;
 		background-color: oklch(from white l c h / 0.5);
 
@@ -335,25 +377,40 @@
 		min-width: 0;
 	}
 
+	:global(.mono) {
+		font-size: var(--type-sm);
+		font-weight: 450;
+		font-stretch: 66%;
+		line-height: var(--leading-sm);
+	}
+
 	.archive-name {
-		font-weight: bold;
+		font-weight: normal;
 	}
 
 	.archive-headline {
 		overflow: hidden;
 		text-overflow: ellipsis;
+		font-stretch: condensed;
 		color: var(--secondary);
 		white-space: nowrap;
 	}
 
-	:global(.mono) {
-		font-size: var(--type-sm);
-		font-stretch: 88%;
-		line-height: var(--leading-sm);
-	}
-
 	.archive-year {
 		color: var(--secondary);
+	}
+
+	.archive:global(.expanded) {
+		grid-template-columns: var(--label-w) 1fr;
+
+		.archive-year {
+			display: none;
+		}
+
+		.archive-headline {
+			text-overflow: unset;
+			white-space: normal;
+		}
 	}
 
 	.archives {
@@ -585,11 +642,11 @@
 			text-transform: lowercase;
 		}
 
-		p {
+		& p {
 			text-box: cap alphabetic;
 		}
 
-		p:has(+ div) {
+		& p:has(+ div) {
 			transform: translateY(-0.75cqh);
 		}
 	}
@@ -668,4 +725,8 @@
 		}
 	}
 
+	:global(.type-sm) p {
+		padding-top: var(--snap-sm);
+		letter-spacing: -0.01em;
+	}
 </style>
