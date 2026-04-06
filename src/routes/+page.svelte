@@ -30,8 +30,8 @@
 		{ headline: "Prospecting software for targeting ecommerce sellers", name: "Moonwalk", thumb: { h: 40 }, year: 2024 },
 		{ headline: "Insurance for the underserved", name: "sofasoda", thumb: { h: 45 }, year: 2024 },
 		{ headline: "Insurance for the underserved", name: "Snapask", thumb: { w: 45 }, year: 2024 },
-		{ headline: "Insurance for the underserved", name: "Foundlost", thumb: { h: 50 }, year: 2024 },
-		{ headline: "Insurance for the underserved", name: "Mātū", thumb: { h: 50 }, year: 2024 },
+		{ headline: "Insurance for the underserved", name: "Foundlost", thumb: { h: 60 }, year: 2024 },
+		{ headline: "Insurance for the underserved", name: "pokayoke", thumb: { w: 95 }, year: 2024 },
 		{
 			headline: "Circular economy material passport",
 			name: "Cambium",
@@ -80,11 +80,11 @@
 	<main class="sidebar sans type-sm">
 		<p class="name">Christopher Hugentobler <span lang="zh">姚思陶</span></p>
 		<span class="subheader">About</span>
-		<p>Economics by training, operator by necessity, creative-engineer by vocation.</p>
+		<p>Economist by training, operator by necessity, creative-engineer by vocation.</p>
 		<span class="subheader">Affairs</span>
 		<div>
 			<p>Computer agents</p>
-			<p>Smarter healthcare</p>
+			<p>Smarter health insurance</p>
 		</div>
 		<span class="subheader">Abode</span>
 		<p>Long Beach</p>
