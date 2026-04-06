@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { ElementSize, useMousePosition } from "runed";
-	import DecoratedLink from "$lib/components/DecoratedLink.svelte";
-	import VisitorFeed from "$lib/components/VisitorFeed.svelte";
+	import PageFooter from "$lib/components/PageFooter.svelte";
 	import LondonTelephone from "./home/london-telephone-josef-müller-brockmann.jpg?enhanced";
 	import MyPortrait from "./home/noguchi.png?enhanced";
 
@@ -254,30 +253,7 @@
 			</button>
 		</div>
 	</aside>
-	<footer class="sans type-sm">
-		<p class="visitors">
-			Last visitor from
-			<VisitorFeed>
-				{#snippet children({ city, country })}
-					{#if city}{city}, {country}{/if}
-				{/snippet}
-			</VisitorFeed>
-		</p>
-		<p>
-			<DecoratedLink
-				target="_blank"
-				href="https://github.com/hugentobler/website/blob/master/LICENSE"
-				>Open source</DecoratedLink
-			>
-		</p>
-		<p>
-			<DecoratedLink
-				target="_blank"
-				href="https://linkedin.com/in/hugentobler"
-				>LinkedIn</DecoratedLink
-			>
-		</p>
-	</footer>
+	<PageFooter />
 </div>
 
 <style>
@@ -445,16 +421,10 @@
 		}
 	}
 
-	footer {
-		--foreground: var(--primary);
+	.page > :global(footer) {
 		grid-row: 4;
 		grid-column: 1;
-		padding: var(--baseline) var(--baseline) var(--baseline);
-		color: var(--secondary);
-
-		:global(a:hover), :global(a:focus) {
-			color: var(--primary);
-		}
+		padding: var(--baseline);
 
 		@media (max-aspect-ratio: 1.65) {
 			grid-row: auto;
@@ -462,13 +432,6 @@
 			order: 3;
 			padding-bottom: 50svh;
 		}
-	}
-
-	.visitors {
-		min-height: 1lh;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
 	}
 
 	aside {
