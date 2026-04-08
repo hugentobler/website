@@ -29,6 +29,7 @@ const config = {
 
 		// Global prerender configuration
 		prerender: {
+			entries: ["/2026/feeding-computer-agents/og.png"],
 			handleHttpError: "warn",
 			handleMissingId: "warn",
 		},

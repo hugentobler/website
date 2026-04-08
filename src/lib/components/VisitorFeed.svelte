@@ -1,45 +1,36 @@
 <!--
-  Visitor feed component. Fires a beacon to POST /api/visit on each
-  navigation, which records the visit and returns { total, city, country }
-  in one round trip. Passes data to a consumer snippet.
-  Renders nothing during SSR — data fills in client-side only.
+  Visitor feed component. Displays server-loaded visitor data and fires
+  a write-only beacon to POST /api/visit on each navigation.
 -->
 <script lang="ts">
 	import type { Snippet } from "svelte";
 	import { afterNavigate } from "$app/navigation";
-	import type { VisitorFeedData } from "$lib/types";
 
 	let {
-		path = "/",
+		path,
+		city,
+		country,
 		children,
 	}: {
-		path?: string;
-		children: Snippet<[VisitorFeedData]>;
+		path: string;
+		city: string | null;
+		country: string | null;
+		children: Snippet<[{ city: string; country: string | null }]>;
 	} = $props();
-
-	let total = $state(0);
-	let city = $state<string | null>(null);
-	let country = $state<string | null>(null);
 
 	afterNavigate(async () => {
 		try {
-			const res = await fetch("/api/visit", {
+			await fetch("/api/visit", {
 				body: JSON.stringify({ path }),
 				headers: { "Content-Type": "application/json" },
 				method: "POST",
 			});
-			if (res.ok) {
-				const data: VisitorFeedData = await res.json();
-				total = data.total;
-				city = data.city;
-				country = data.country;
-			}
 		} catch {
 			// Non-essential — fail silently
 		}
 	});
 </script>
 
-{#if total > 0 || city}
-	{@render children({ total, city, country })}
+{#if city}
+	{@render children({ city, country })}
 {/if}

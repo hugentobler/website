@@ -74,6 +74,9 @@
 
 <svelte:head>
 	<title>Christopher Hugentobler 姚思陶</title>
+	<meta property="og:title" content="Christopher Hugentobler 姚思陶" />
+	<meta property="og:description" content="Economist by training, operator by necessity, creative-engineer by vocation." />
+	<meta property="og:type" content="website" />
 </svelte:head>
 
 <div class="page">

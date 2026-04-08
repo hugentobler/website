@@ -46,16 +46,17 @@ function isBot(userAgent: string): boolean {
 }
 
 // Production routes — only these paths are live. Everything else 404s.
-const ALLOWED_PATHS = new Set(["/"]);
+const ALLOWED_PATHS = new Set(["/", "/2026/feeding-computer-agents"]);
 
 export const handle: Handle = async ({ event, resolve }) => {
 	const { url, request } = event;
 	const pathname = url.pathname;
 
 	// Production route guard: 404 anything not explicitly allowed.
-	// Skipped in dev so all routes remain accessible during development.
+	// Skipped in dev and during prerendering so all routes remain accessible.
 	if (
 		!dev &&
+		!building &&
 		!ALLOWED_PATHS.has(pathname) &&
 		!pathname.endsWith(".md") &&
 		!pathname.startsWith("/api/")

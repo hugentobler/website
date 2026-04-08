@@ -4,18 +4,15 @@ Renders a dynamic layout if a valid layout name is defined in the frontmatter. O
 -->
 
 <script lang="ts">
-import type { Component } from "svelte";
-
 import type { MarkdocModule } from "markdoc-svelte";
-
-import { getNavbar } from "$lib/components/Navbars.svelte";
-
+import type { Component } from "svelte";
 import { page } from "$app/state";
+import { getNavbar } from "$lib/components/Navbars.svelte";
 
 import Page from "./+page.svelte";
 
 // Access frontmatter from child page data
-const data = page.data as { markdown: MarkdocModule };
+const data = page.data as { markdown: MarkdocModule; visitor: { city: string | null; country: string | null } };
 const { frontmatter } = data.markdown;
 
 // Get the correct navbar, fallsback to default
@@ -68,7 +65,7 @@ Directly renders the page component with the default components.
     {:else}
       {@render DefaultLayout()}
     {/if}
-  {:catch}
+  {:catch _}
     {@render DefaultLayout()}
   {/await}
 </main>

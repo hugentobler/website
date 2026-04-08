@@ -1,7 +1,11 @@
-# Christopher Hugentobler
+# Christopher Hugentobler 姚思陶
 
-Technologist based between Hong Kong, Taipei, and Los Angeles.
+Economist by training, operator by necessity, creative-engineer by vocation.
 
-Interests: economics, insurance, circularity, education, agency, and the commons.
+Affairs: computer agents, smarter health insurance.
 
-Website: https://hvgentobler.com
+Based in Long Beach.
+
+Archives: Inter-faces (2024), Macre (2023), pokayoke (2022), Moonwalk (2022), Inspect Element (2021), FoundLost (2020), sofasoda (2019), Snapask (2016), TAB (2015), 24 Hour Race (2014).
+
+Website: https://hugentobler.world

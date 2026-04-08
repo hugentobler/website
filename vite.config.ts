@@ -12,4 +12,7 @@ export default defineConfig({
 			ignored: ["**/src/lib/generated/**"],
 		},
 	},
+	ssr: {
+		external: ["@resvg/resvg-js", "wawoff2"],
+	},
 });
