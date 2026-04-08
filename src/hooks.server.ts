@@ -64,6 +64,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 		!building &&
 		!ALLOWED_PATHS.has(pathname) &&
 		!pathname.endsWith(".md") &&
+		!pathname.endsWith(".png") &&
 		!pathname.startsWith("/api/")
 	) {
 		return new Response("Not found", { status: 404 });
@@ -91,6 +92,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 		const ua = request.headers.get("user-agent") ?? "";
 		if (
 			!pathname.endsWith(".md") &&
+			!pathname.endsWith(".png") &&
 			!pathname.startsWith("/api/") &&
 			(isBot(ua) || (dev && url.searchParams.has("bot")))
 		) {
