@@ -38,6 +38,11 @@ for (const [path, content] of Object.entries(rawModules)) {
 	if (slug) markdownBySlug.set(slug, content);
 }
 
+// TODO: derive route→slug mapping automatically instead of hardcoding aliases.
+const SLUG_ALIASES: Record<string, string> = {
+	"2026/feeding-computer-agents": "feeding-computer-agents",
+};
+
 // Bot detection: single compiled regex from all crawler-user-agents patterns.
 const botPattern = new RegExp(crawlers.map((c) => `(?:${c.pattern})`).join("|"), "i");
 
@@ -70,7 +75,8 @@ export const handle: Handle = async ({ event, resolve }) => {
 	// Static summaries (e.g. /home.md) are served by the CDN/Vite before
 	// reaching this hook.
 	if (pathname.endsWith(".md")) {
-		const slug = pathname.slice(1, -3); // "/bowtie.md" → "bowtie"
+		const rawSlug = pathname.slice(1, -3); // "/bowtie.md" → "bowtie"
+		const slug = SLUG_ALIASES[rawSlug] ?? rawSlug;
 		const content = markdownBySlug.get(slug);
 		if (content) {
 			return new Response(content, {

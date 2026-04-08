@@ -24,7 +24,9 @@
 	<meta property="og:title" content={metatitle} />
 	<meta property="og:description" content={description} />
 	<meta property="og:image" content="{page.url.origin}/2026/feeding-computer-agents/og.png" />
+	<meta property="og:url" content={page.url.href} />
 	<meta property="og:type" content="article" />
+	<meta property="article:author" content="{page.url.origin}" />
 	<meta name="twitter:card" content="summary_large_image" />
 </svelte:head>
 
