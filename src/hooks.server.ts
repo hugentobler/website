@@ -86,23 +86,23 @@ export const handle: Handle = async ({ event, resolve }) => {
 		}
 	}
 
-	// Runtime only: redirect bots to /{slug}.md.
-	// Skipped during prerendering (building) since there's no real user-agent.
-	if (!building) {
-		const ua = request.headers.get("user-agent") ?? "";
-		if (
-			!pathname.endsWith(".md") &&
-			!pathname.endsWith(".png") &&
-			!pathname.startsWith("/api/") &&
-			(isBot(ua) || (dev && url.searchParams.has("bot")))
-		) {
-			const slug = pathname === "/" ? "home" : pathname.replace(/^\//, "").replace(/\/$/, "");
-			return new Response(null, {
-				headers: { Location: `/${slug}.md` },
-				status: 302,
-			});
-		}
-	}
+	// Bot redirect disabled for now — it prevents social crawlers from seeing
+	// OG meta tags. Raw markdown is still available via <link rel="alternate">.
+	// if (!building) {
+	// 	const ua = request.headers.get("user-agent") ?? "";
+	// 	if (
+	// 		!pathname.endsWith(".md") &&
+	// 		!pathname.endsWith(".png") &&
+	// 		!pathname.startsWith("/api/") &&
+	// 		(isBot(ua) || (dev && url.searchParams.has("bot")))
+	// 	) {
+	// 		const slug = pathname === "/" ? "home" : pathname.replace(/^\//, "").replace(/\/$/, "");
+	// 		return new Response(null, {
+	// 			headers: { Location: `/${slug}.md` },
+	// 			status: 302,
+	// 		});
+	// 	}
+	// }
 
 	// Inject <link rel="alternate"> into <head> for all HTML pages.
 	// Runs during both prerendering and SSR, so the tag is baked into
