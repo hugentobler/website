@@ -26,7 +26,7 @@
 
 	const projects = [
 		{
-			headline: "Hawker-centre hackathon for hungry AI tinkerers",
+			headline: "Hawker-centre hackathon for 100 hungry AI tinkerers",
 			name: "Inter-faces",
 			thumb: {h: 60},
 			year: 2024
