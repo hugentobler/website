@@ -7,7 +7,7 @@
 	import raw from "$lib/markdown/feeding-computer-agents.md?raw";
 
 	const title = frontmatter?.title ?? "Feeding Computer Agents";
-	const metatitle = `${frontmatter?.title} — ${frontmatter?.description}`;
+	const metatitle = `${frontmatter?.title} - ${frontmatter?.description}`;
 	const description = raw
 		.replace(/---[\s\S]*?---/, "") // strip frontmatter
 		.replace(/[#*>[\]()_~`]/g, "") // strip markdown syntax
