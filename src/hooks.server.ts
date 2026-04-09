@@ -24,6 +24,10 @@ import type { Handle } from "@sveltejs/kit";
 import crawlers from "crawler-user-agents";
 import { building, dev } from "$app/environment";
 
+// Edge cache TTL for SSR pages (seconds).
+// Cached per-datacenter via the Cloudflare Workers Cache API.
+const CACHE_TTL = 3600; // 1 hour
+
 // Raw markdown content, loaded at build time via Vite's ?raw query.
 // markdoc-svelte processes the same files separately for HTML rendering.
 const rawModules = import.meta.glob("/src/lib/markdown/*.md", {
@@ -56,6 +60,20 @@ const ALLOWED_PATHS = new Set(["/", "/2026/feeding-computer-agents"]);
 export const handle: Handle = async ({ event, resolve }) => {
 	const { url, request } = event;
 	const pathname = url.pathname;
+
+	// Edge cache: serve cached SSR HTML from the nearest Cloudflare datacenter.
+	const isPageRequest =
+		request.method === "GET" &&
+		!pathname.endsWith(".md") &&
+		!pathname.endsWith(".png") &&
+		!pathname.startsWith("/api/");
+
+	if (!dev && !building && isPageRequest) {
+		const cache = caches.default;
+		const cacheKey = new Request(url.toString(), { method: "GET" });
+		const cached = await cache.match(cacheKey);
+		if (cached) return cached;
+	}
 
 	// Production route guard: 404 anything not explicitly allowed.
 	// Skipped in dev and during prerendering so all routes remain accessible.
@@ -109,11 +127,29 @@ export const handle: Handle = async ({ event, resolve }) => {
 	// all static HTML and present on all SSR pages.
 	const slug = pathname === "/" ? "home" : pathname.replace(/^\//, "").replace(/\/$/, "");
 
-	return resolve(event, {
+	const response = await resolve(event, {
 		transformPageChunk: ({ html }) =>
 			html.replace(
 				"</head>",
 				`<link rel="alternate" type="text/markdown" href="/${slug}.md">\n</head>`,
 			),
 	});
+
+	// Store SSR response in edge cache (non-blocking).
+	if (!dev && !building && isPageRequest && response.status === 200) {
+		const cache = caches.default;
+		const cacheKey = new Request(url.toString(), { method: "GET" });
+		const headers = new Headers(response.headers);
+		headers.set("Cache-Control", `public, s-maxage=${CACHE_TTL}`);
+		const toCache = new Response(response.clone().body, {
+			headers,
+			status: response.status,
+		});
+		const ctx = event.platform?.ctx;
+		if (ctx?.waitUntil) {
+			ctx.waitUntil(cache.put(cacheKey, toCache));
+		}
+	}
+
+	return response;
 };
