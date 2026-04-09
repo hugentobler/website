@@ -1,5 +1,6 @@
 <script lang="ts">
 import type { LayoutProps } from "./$types";
+
 let { children }: LayoutProps = $props();
 </script>
 
@@ -14,10 +15,12 @@ let { children }: LayoutProps = $props();
       --primary: var(--color-indigo-600);
     }
 
+    /* TODO: Enable dark mode overrides for library route after testing
     :global([data-theme='dark']) {
       --background: var(--color-slate-900);
       --foreground: var(--color-slate-100);
       --primary: var(--color-indigo-400);
     }
+    */
   }
 </style>

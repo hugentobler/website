@@ -2,7 +2,9 @@
 	import type { Snippet } from "svelte";
 
 	import Clock from "$lib/components/Clock.svelte";
-	import { getNextTheme, toggleTheme } from "$lib/themes.svelte";
+
+	// TODO: Enable dark mode theme toggle after testing
+	// import { getNextTheme, toggleTheme } from "$lib/themes.svelte";
 
 	// Map layout names to snippets
 	const navbars: Record<string, Snippet> = {
@@ -26,7 +28,8 @@
 
 {#snippet magazine()}
 	<button
-		class="m-px flex flex-1 items-center rounded-lg bg-zinc-50 inset-shadow-sm inset-shadow-zinc-600/40 hover:inset-shadow-none dark:bg-zinc-800 dark:inset-shadow-zinc-950/40"
+		type="button"
+		class="m-px flex flex-1 items-center rounded-lg bg-zinc-50 inset-shadow-sm inset-shadow-zinc-600/40 hover:inset-shadow-none"
 		tabindex="-1"
 	>
 		<a
@@ -40,7 +43,8 @@
 		</a>
 	</button>
 	<button
-		class="m-px hidden flex-1 rounded-lg bg-zinc-100 inset-shadow-sm inset-shadow-zinc-600/40 hover:inset-shadow-none lg:flex dark:bg-zinc-700 dark:inset-shadow-zinc-950/40"
+		type="button"
+		class="m-px hidden flex-1 rounded-lg bg-zinc-100 inset-shadow-sm inset-shadow-zinc-600/40 hover:inset-shadow-none lg:flex"
 		tabindex="-1"
 	>
 		<a
@@ -54,7 +58,7 @@
 		</a>
 	</button>
 	<div
-		class="m-px flex flex-1 items-center justify-center rounded-lg bg-zinc-100 hover:cursor-wait dark:bg-zinc-700"
+		class="m-px flex flex-1 items-center justify-center rounded-lg bg-zinc-100 hover:cursor-wait"
 	>
 		<span
 			class="flex h-full translate-y-px items-center font-normal font-stretch-ultra-condensed invert-50 [--clock-height:0.875rem] lg:[--clock-height:1.25rem]"
@@ -62,12 +66,13 @@
 			<Clock />
 		</span>
 	</div>
-	<div class="m-px flex flex-1 items-center justify-center rounded-lg bg-zinc-100 dark:bg-zinc-700">
+	<div class="m-px flex flex-1 items-center justify-center rounded-lg bg-zinc-100">
 		<span
 			class=" flex h-full translate-y-1 items-center text-lg leading-0 font-light tracking-tight uppercase font-stretch-ultra-condensed invert-50 lg:text-2xl"
 			>Los Angeles</span
 		>
 	</div>
+	<!-- TODO: Enable dark mode theme toggle after testing
 	<button
 		on:click={() => toggleTheme()}
 		class="group focus:inset-rung-2 m-px flex flex-1 items-center justify-center rounded-lg bg-zinc-100 inset-shadow-sm inset-shadow-zinc-600/40 hover:cursor-pointer hover:inset-shadow-none focus:inset-shadow-none focus:outline-none dark:bg-zinc-700 dark:inset-shadow-zinc-950/40"
@@ -79,4 +84,5 @@
 			{getNextTheme()}
 		</span>
 	</button>
+	-->
 {/snippet}

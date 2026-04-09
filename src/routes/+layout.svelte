@@ -1,27 +1,28 @@
 <script lang="ts">
-	import { browser } from "$app/environment";
-	import { setupTheme } from "$lib/themes.svelte";
+	// TODO: Enable dark mode theme setup after testing
+	// import { browser } from "$app/environment";
+	// import { setupTheme } from "$lib/themes.svelte";
 
 	import "$styles/app.css";
 
 	let { children } = $props();
 
-	if (browser) {
-		setupTheme();
-	}
+	// TODO: Enable dark mode theme setup after testing
+	// if (browser) {
+	// 	setupTheme();
+	// }
 </script>
 
 <svelte:head>
-	<!-- Set initial theme in head to avoid FOUC -->
-	<script>
-		// Initial theme is either in localStorage or system preference
+	<!-- TODO: Enable dark mode FOUC prevention after testing -->
+	<!-- <script>
 		document.documentElement.dataset.theme =
 			localStorage.getItem("theme") === "dark" ||
 			(!("theme" in localStorage) &&
 				window.matchMedia(`(prefers-color-scheme: dark)`).matches)
 				? "dark"
 				: "light";
-	</script>
+	</script> -->
 
 	<!-- Preconnect to CDN -->
 	<link

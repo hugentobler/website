@@ -13,8 +13,8 @@
 @plugin '@tailwindcss/typography';
 /* @plugin "@tailwindcss/forms"; */
 
-/* override default dark mode utilities based on 'prefers-color-scheme' */
-@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+/* TODO: Enable dark mode variant after testing */
+/* @custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *)); */
 
 /* register custom properties for transitions */
 @property --gradient-stop {
