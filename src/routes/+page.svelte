@@ -41,18 +41,18 @@
 			year: 2021
 		},
 		{ headline: "Outdoor expeditions that stretch the comfort zone", name: "FoundLost", thumb: { h: 55 }, year: 2020 },
-		{ headline: "Digital literacy courses for knowledge workers", name: "sofasoda", thumb: { h: 45 }, year: 2019 },
+		{ headline: "Digital literacy courses for knowledge workers", name: "sofasoda", thumb: { h: 45, intrinsic: 96 }, year: 2019 },
 		{ headline: "Tutor matchmaker for 3m students, $50m raised", name: "Snapask", thumb: { w: 45 }, year: 2016 },
 		{
 			headline: "Dating app for intrepid wagies",
 			name: "TAB",
-			thumb: {w: 45},
+			thumb: {intrinsic: 374, w: 45 },
 			year: 2015
 		},
 		{
 			headline: "$1m donated, 100k alums in human trafficking fight",
 			name: "24 Hour Race",
-			thumb: {h: 55},
+			thumb: {h: 55, intrinsic: 128},
 			year: 2014
 		},
 	];
@@ -74,6 +74,7 @@
 
 <svelte:head>
 	<title>Christopher Hugentobler 姚思陶</title>
+	<meta name="description" content="Economist by training, operator by necessity, creative-engineer by vocation." />
 	<meta property="og:title" content="Christopher Hugentobler 姚思陶" />
 	<meta property="og:description" content="Economist by training, operator by necessity, creative-engineer by vocation." />
 	<meta property="og:type" content="website" />
@@ -119,9 +120,15 @@
 			>
 				<div class="archive-thumb">
 					{#if thumb(project.name)}
+						<!-- intrinsic width/height tells the browser the aspect ratio so it can
+						     reserve space before load (CLS fix). Only needed for PNGs — SVG
+						     thumbs are inlined as data URIs with a viewBox, so the browser
+						     already knows their dimensions. -->
 						<img
 							src={thumb(project.name)}
 							alt={project.name}
+							width={project.thumb?.intrinsic}
+							height={project.thumb?.intrinsic}
 							style:height={project.thumb?.h ? `${project.thumb.h}%` : undefined}
 							style:width={project.thumb?.w ? `${project.thumb.w}%` : undefined}
 						/>
@@ -160,9 +167,15 @@
 			>
 				<div class="archive-thumb">
 					{#if thumb(project.name)}
+						<!-- intrinsic width/height tells the browser the aspect ratio so it can
+						     reserve space before load (CLS fix). Only needed for PNGs — SVG
+						     thumbs are inlined as data URIs with a viewBox, so the browser
+						     already knows their dimensions. -->
 						<img
 							src={thumb(project.name)}
 							alt={project.name}
+							width={project.thumb?.intrinsic}
+							height={project.thumb?.intrinsic}
 							style:height={project.thumb?.h ? `${project.thumb.h}%` : undefined}
 							style:width={project.thumb?.w ? `${project.thumb.w}%` : undefined}
 						/>

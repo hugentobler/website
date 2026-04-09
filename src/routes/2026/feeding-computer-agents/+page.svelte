@@ -27,7 +27,7 @@
 <div class="page">
 	<header class="header sans type-sm">
 		<span class="arrow">←</span>
-		<DecoratedLink href="/">More</DecoratedLink>
+		<DecoratedLink href="/">Home</DecoratedLink>
 	</header>
 	<main class="content sans">
 		<time class="date mono">{frontmatter?.published}</time>
