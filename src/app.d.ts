@@ -2,6 +2,14 @@
 // for information about these interfaces
 
 declare global {
+	// Cloudflare Workers extends CacheStorage with a default cache instance.
+	interface CacheStorage {
+		default: Cache;
+	}
+
+	// Build-time constant injected by Vite's define config.
+	const __BUILD_TIMESTAMP__: string;
+
 	namespace App {
 		interface Error {
 			message: string;

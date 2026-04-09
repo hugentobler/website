@@ -5,7 +5,8 @@
 @import './colors.css';
 
 @import './fonts.css';
-@import '@fontsource-variable/m-plus-1';
+/* M PLUS 1: only the 3 subsets containing 姚思陶 (CJK characters used on homepage) */
+@import './m-plus-1-cjk.css';
 @import './typography.css';
 @import './typesetter.css';
 @import './type-axes.css';

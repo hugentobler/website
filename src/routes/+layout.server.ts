@@ -1,5 +1,8 @@
 import type { LayoutServerLoad } from "./$types";
 
+// TODO: Move visitor fetch to a client-side polling endpoint so the "last
+// visitor" updates live after initial load. Currently this result gets frozen
+// into the edge-cached SSR HTML (see hooks.server.ts CACHE_TTL).
 export const load: LayoutServerLoad = async ({ platform, url }) => {
 	const db = platform?.env?.DB ?? null;
 	if (!db) return { visitor: { city: null, country: null } };

@@ -6,6 +6,9 @@ import { defineConfig } from "vite";
 import { typographyPlugin } from "./src/lib/typography-generator";
 
 export default defineConfig({
+	define: {
+		__BUILD_TIMESTAMP__: JSON.stringify(Date.now().toString()),
+	},
 	plugins: [typographyPlugin(), enhancedImages(), sveltekit(), tailwindcss()],
 	server: {
 		watch: {
