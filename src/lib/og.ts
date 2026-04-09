@@ -9,8 +9,8 @@ const HEIGHT = 630;
 
 // Derived from --color-charcoal-{900,400,50} in kromatika.css
 const COLORS = {
-	bg: "#262930",
-	primary: "#F7F7F8",
+	bg: "#F7F7F8",
+	primary: "#262930",
 	secondary: "#9FA2AC",
 };
 
@@ -33,11 +33,11 @@ async function loadWoff2(url: string): Promise<ArrayBuffer> {
 
 async function loadFonts() {
 	if (fontsCache) return fontsCache;
-	const [condensedLight] = await Promise.all([loadWoff2(`${CDN}/uni-condensed-light.woff2`)]);
+	const [ultraCondensed] = await Promise.all([loadWoff2(`${CDN}/uni-ultra-condensed-light.woff2`)]);
 	fontsCache = [
 		{
-			data: condensedLight,
-			name: "Univers Condensed",
+			data: ultraCondensed,
+			name: "Univers Ultra Condensed",
 			style: "normal" as const,
 			weight: 300 as const,
 		},
@@ -60,39 +60,38 @@ function el(
 	};
 }
 
+function formatDate(published: string): string {
+	const date = new Date(`${published}T00:00:00`);
+	const month = date.toLocaleDateString("en-US", { month: "short" }).toUpperCase();
+	return `${month} ${date.getFullYear()}`;
+}
+
 export async function generateOgImage(opts: {
 	title: string;
-	description?: string;
+	published?: string;
 }): Promise<ArrayBuffer> {
 	const fonts = await loadFonts();
 
-	const titleWords = opts.title.toUpperCase().split(/\s+/);
-	const descWords = opts.description?.toUpperCase().split(/\s+/) ?? [];
-
-	const words = [
-		...titleWords.map((w) => el("span", { color: COLORS.primary }, w)),
-		...descWords.map((w) => el("span", { color: COLORS.secondary }, w)),
-	];
+	const titleText = opts.title.toUpperCase();
+	const dateText = opts.published ? formatDate(opts.published) : "";
 
 	const element = el(
 		"div",
 		{
-			alignContent: "center",
 			alignItems: "center",
 			background: COLORS.bg,
-			columnGap: 40,
 			display: "flex",
-			flexWrap: "wrap",
-			fontFamily: "Univers Condensed",
-			fontSize: 168,
+			flexDirection: "column",
+			fontFamily: "Univers Ultra Condensed",
 			fontWeight: 300,
 			height: "100%",
-			letterSpacing: "-0.05em",
-			lineHeight: 0.85,
+			justifyContent: "center",
+			lineHeight: 1,
 			textTransform: "uppercase" as const,
 			width: "100%",
 		},
-		...words,
+		el("span", { color: COLORS.primary, fontSize: 88 }, titleText),
+		dateText && el("span", { color: COLORS.secondary, fontSize: 88, marginTop: 44 }, dateText),
 	);
 
 	const svg = await satori(element, { fonts, height: HEIGHT, width: WIDTH });

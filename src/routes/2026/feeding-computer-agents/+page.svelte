@@ -4,25 +4,19 @@
 	import PageFooter from "$lib/components/PageFooter.svelte";
 
 	import Content, { frontmatter } from "$lib/markdown/feeding-computer-agents.md";
-	import raw from "$lib/markdown/feeding-computer-agents.md?raw";
 
 	const title = frontmatter?.title ?? "Feeding Computer Agents";
 	const metatitle = `${frontmatter?.title} - ${frontmatter?.description}`;
-	const description = raw
-		.replace(/---[\s\S]*?---/, "") // strip frontmatter
-		.replace(/[#*>[\]()_~`]/g, "") // strip markdown syntax
-		.replace(/\s+/g, " ") // collapse whitespace
-		.trim()
-		.split(/\s+/)
-		.slice(0, 120)
-		.join(" ");
+	const pubDate = new Date(`${frontmatter?.published}T00:00:00`);
+	const formattedDate = pubDate.toLocaleDateString("en-US", { month: "short", year: "numeric" });
+	const ogDescription = `Christopher Hugentobler 姚思陶 – ${formattedDate}`;
 </script>
 
 <svelte:head>
 	<title>{metatitle}</title>
-	<meta name="description" content={description} />
+	<meta name="description" content={ogDescription} />
 	<meta property="og:title" content={metatitle} />
-	<meta property="og:description" content={description} />
+	<meta property="og:description" content={ogDescription} />
 	<meta property="og:image" content="{page.url.origin}/2026/feeding-computer-agents/og.png" />
 	<meta property="og:url" content={page.url.href} />
 	<meta property="og:type" content="article" />

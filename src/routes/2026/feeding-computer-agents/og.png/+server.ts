@@ -6,7 +6,7 @@ export const prerender = true;
 
 export const GET: RequestHandler = async () => {
 	const png = await generateOgImage({
-		description: frontmatter?.description,
+		published: frontmatter?.published,
 		title: frontmatter?.title ?? "Feeding Computer Agents",
 	});
 
