@@ -5,9 +5,16 @@
  * platform.cf headers — the client only sends { path }.
  * Visitor data for display is loaded server-side in +layout.server.ts.
  */
+
+import { dev } from "$app/environment";
 import type { RequestHandler } from "./$types";
 
-export const POST: RequestHandler = async ({ platform, request }) => {
+export const POST: RequestHandler = async ({ platform, request, url }) => {
+	if (!dev) {
+		const origin = request.headers.get("origin") ?? "";
+		if (origin !== url.origin) return new Response(null, { status: 403 });
+	}
+
 	const db = platform?.env?.DB ?? null;
 	if (!db) return new Response(null, { status: 204 });
 
