@@ -1,15 +1,22 @@
 <script lang="ts">
+	import type { MarkdocModule } from "markdoc-svelte";
 	import { page } from "$app/state";
 	import DecoratedLink from "$lib/components/DecoratedLink.svelte";
 	import PageFooter from "$lib/components/PageFooter.svelte";
 
-	import Content, { frontmatter } from "$lib/markdown/feeding-computer-agents.md";
+	let { data }: { data: { markdown: MarkdocModule } } = $props();
 
-	const title = frontmatter?.title ?? "Feeding Computer Agents";
-	const metatitle = `${frontmatter?.title} - ${frontmatter?.description}`;
-	const pubDate = new Date(`${frontmatter?.published}T00:00:00`);
-	const formattedDate = pubDate.toLocaleDateString("en-US", { month: "short", year: "numeric" });
-	const ogDescription = `Christopher Hugentobler 姚思陶 – ${formattedDate}`;
+	const frontmatter = $derived(data.markdown.frontmatter);
+	const Content = $derived(data.markdown.default);
+	const title = $derived(frontmatter?.title ?? "Untitled");
+	const metatitle = $derived(frontmatter?.description
+		? `${frontmatter.title} - ${frontmatter.description}`
+		: frontmatter?.title);
+	const pubDate = $derived(frontmatter?.published
+		? new Date(`${frontmatter.published}T00:00:00`)
+		: null);
+	const formattedDate = $derived(pubDate?.toLocaleDateString("en-US", { month: "short", year: "numeric" }));
+	const ogDescription = $derived(`Christopher Hugentobler 姚思陶 – ${formattedDate}`);
 </script>
 
 <svelte:head>
@@ -17,7 +24,7 @@
 	<meta name="description" content={ogDescription} />
 	<meta property="og:title" content={metatitle} />
 	<meta property="og:description" content={ogDescription} />
-	<meta property="og:image" content="{page.url.origin}/2026/feeding-computer-agents/og.png" />
+	<meta property="og:image" content="{page.url.origin}{page.url.pathname}/og.png" />
 	<meta property="og:url" content="{page.url.origin}{page.url.pathname}" />
 	<meta property="og:type" content="article" />
 	<meta property="article:author" content="{page.url.origin}" />
@@ -219,6 +226,26 @@
 		:global(h5):not(:first-child), :global(h6):not(:first-child) {
 			margin-top: var(--baseline);
 		}
-	}
 
+		:global(table) {
+			width: 100%;
+			margin: var(--baseline) 0;
+			font-size: var(--type-sm);
+			line-height: var(--leading-sm);
+			border-collapse: collapse;
+		}
+
+		:global(th), :global(td) {
+			padding: calc(var(--baseline) / 4) calc(var(--baseline) / 2);
+			vertical-align: top;
+			text-align: left;
+			text-indent: 0;
+			border-bottom: 1px solid var(--color-charcoal-100);
+		}
+
+		:global(th) {
+			font-weight: 600;
+			border-bottom-color: var(--primary);
+		}
+	}
 </style>

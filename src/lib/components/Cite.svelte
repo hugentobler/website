@@ -14,7 +14,7 @@
 </li>
 
 <style>
-	.back {
+	:global(.back) {
 		--foreground: var(--secondary, currentColor);
 		margin-left: 0.5ch;
 		font-size: var(--type-md);

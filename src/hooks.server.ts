@@ -55,6 +55,7 @@ for (const [path, content] of Object.entries(rawModules)) {
 
 // TODO: derive route→slug mapping automatically instead of hardcoding aliases.
 const SLUG_ALIASES: Record<string, string> = {
+	"2025/durable-ai-initiatives": "durable-ai-initiatives",
 	"2026/feeding-computer-agents": "feeding-computer-agents",
 };
 
@@ -65,7 +66,11 @@ const SLUG_ALIASES: Record<string, string> = {
 // }
 
 // Production routes — only these paths are live. Everything else 404s.
-const ALLOWED_PATHS = new Set(["/", "/2026/feeding-computer-agents"]);
+const ALLOWED_PATHS = new Set([
+	"/",
+	"/2025/durable-ai-initiatives",
+	"/2026/feeding-computer-agents",
+]);
 
 export const handle: Handle = async ({ event, resolve }) => {
 	const { url, request } = event;

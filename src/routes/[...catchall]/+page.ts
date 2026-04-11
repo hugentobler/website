@@ -5,14 +5,21 @@ import type { EntryGenerator, PageLoad } from "./$types";
 
 const markdownModules = import.meta.glob("$lib/markdown/*.md");
 
+// Year-prefixed routes resolve to flat markdown filenames.
+// Must stay in sync with SLUG_ALIASES in hooks.server.ts.
+const SLUG_ALIASES: Record<string, string> = {
+	"2025/durable-ai-initiatives": "durable-ai-initiatives",
+	"2026/feeding-computer-agents": "feeding-computer-agents",
+};
+
 export const load: PageLoad = async ({ params }) => {
-	const slug = params.catchall;
+	const slug = SLUG_ALIASES[params.catchall] ?? params.catchall;
 
 	try {
 		const markdown = (await import(`$lib/markdown/${slug}.md`)) as MarkdocModule;
 		return { markdown };
 	} catch {
-		throw error(404, `No content for "${slug}"`);
+		throw error(404, `No content for "${params.catchall}"`);
 	}
 };
 

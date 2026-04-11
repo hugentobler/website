@@ -51,16 +51,10 @@
 			year: 2026,
 		},
 		{
-			description: "Bigger than coding agents",
-			href: "/2026/feeding-computer-agents",
-			title: "Feeding Computer Agents",
-			year: 2026,
-		},
-		{
-			description: "Bigger than coding agents",
-			href: "/2026/feeding-computer-agents",
-			title: "Feeding Computer Agents",
-			year: 2026,
+			description: "Token business or intelligence business?",
+			href: "/2025/durable-ai-initiatives",
+			title: "Durable AI Initiatives",
+			year: 2025,
 		},
 	];
 

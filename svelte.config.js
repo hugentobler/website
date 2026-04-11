@@ -29,7 +29,7 @@ const config = {
 
 		// Global prerender configuration
 		prerender: {
-			entries: ["/2026/feeding-computer-agents/og.png"],
+			entries: ["/2025/durable-ai-initiatives/og.png", "/2026/feeding-computer-agents/og.png"],
 			handleHttpError: "warn",
 			handleMissingId: "warn",
 		},
