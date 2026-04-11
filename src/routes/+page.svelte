@@ -169,6 +169,8 @@
 				tabindex="0"
 				onclick={(e) => {
 					const el = e.currentTarget;
+					const headline = el.querySelector('.headline') as HTMLElement | null;
+					if (headline && headline.scrollWidth <= headline.clientWidth) return;
 					el.classList.toggle('expanded');
 					if (el.classList.contains('expanded')) {
 						setTimeout(() => el.classList.remove('expanded'), 900);
@@ -177,6 +179,8 @@
 				onkeydown={(e) => {
 					if (e.key !== 'Enter') return;
 					const el = e.currentTarget;
+					const headline = el.querySelector('.headline') as HTMLElement | null;
+					if (headline && headline.scrollWidth <= headline.clientWidth) return;
 					el.classList.toggle('expanded');
 					if (el.classList.contains('expanded')) {
 						setTimeout(() => el.classList.remove('expanded'), 900);
@@ -216,6 +220,8 @@
 				tabindex="0"
 				onclick={(e) => {
 					const el = e.currentTarget;
+					const headline = el.querySelector('.headline') as HTMLElement | null;
+					if (headline && headline.scrollWidth <= headline.clientWidth) return;
 					el.classList.toggle('expanded');
 					if (el.classList.contains('expanded')) {
 						setTimeout(() => el.classList.remove('expanded'), 900);
@@ -224,6 +230,8 @@
 				onkeydown={(e) => {
 					if (e.key !== 'Enter') return;
 					const el = e.currentTarget;
+					const headline = el.querySelector('.headline') as HTMLElement | null;
+					if (headline && headline.scrollWidth <= headline.clientWidth) return;
 					el.classList.toggle('expanded');
 					if (el.classList.contains('expanded')) {
 						setTimeout(() => el.classList.remove('expanded'), 900);
@@ -574,7 +582,6 @@
 			gap: var(--baseline);
 			align-items: center;
 			height: calc(var(--baseline) * 2);
-			cursor: pointer;
 
 			&:global(.expanded) {
 				grid-template-columns: var(--label-w) 1fr;
