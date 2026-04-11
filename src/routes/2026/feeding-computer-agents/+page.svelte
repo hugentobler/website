@@ -193,7 +193,9 @@
 
 		:global(p) + :global(p),
 		:global(blockquote) :global(p),
-		:global(svg) :global(p) {
+		:global(svg) :global(p),
+		:global(.citations) :global(p),
+		:global(.citations) :global(li) {
 			text-indent: 0;
 		}
 

@@ -78,7 +78,7 @@ While the underlying technology continues to evolve, the industry has started to
 
 {% panzoom src="harnesses-help.svg" alt="Use out-of-the-box harness features to get auditable artifacts and predictable performance." /%}
 
-How to design a software interface for agents could be its own essay. One emerging pattern is to create a [Unix-style CLI](https://x.com/yan5xu/status/2031969426124521506), purpose-built for agent use.
+How to design a software interface for agents could be its own essay. One emerging pattern is to create a Unix-style CLI{% ref n=1 /%}, purpose-built for agent use.
 
 {% panzoom src="cli-in-practice.svg" alt="Design interfaces that progressively disclose commands, tools, and follow-up actions, and clearly reports errors, duration, cost, and artifacts." /%}
 
@@ -95,3 +95,7 @@ The end user relies on their capable computer agent for day to day tasks. That c
 What does commercialization look like? Frankly, I don't have a concrete answer yet. But I see a few paths. One provides value-add services for enterprises with larger, more complex workloads that still require occasional human oversight. Two trains vertical expert models on verifiable outcomes of the chosen problem. Three buys the service businesses that have solved the chosen problem in the past.
 
 Are you good at understanding how non-technical people do their job? Then build software for computer agents.
+
+{% citations %}
+{% cite n=1 %}@yan5xu, ["CLI is All Agents Need — A *nix Agent Design Guide"](https://x.com/yan5xu/status/2031969426124521506), X (2026).{% /cite %}
+{% /citations %}
