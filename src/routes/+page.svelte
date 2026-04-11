@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { ElementSize, useMousePosition } from "runed";
+	import { flushSync } from "svelte";
 	import PageFooter from "$lib/components/PageFooter.svelte";
 	import LondonTelephone from "./home/london-telephone-josef-müller-brockmann.jpg?enhanced";
 	import MyPortrait from "./home/noguchi.png?enhanced";
@@ -17,12 +18,51 @@
 	);
 
 	let showInspo = $state(false);
+	let writingIndex = $state(0);
+	let writingVisible = $state(false);
+	let writingBg = $state<HTMLDivElement>();
+
+	function onWritingEnter(i: number, e: MouseEvent) {
+		if (!writingVisible && writingBg) {
+			const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+			const fromAbove = e.clientY < rect.top + rect.height / 2;
+
+			writingBg.style.setProperty('transition', 'none');
+			writingIndex = fromAbove ? i - 1 : i + 1;
+			flushSync();
+			writingBg.offsetHeight;
+			writingBg.style.removeProperty('transition');
+		}
+		writingIndex = i;
+		writingVisible = true;
+	}
 
 	const thumbs = import.meta.glob('./home/*.{svg,png}', { eager: true, import: 'default', query: '?url' }) as Record<string, string>;
 	const thumb = (name: string) => {
 		const base = `./home/${name.toLowerCase().replace(/\s+/g, '-')}`;
 		return thumbs[`${base}.svg`] ?? thumbs[`${base}.png`];
 	};
+
+	const writings = [
+		{
+			description: "Bigger than coding agents",
+			href: "/2026/feeding-computer-agents",
+			title: "Feeding Computer Agents",
+			year: 2026,
+		},
+		{
+			description: "Bigger than coding agents",
+			href: "/2026/feeding-computer-agents",
+			title: "Feeding Computer Agents",
+			year: 2026,
+		},
+		{
+			description: "Bigger than coding agents",
+			href: "/2026/feeding-computer-agents",
+			title: "Feeding Computer Agents",
+			year: 2026,
+		},
+	];
 
 	const projects = [
 		{
@@ -95,6 +135,37 @@
 		<!-- <span class="subheader">Agenda</span>
 		<p>Abundance</p> -->
 	</main>
+	<!-- svelte-ignore a11y_no_static_element_interactions -->
+	<section
+		class="writing sans type-sm"
+		onmouseleave={() => (writingVisible = false)}
+	>
+		<span class="subheader">Writing</span>
+		<div class="list">
+			<div
+				class="bg"
+				class:visible={writingVisible}
+				style:--index={writingIndex}
+				bind:this={writingBg}
+			></div>
+			{#each writings as article, i}
+				<a
+					class="item"
+					href={article.href}
+					tabindex="0"
+					onmouseenter={(e) => onWritingEnter(i, e)}
+					onfocus={() => { writingIndex = i; writingVisible = true; }}
+					onblur={() => (writingVisible = false)}
+				>
+					<div class="text">
+						<p class="title">{article.title}</p>
+						<p class="description">{article.description}</p>
+					</div>
+					<time class="year mono">{article.year}</time>
+				</a>
+			{/each}
+		</div>
+	</section>
 	<section class="archives sans type-sm">
 		<span class="subheader">Archives</span>
 		{#each projects.slice(0, Math.ceil(projects.length / 2)) as project}
@@ -118,7 +189,7 @@
 					}
 				}}
 			>
-				<div class="archive-thumb">
+				<div class="thumb">
 					{#if thumb(project.name)}
 						<!-- intrinsic width/height tells the browser the aspect ratio so it can
 						     reserve space before load (CLS fix). Only needed for PNGs — SVG
@@ -134,11 +205,11 @@
 						/>
 					{/if}
 				</div>
-				<div class="archive-text">
-					<p class="archive-name">{project.name}</p>
-					<p class="archive-headline">{project.headline}</p>
+				<div class="text">
+					<p class="name">{project.name}</p>
+					<p class="headline">{project.headline}</p>
 				</div>
-				<time class="archive-year mono">{project.year}</time>
+				<time class="year mono">{project.year}</time>
 			</div>
 		{/each}
 	</section>
@@ -165,7 +236,7 @@
 					}
 				}}
 			>
-				<div class="archive-thumb">
+				<div class="thumb">
 					{#if thumb(project.name)}
 						<!-- intrinsic width/height tells the browser the aspect ratio so it can
 						     reserve space before load (CLS fix). Only needed for PNGs — SVG
@@ -181,11 +252,11 @@
 						/>
 					{/if}
 				</div>
-				<div class="archive-text">
-					<p class="archive-name">{project.name}</p>
-					<p class="archive-headline">{project.headline}</p>
+				<div class="text">
+					<p class="name">{project.name}</p>
+					<p class="headline">{project.headline}</p>
 				</div>
-				<time class="archive-year mono">{project.year}</time>
+				<time class="year mono">{project.year}</time>
 			</div>
 		{/each}
 	</section>
@@ -285,9 +356,9 @@
 			100vw - var(--baseline) * 2
 		);
 		display: grid;
-		grid-template-rows: auto auto 1fr auto;
+		grid-template-rows: auto auto auto 1fr auto;
 		grid-template-columns: 1fr auto;
-		gap: var(--baseline);
+		gap: calc(var(--baseline) * 2);
 		min-height: 100svh;
 		color: var(--primary);
 
@@ -316,10 +387,10 @@
 		align-content: start;
 		align-self: start;
 		width: var(--poster-w);
-		padding: var(--baseline);
+		padding: var(--baseline) var(--baseline) 0;
 	}
 
-	.name {
+	.sidebar .name {
 		grid-column: 1 / -1;
 		font-weight: normal;
 		font-stretch: expanded;
@@ -331,6 +402,7 @@
 				sans-serif;
 			font-weight: 400;
 			font-stretch: unset;
+			white-space: nowrap;
 		}
 	}
 
@@ -348,71 +420,7 @@
 		}
 	}
 
-	.archive {
-		display: grid;
-		grid-template-columns: var(--label-w) 1fr auto;
-		gap: var(--baseline);
-		align-items: center;
-		height: calc(var(--baseline) * 2);
-		cursor: pointer;
-	}
-
-	.archive-thumb {
-		display: flex;
-		align-items: center;
-		align-self: flex-start;
-		justify-content: center;
-		height: calc(var(--baseline) * 2);
-		overflow: hidden;
-		background-color: oklch(from white l c h / 0.5);
-
-		img {
-			max-height: 100%;
-			object-fit: contain;
-		}
-	}
-
-	.archive-text {
-		min-width: 0;
-	}
-
-	:global(.mono) {
-		font-size: var(--type-sm);
-		font-weight: 450;
-		font-stretch: 66%;
-		line-height: var(--leading-sm);
-	}
-
-	.archive-name {
-		font-weight: normal;
-	}
-
-	.archive-headline {
-		overflow: hidden;
-		text-overflow: ellipsis;
-		font-stretch: condensed;
-		color: var(--secondary);
-		white-space: nowrap;
-	}
-
-	.archive-year {
-		color: var(--secondary);
-	}
-
-	.archive:global(.expanded) {
-		grid-template-columns: var(--label-w) 1fr;
-
-		.archive-year {
-			display: none;
-		}
-
-		.archive-headline {
-			text-overflow: unset;
-			white-space: normal;
-		}
-	}
-
-	.archives {
+	.writing {
 		box-sizing: content-box;
 		display: flex;
 		flex-direction: column;
@@ -426,10 +434,171 @@
 			grid-row: auto;
 			grid-column: auto;
 		}
+
+		.list {
+			--item-h: calc(var(--baseline) * 2);
+			--gap: var(--baseline);
+			position: relative;
+			display: flex;
+			flex-direction: column;
+			gap: var(--gap);
+		}
+
+		.bg {
+			--inset: var(--baseline);
+			position: absolute;
+			top: 0;
+			right: calc(-1 * var(--inset));
+			left: calc(-1 * var(--inset));
+			height: calc(var(--item-h) + var(--inset));
+			margin-top: calc(-0.5 * var(--inset));
+			pointer-events: none;
+			background-color: white;
+			opacity: 0;
+			transform: translateY(calc(var(--index) * (var(--item-h) + var(--gap))));
+			transition: transform 200ms ease-out, opacity 150ms ease-out;
+
+			&.visible {
+				opacity: 1;
+			}
+
+			@media not (max-aspect-ratio: 1.65) {
+				--inset: calc(0.5 * var(--baseline));
+			}
+		}
+
+		.item {
+			position: relative;
+			z-index: 1;
+			display: grid;
+			grid-template-columns: 1fr auto;
+			gap: var(--baseline);
+			align-items: center;
+			height: var(--item-h);
+			color: inherit;
+			text-decoration: none;
+			cursor: pointer;
+			outline: none;
+		}
+
+		.text {
+			min-width: 0;
+		}
+
+		.title {
+			font-weight: normal;
+		}
+
+		.description {
+			overflow: hidden;
+			text-overflow: ellipsis;
+			font-stretch: condensed;
+			color: var(--secondary);
+			white-space: nowrap;
+		}
+
+		.year {
+			color: var(--secondary);
+		}
+	}
+
+	.writing .item,
+	.archives .archive {
+		&:focus-visible {
+			outline: none;
+
+			&::before {
+				position: absolute;
+				inset: calc(-0.25 * var(--baseline)) calc(-0.5 * var(--baseline));
+				pointer-events: none;
+				content: '';
+				border: 1px solid var(--primary);
+			}
+		}
+	}
+
+	:global(.mono) {
+		font-size: var(--type-sm);
+		font-weight: 450;
+		font-stretch: 66%;
+		line-height: var(--leading-sm);
+	}
+
+	.archives {
+		box-sizing: content-box;
+		display: flex;
+		flex-direction: column;
+		grid-row: 3;
+		grid-column: 1;
+		gap: var(--baseline);
+		width: var(--poster-w);
+		padding: 0 var(--baseline);
+
+		@media (max-aspect-ratio: 1.65) {
+			grid-row: auto;
+			grid-column: auto;
+		}
+
+		.thumb {
+			display: flex;
+			align-items: center;
+			align-self: flex-start;
+			justify-content: center;
+			height: calc(var(--baseline) * 2);
+			overflow: hidden;
+
+			img {
+				max-height: 100%;
+				object-fit: contain;
+			}
+		}
+
+		.text {
+			min-width: 0;
+		}
+
+		.name {
+			font-weight: normal;
+		}
+
+		.headline {
+			overflow: hidden;
+			text-overflow: ellipsis;
+			font-stretch: condensed;
+			color: var(--secondary);
+			white-space: nowrap;
+		}
+
+		.year {
+			color: var(--secondary);
+		}
+
+		.archive {
+			position: relative;
+			display: grid;
+			grid-template-columns: var(--label-w) 1fr auto;
+			gap: var(--baseline);
+			align-items: center;
+			height: calc(var(--baseline) * 2);
+			cursor: pointer;
+
+			&:global(.expanded) {
+				grid-template-columns: var(--label-w) 1fr;
+
+				.year {
+					display: none;
+				}
+
+				.headline {
+					text-overflow: unset;
+					white-space: normal;
+				}
+			}
+		}
 	}
 
 	.archives-bottom {
-		grid-row: 3;
+		grid-row: 4;
 
 		@media (max-aspect-ratio: 1.65) {
 			grid-row: auto;
@@ -438,7 +607,7 @@
 	}
 
 	.page > :global(footer) {
-		grid-row: 4;
+		grid-row: 5;
 		grid-column: 1;
 		padding: var(--baseline);
 
