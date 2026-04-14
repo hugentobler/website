@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { MarkdocModule } from "markdoc-svelte";
 	import { page } from "$app/state";
+	import { sentenceHighlights } from "$lib/actions/sentenceHighlights";
 	import DecoratedLink from "$lib/components/DecoratedLink.svelte";
 	import PageFooter from "$lib/components/PageFooter.svelte";
 
@@ -36,7 +37,7 @@
 		<span class="arrow">←</span>
 		<DecoratedLink href="/">Home</DecoratedLink>
 	</header>
-	<main class="content sans">
+	<main class="content sans" use:sentenceHighlights={{ slug: page.url.pathname }}>
 		<time class="date mono">{frontmatter?.published}</time>
 		<h1>{title}</h1>
 		<Content />
@@ -246,6 +247,28 @@
 		:global(th) {
 			font-weight: 600;
 			border-bottom-color: var(--primary);
+		}
+
+		:global(.sentence) {
+			--crowd-warmth: 0;
+			--hover-boost: 0;
+			--warmth: max(var(--crowd-warmth), var(--hover-boost));
+			padding: 1px 0;
+			cursor: pointer;
+			background-color: oklch(calc(1 - 0.08 * var(--warmth)) calc(0.15 * var(--warmth)) 90);
+			border-radius: 2px;
+			transition: background-color 150ms ease;
+		}
+
+		:global(.sentence:hover) {
+			--hover-boost: 0.15;
+		}
+
+		:global(.sentence[data-own]) {
+			text-decoration: underline;
+			text-decoration-thickness: 1.5px;
+			text-decoration-color: oklch(0.75 0.15 90);
+			text-underline-offset: 2px;
 		}
 	}
 </style>
