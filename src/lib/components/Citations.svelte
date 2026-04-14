@@ -33,8 +33,8 @@
 
 		:global(li)::marker {
 			font-size: var(--type-sm);
-			font-weight: 450;
-			font-stretch: 66%;
+			font-weight: 500;
+			font-stretch: expanded;
 		}
 	}
 </style>

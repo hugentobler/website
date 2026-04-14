@@ -10,7 +10,7 @@
 	<DecoratedLink class="back" href="#cite-{n}-ref" onclick={(e) => {
 		e.preventDefault();
 		document.getElementById(`cite-${n}-ref`)?.scrollIntoView({ behavior: 'smooth' });
-	}}><span class="mono">↩</span></DecoratedLink>
+	}}><span class="mono arrow">↑</span></DecoratedLink>
 </li>
 
 <style>
@@ -20,5 +20,10 @@
 		font-size: var(--type-md);
 		font-weight: 450;
 		font-stretch: 66%;
+	}
+
+	.arrow {
+		font-weight: 500;
+		font-stretch: expanded;
 	}
 </style>
