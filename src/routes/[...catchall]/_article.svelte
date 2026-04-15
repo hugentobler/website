@@ -163,8 +163,70 @@
 			--snap: var(--snap-base);
 			font-size: var(--type-base);
 			line-height: var(--leading-base);
-			text-indent: 3ch;
 			text-wrap: pretty;
+		}
+
+		:global(p) {
+			text-indent: 3ch;
+		}
+
+		/* Subtitle convention: a fully-italicized paragraph sitting
+		   directly after the article title reads as a dedication or
+		   note to the reader, so it sits flush and in the secondary
+		   color. The next paragraph then acts as the real first
+		   paragraph and keeps its indent. */
+		:global(h1 + p:has(em:only-child)) {
+			color: var(--secondary);
+			text-indent: 0;
+		}
+
+		:global(h1 + p:has(em:only-child) + p) {
+			text-indent: 3ch;
+		}
+
+		:global(ol), :global(ul) {
+			padding-left: 3ch;
+			margin-top: var(--baseline);
+			margin-bottom: var(--baseline);
+		}
+
+		:global(li) + :global(li) {
+			margin-top: calc(var(--baseline) / 2);
+		}
+
+		:global(ol) {
+			list-style-type: none;
+			counter-reset: item;
+		}
+
+		:global(ul) {
+			list-style-type: disc;
+		}
+
+		:global(ol) > :global(li) {
+			position: relative;
+			counter-increment: item;
+		}
+
+		:global(ol) > :global(li)::before {
+			position: absolute;
+			right: 100%;
+			padding-right: 0.5ch;
+			font-family: var(--font-mono);
+			font-size: var(--type-sm);
+			font-weight: 500;
+			font-feature-settings: "tnum";
+			content: counter(item) ".";
+		}
+
+		/* Citations component renders its own native ::marker; suppress
+		   the counter ::before and restore native list-style there. */
+		:global(.citations) :global(ol) {
+			list-style-type: decimal;
+		}
+
+		:global(.citations) :global(li)::before {
+			content: none;
 		}
 
 		:global(em) {
@@ -247,6 +309,19 @@
 		:global(th) {
 			font-weight: 600;
 			border-bottom-color: var(--primary);
+		}
+
+		:global(td) :global(br) {
+			display: none;
+		}
+
+		:global(td) :global(br ~ .sentence),
+		:global(td) :global(.sentence:has(+ br)) {
+			display: block;
+		}
+
+		:global(td) :global(.sentence:has(+ br)) {
+			margin-bottom: calc(var(--baseline) / 2);
 		}
 
 		:global(.sentence) {
