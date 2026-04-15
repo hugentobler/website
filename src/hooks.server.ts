@@ -56,23 +56,48 @@
  *
  *    Consequence: if a bad response gets written to the outer cache, it
  *    persists across deploys until its s-maxage expires. A new deploy
- *    alone will NOT clear it — you have to either wait for TTL, or write
- *    a fresh response through it (the adapter does a put on every write
- *    path), or delete the entry via a Worker that calls
- *    caches.default.delete(new Request(url)).
+ *    alone will NOT clear it. Options to recover:
+ *      - Wait for TTL.
+ *      - Use Cloudflare's global cache purge API (Purge Everything, or
+ *        Purge by Host/Prefix). The dashboard button works too. This is
+ *        the *correct* lever — it clears every PoP in one call.
+ *      - A Worker calling caches.default.delete(new Request(url)) only
+ *        purges the ONE data center the Worker is currently running in
+ *        (per Cloudflare's own docs:
+ *        https://developers.cloudflare.com/workers/reference/how-the-cache-works/#purge-assets-stored-with-the-cache-api).
+ *        Don't rely on this for incident recovery — reach for the purge
+ *        API instead.
  *
  * 3. Never leak the inner cache's Cache-Control header to the outer cache
- *    This hook sets Cache-Control: public, s-maxage on the `toCache` copy
- *    it stores internally, but returns the ORIGINAL response unchanged to
- *    the adapter. That's deliberate. SvelteKit page responses have no
- *    Cache-Control by default, so the outer adapter cache sees no
- *    caching directive and declines to cache. That keeps the outer cache
- *    empty for regular HTML — and since the outer cache is un-versioned
- *    (see gotcha #2), we WANT it empty.
+ *    This hook stores a `toCache` copy with `Cache-Control: private,
+ *    max-age=...` in the inner cache. The `private` directive is load-
+ *    bearing: on a cache HIT we return the stored response as-is, and the
+ *    adapter's worktop wrapper in _worker.js tries to re-cache it via
+ *    `caches.default.put`. Its cacheability check is:
  *
- *    If you ever add `response.headers.set("Cache-Control", ...)` on the
- *    returned response, you will poison the outer cache on the next deploy
- *    that hits a bug. Don't.
+ *        let pragma = res.headers.get("cache-control") || "";
+ *        return !/(private|no-cache|no-store)/i.test(pragma);
+ *
+ *    With `private`, that check returns false and the outer un-versioned
+ *    cache stays empty. That's critical, because the outer cache is the
+ *    exact layer that cannot be busted by a redeploy (see gotcha #2).
+ *
+ *    Workers Cache API only rejects `put()` for `Cache-Control: no-store`,
+ *    `Vary: *`, or status 206 — `private` is stored and retrieved
+ *    normally, so the inner cache is unaffected.
+ *
+ *    DO NOT change this back to `public, s-maxage=...`. The very first
+ *    version of this hook did, and it caused two incidents:
+ *      - Data-request responses leaked into the outer cache under page
+ *        URL keys (when combined with gotcha #1 above).
+ *      - Even after the keying bug was fixed, any stale outer-cache entry
+ *        would persist through deploys because the outer cache is
+ *        un-versioned.
+ *    A one-off ?__purge handler was added to delete poisoned entries
+ *    (see 590b34e / bb80c55 if you want to resurrect it for future
+ *    surgical cache cleanups — it deletes page URLs and every plausible
+ *    /path/__data.json?x-sveltekit-invalidated=XXX variant by enumerating
+ *    binary strings of 2-4 bits).
  */
 
 import type { Handle } from "@sveltejs/kit";
