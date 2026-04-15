@@ -51,7 +51,7 @@
 			year: 2026,
 		},
 		{
-			description: "Token business or intelligence business?",
+			description: "Build the feedback loop",
 			href: "/2025/durable-ai-initiatives",
 			title: "Durable AI Initiatives",
 			year: 2025,

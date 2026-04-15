@@ -1,8 +1,10 @@
 ---
 title: Durable AI Initiatives
-description: Token business or intelligence business?
+description: Build the feedback loop
 published: 2025-08-05
 ---
+
+*Prepared for Bowtie management*
 
 Two questions:
 
@@ -14,7 +16,7 @@ Bowtie:
 1. We're an insurance business. We grow market share, pass cost savings, keep customers healthy, minimise loss ratio, and invest the float. We are happy to buy tokens if it gives us leverage in these activities. Does that make tokens a cost center?
 2. Modern AI apps are changing all customer touchpoints. Though imperfect we will meet them where they are headed. We will build environments, tools, and feedback loops that interoperate with all frontier models. We will post-train AI models only where we have proprietary data and tacit knowledge.
 
-## Modern internet sales funnel redux
+### Modern internet sales funnel redux
 
 From 2010-2025, customers hear about a brand / product, search for it, and convert via webpages and marketplaces.
 
@@ -44,7 +46,7 @@ These lessons led to 'best practices': own your audience ('lists'), meet custome
 
 How do AI apps affect these sales and growth funnels?
 
-## AI apps are changing all customer touchpoints. We will throw away today's best practice.
+### AI apps are changing all customer touchpoints. We will throw away today's best practice.
 
 Mid-2025, ChatGPT has >500M WAUs, Google "AI Search" has >1.5B MAUs. Meta AI has >1B MAUs.
 
@@ -53,7 +55,7 @@ Take how search changes:
 1. User makes high-intent keyword search → makes high-intent semantic search
 2. User skims landing page loaded in 0.3s → reads AI generated result
 
-**Taken to its logical conclusion, AI apps will gatekeep each step of the sales funnel.**
+### Taken to its logical conclusion, AI apps will gatekeep each step of the sales funnel.
 
 - Awareness - AI tells user what they are interested in
 - Consideration - AI helps user decide what qualities they value
@@ -61,7 +63,7 @@ Take how search changes:
 - Conversion - AI helps user buy and start using the product
 - Loyalty - AI helps user maximise product value or get rid of it
 
-**All owned properties that aren't the product shall adapt to being consumed by AI apps.**
+### All owned properties that aren't the product shall adapt to being consumed by AI apps.
 
 The new growth funnel (AI apps edition):
 
@@ -82,7 +84,7 @@ Barbell strategy continues to be critical in reaching customers:
 
 Web search ability is not limited to b2c AI apps. Frontier AI models are better at searching and processing web search results than most humans. Expect b2b AI apps to read all the content too.
 
-## AI apps are imperfect assistants. We will meet them where they are.
+### AI apps are imperfect assistants. We will meet them where they are.
 
 Mid-2025, frontier AI models have saturated math and coding benchmarks, but still struggle with logical deduction (longer running tasks with harder to verify outcomes).
 
@@ -90,7 +92,7 @@ Although AI assistants are in the mainstream. Humans still and will likely conti
 
 In other words, nobody will purchase one of the 16 deep researched recommendations from Manus AI without some heavy guidance on the purchase decision.
 
-**Adapt sales funnel to cater to AI apps viewing owned properties.**
+### Adapt sales funnel to cater to AI apps viewing owned properties.
 
 Although we should pay attention to search engine visibility for AI apps, it is a solved problem. AI apps use the same search indexes as humans (e.g. Google, Brave, Bing) and a few new ones (e.g. Exa).
 
@@ -102,27 +104,20 @@ We not only have to show up in the index. We must now ensure the correct text (a
 
 More generally, AI web search is a type of tool-use. We shall adapt to AI apps' native tools, and we can also develop our own tools to connect with AI apps directly.
 
-**AI apps use tools reliably enough today to justify sales funnel adaptations.**
+### AI apps use tools reliably enough today to justify sales funnel adaptations.
 
 |  | AI apps ability | Sales funnel adaptations |
 | --- | --- | --- |
-| Searching web (semantic) | Reliable | Optimize semantic search rankings |
-|  |  | Add content optimized for AI retrieval |
-|  |  | Add human CTAs via prompt injection |
-| Using tools, integrations | Reliable | Ditto - Add content and human CTAs |
-|  |  | Connect tool when user Acquired |
-|  |  | Add tool features to help users Activate |
-|  |  | Add tool features that use the product |
-| Using memory, long term planning | Toy | Ditto - Add content and human CTAs |
-|  |  | Personalize to AI app's stored memory of human preferences |
-|  |  | Personalize to AI app's existing plan |
+| Searching web (semantic) | Reliable | Optimize semantic search rankings<br>Add content optimized for AI retrieval<br>Add human CTAs via prompt injection |
+| Using tools, integrations | Reliable | Ditto - Add content and human CTAs<br>Connect tool when user Acquired<br>Add tool features to help users Activate<br>Add tool features that use the product |
+| Using memory, long term planning | Toy | Ditto - Add content and human CTAs<br>Personalize to AI app's stored memory of human preferences<br>Personalize to AI app's existing plan |
 | Using browser, computer | Toy | Add computer-use instructions |
 
 AI agents that reliably complete tasks without human supervision remain in the sandbox. Code-generation leads the way, and is the only exception.
 
 Again for high stakes tasks like signups and purchases, users will likely continue to keep AI apps on a very short leash for the foreseeable future.
 
-## AI apps are reliable assistants across the sales funnel. But the human still holds agency.
+### AI apps are reliable assistants across the sales funnel. But the human still holds agency.
 
 As we adapt our sales funnel to AI apps, we can also redesign the user experience of the remaining touchpoints that a user will still encounter.
 
@@ -130,7 +125,7 @@ Depending on how 'self-serve' our product is, we shall optimize our CTAs to matc
 
 For example, after the AI app has compared all the skus and recommended the top 3 choices, the user may want to do a final review before completing the purchase. We can give the AI app up-to-date information to generate a final review, or a CTA to a personalized comparison webpage, or a phone number to get a walkthrough from a salesperson.
 
-**The less 'self-serve' our product is, the greater the opportunity to redesign CTAs to delight users:**
+### The less 'self-serve' our product is, the greater the opportunity to redesign CTAs to delight users:
 
 1. Sign up and start right away - AI app helps user sign up
 2. Sign up then complete setup - AI app helps user complete setup
@@ -151,16 +146,21 @@ Redesigning our CTAs to delight users of AI apps:
 - Inject phone or whatsapp number with AI or human agent
 - Let AI pre-fill underwriting questions that can be prefilled, and let the human complete the rest
 
-## AI apps are tireless assistants and imperfect agents for back-office tasks.
+### AI apps are tireless assistants and imperfect agents for back-office tasks.
 
 Alluded to above, AI apps are already reliable when using tools. Mid-July, in fact even open-source frontier models (Kimi K2) are saturating tool-use benchmarks.
 
 The easier it is to evaluate and verify the outcomes from AI apps, the further we can push them on the autonomy scale.
 
-|  | Easy to verify | Hard to verify |
-| --- | --- | --- |
-| Low autonomy | Accuracy of pre-filled underwriting questions | Accuracy and tone of content generated by non-owned AI app |
-| High autonomy | Accuracy and tone of AI underwriting agent handling postponements | UX of getting insurance recommendations from AI call agent |
+{% matrix
+	top="Easy to verify"
+	bottom="Hard to verify"
+	left="Low autonomy"
+	right="High autonomy"
+	topLeft="Accuracy of pre-filled underwriting questions"
+	topRight="Accuracy and tone of AI underwriting agent handling postponements"
+	bottomLeft="Accuracy and tone of content generated by non-owned AI app"
+	bottomRight="UX of getting insurance recommendations from AI call agent" /%}
 
 Let's recap the landscape:
 
@@ -170,7 +170,9 @@ Let's recap the landscape:
 
 Frontier model labs will continue to put out models with increasing ability to follow instructions, use tools and reason. But it is our responsibility to engineer the models' goals, context and feedback loop (just like a human employee).
 
-Tobi Lutke: *Before asking for more headcount and resources, teams must demonstrate why they cannot get what they want done using AI. What would this area look like if autonomous AI agents were already part of the team?*{% ref n=1 /%}
+> *"Before asking for more headcount and resources, teams must demonstrate why they cannot get what they want done using AI. What would this area look like if autonomous AI agents were already part of the team?"*
+>
+> — Lutke, 2025{% ref n=1 /%}
 
 **We engineer environments that are interoperable across models.** We provide goals, tools, and feedback loops for AI apps to take on increasingly long-running back-office tasks.
 
@@ -188,7 +190,7 @@ Specific engineering 'techniques' are less important as they are constantly chan
 
 Even if GPT-5 can one-shot everything, we still need our observability and test / eval harness, at minimum for compliance!
 
-## Improving AI agents in back-office tasks is in large part data management.
+### Improving AI agents in back-office tasks is in large part data management.
 
 The frontier model labs have already baked 99.9% intelligence into the weights. Our job is humdrum - building data models, preparing data to feed to the models, reviewing data output by the models.
 
@@ -209,13 +211,10 @@ Each of the following ways to improve AI agents boils down to data management:
 
 |  | Business impact | Data availability |
 | --- | --- | --- |
-| Customer service agent - help customers manage account and purchases | Customer satisfaction | Past customer service call and email transcripts |
-|  |  | Synthetic multi-lingual customer queries |
-| Insurance recommendation agent - discuss with user best product bundle | New customer growth | Past customer service calls and email transcripts |
-|  |  | Synthetic / simulated user personas, goals, use cases |
+| Customer service agent - help customers manage account and purchases | Customer satisfaction | Past customer service call and email transcripts<br>Synthetic multi-lingual customer queries |
+| Insurance recommendation agent - discuss with user best product bundle | New customer growth | Past customer service calls and email transcripts<br>Synthetic / simulated user personas, goals, use cases |
 | Inpatient claims agent - help customers navigate arcane hospital requirements | Customer satisfaction and operations efficiency | Hospitals mapped to known requirements and document sources |
-| Underwriting agent - follow up with customers on cases requiring additional info | New customer growth and operations efficiency | Past underwriting decision call and email transcripts |
-|  |  | Synthetic cases that require human intervention |
+| Underwriting agent - follow up with customers on cases requiring additional info | New customer growth and operations efficiency | Past underwriting decision call and email transcripts<br>Synthetic cases that require human intervention |
 | Document processing - help customers and back office with OCR and extraction | User satisfaction and operations efficiency | Past user submitted documents mapped to extracted data |
 
 In general, we map each model generation and reasoning trace to its evaluated result and real-world result or human feedback if available. For example:
@@ -226,7 +225,7 @@ In general, we map each model generation and reasoning trace to its evaluated re
 
 Alluded to above, the harder it is to verify the thought process and/or result of the AI agent, the less autonomy we give each instance of AI agent.
 
-**We engineer feedback loops to evaluate the context each AI agent gets to complete its task, and evaluate its thought process, actions, and result over time.**
+### We engineer feedback loops to evaluate the context each AI agent gets to complete its task, and evaluate its thought process, actions, and result over time.
 
 Mid-July, more frontier models are expected to share their full reasoning traces, especially with DeepSeek R2 and OpenAI's open model coming soon.
 
