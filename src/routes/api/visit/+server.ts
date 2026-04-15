@@ -15,6 +15,13 @@ export const POST: RequestHandler = async ({ platform, request, url }) => {
 		if (origin !== url.origin) return new Response(null, { status: 403 });
 	}
 
+	// Skip writes from preview deploys (*.hugentobler.pages.dev share the
+	// production D1 binding). Reads in +layout.server.ts stay unfiltered so
+	// previews still render the real visitor feed.
+	if (url.hostname.endsWith(".pages.dev")) {
+		return new Response(null, { status: 204 });
+	}
+
 	// Write-only analytics beacon: ANY failure should be absorbed as 204.
 	// Previously `await request.json()` sat outside the try/catch, so an empty
 	// body or malformed JSON (from browser preflights, resets, or a broken
