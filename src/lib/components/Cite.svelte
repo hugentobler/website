@@ -23,7 +23,10 @@
 	}
 
 	.arrow {
+		display: inline-block;
 		font-weight: 500;
 		font-stretch: expanded;
+		transform: scale(1.2);
+		transform-origin: center;
 	}
 </style>
