@@ -1,8 +1,12 @@
 <script lang="ts">
 	import createPanzoom from "panzoom";
-	import { onMount } from "svelte";
+	import { onMount, type Snippet } from "svelte";
 
-	const { src, alt = "" }: { src: string; alt?: string } = $props();
+	const {
+		src,
+		alt = "",
+		children,
+	}: { src: string; alt?: string; children?: Snippet } = $props();
 
 	const svgModules = import.meta.glob("$lib/images/*.svg", {
 		eager: true,
@@ -36,7 +40,9 @@
 			{@html raw}
 		{/if}
 	</div>
-	{#if alt}
+	{#if children}
+		<figcaption>{@render children()}</figcaption>
+	{:else if alt}
 		<figcaption>{alt}</figcaption>
 	{/if}
 </figure>

@@ -30,7 +30,6 @@ const tags: Config["tags"] = {
 			src: { required: true, type: String },
 		},
 		render: "Panzoom",
-		selfClosing: true,
 	},
 	ref: {
 		attributes: {
