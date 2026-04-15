@@ -107,6 +107,10 @@
 	.content {
 		grid-row: 1 / -1;
 		grid-column: 2;
+		/* Allow scrollable children (.table-scroll) to clip their intrinsic
+		   min-content width instead of bubbling it up through the grid
+		   track and forcing the column wider than the viewport. */
+		min-width: 0;
 		max-width: calc(var(--baseline) * 36);
 		padding: calc(var(--baseline) * 2) calc(var(--baseline) * 3);
 		margin: var(--baseline) 0;
@@ -290,15 +294,21 @@
 			margin-top: var(--baseline);
 		}
 
-		:global(table) {
-			width: 100%;
+		:global(.table-scroll) {
 			margin: var(--baseline) 0;
+			overflow-x: auto;
+		}
+
+		:global(.table-scroll) :global(table) {
+			width: max-content;
+			min-width: 100%;
 			font-size: var(--type-sm);
 			line-height: var(--leading-sm);
 			border-collapse: collapse;
 		}
 
 		:global(th), :global(td) {
+			max-width: 32ch;
 			padding: calc(var(--baseline) / 4) calc(var(--baseline) / 2);
 			vertical-align: top;
 			text-align: left;
