@@ -330,7 +330,11 @@
 			--warmth: max(var(--crowd-warmth), var(--hover-boost));
 			padding: 1px 0;
 			cursor: pointer;
-			background-color: oklch(calc(1 - 0.08 * var(--warmth)) calc(0.15 * var(--warmth)) 90);
+			background-color: color-mix(
+				in oklch,
+				transparent,
+				oklch(0.92 0.15 90) calc(var(--warmth) * 100%)
+			);
 			border-radius: 2px;
 			transition: background-color 150ms ease;
 		}
