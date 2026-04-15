@@ -116,6 +116,37 @@ function wrapParagraph(el: HTMLElement): Map<string, HTMLSpanElement> {
 	const fullText = el.textContent ?? "";
 	if (!fullText.trim()) return result;
 
+	// Special case: <br> acts as a hard sentence boundary. Walk direct
+	// children, collect each br-separated segment, and wrap each as its
+	// own sentence span. Leaves <br> elements in place between spans.
+	if (el.querySelector(":scope > br")) {
+		const segments: { nodes: Node[]; text: string }[] = [];
+		let currentNodes: Node[] = [];
+		let currentText = "";
+		for (const child of Array.from(el.childNodes)) {
+			if (child.nodeName === "BR") {
+				if (currentText.trim()) segments.push({ nodes: currentNodes, text: currentText });
+				currentNodes = [];
+				currentText = "";
+			} else {
+				currentNodes.push(child);
+				currentText += child.textContent ?? "";
+			}
+		}
+		if (currentText.trim()) segments.push({ nodes: currentNodes, text: currentText });
+
+		for (const seg of segments) {
+			const key = hash(seg.text);
+			const span = document.createElement("span");
+			span.className = "sentence";
+			span.dataset.sentence = key;
+			el.insertBefore(span, seg.nodes[0]);
+			for (const node of seg.nodes) span.appendChild(node);
+			result.set(key, span);
+		}
+		return result;
+	}
+
 	const sentences = splitSentences(fullText);
 	if (sentences.length === 0) return result;
 
