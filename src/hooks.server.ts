@@ -147,63 +147,9 @@ const ALLOWED_PATHS = new Set([
 	"/2026/pragmatists-guide-to-ai",
 ]);
 
-// TEMP (remove after ~1h post-deploy): per-PoP one-shot self-heal for
-// outer-cache entries poisoned earlier today. caches.default.delete() is
-// per-PoP, and the CF dashboard "Purge Everything" button does NOT clear
-// caches.default entries, so we lazily evict known-bad URL keys the first
-// time any request lands on each PoP after this deploy. The architectural
-// fix in bb80c55 (private max-age on toCache) prevents new poisoning, so
-// once this sweep has run on every active PoP we can drop it.
-let outerCacheSwept = false;
-async function sweepPoisonedOuterCache(origin: string): Promise<void> {
-	if (outerCacheSwept) return;
-	outerCacheSwept = true;
-	if (typeof caches === "undefined") return;
-	const pages = [
-		"/",
-		"/2025/durable-ai-initiatives",
-		"/2026/feeding-computer-agents",
-		"/2026/pragmatists-guide-to-ai",
-	];
-	// All plausible x-sveltekit-invalidated strings for routes with
-	// up to 4 data nodes (1-4 bits, all binary combinations).
-	const invalidated: string[] = [];
-	for (let bits = 1; bits <= 4; bits++) {
-		for (let i = 0; i < 1 << bits; i++) {
-			invalidated.push(i.toString(2).padStart(bits, "0"));
-		}
-	}
-	const del = (u: string) => caches.default.delete(new Request(u));
-	for (const p of pages) {
-		const base = p === "/" ? "" : p;
-		// Page URL itself
-		await del(`${origin}${p}`);
-		// Bare /__data.json (with and without trailing-slash flag)
-		await del(`${origin}${base}/__data.json`);
-		await del(`${origin}${base}/__data.json?x-sveltekit-trailing-slash=1`);
-		// Each invalidation variant, both with and without trailing-slash flag
-		for (const inv of invalidated) {
-			await del(`${origin}${base}/__data.json?x-sveltekit-invalidated=${inv}`);
-			await del(
-				`${origin}${base}/__data.json?x-sveltekit-trailing-slash=1&x-sveltekit-invalidated=${inv}`,
-			);
-		}
-	}
-}
-
 export const handle: Handle = async ({ event, resolve }) => {
 	const { url, request } = event;
 	const pathname = url.pathname;
-
-	// TEMP: fire-and-forget per-PoP self-heal of poisoned outer-cache
-	// entries. No-op on PoPs already swept this isolate. See the
-	// sweepPoisonedOuterCache definition above for context.
-	if (!dev && !building) {
-		const sweepCtx = event.platform?.ctx;
-		if (sweepCtx?.waitUntil) {
-			sweepCtx.waitUntil(sweepPoisonedOuterCache(url.origin));
-		}
-	}
 
 	// SvelteKit's client-navigation data payload. Contains the return value of
 	// +layout.server.ts / +page.server.ts load functions — including per-request
