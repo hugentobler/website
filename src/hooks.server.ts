@@ -25,6 +25,54 @@
  * not by this hook, so they work for both SSR and SSG pages.
  *
  * Dev: append ?bot to any URL to simulate bot detection.
+ *
+ * ─── CACHE GOTCHAS (learned the hard way — see below before editing) ──────
+ *
+ * 1. SvelteKit rewrites event.url for data requests
+ *    When a client-side navigation fetches /path/__data.json, SvelteKit's
+ *    internal_respond strips the suffix before the handle hook runs
+ *    (node_modules/@sveltejs/kit/src/runtime/server/respond.js:120). Inside
+ *    this hook, event.url.pathname for a /__data.json request is "/path",
+ *    NOT "/path/__data.json". So `pathname.endsWith("/__data.json")` is
+ *    ALWAYS false here — use `event.isDataRequest` instead.
+ *
+ *    Consequence if missed: data-request responses (which contain per-
+ *    request load() return values like visitor geolocation) get cached
+ *    under the same key as the page URL, and every subsequent page load
+ *    from that PoP serves stale JSON instead of HTML.
+ *
+ * 2. There are TWO nested caches, not one
+ *    The @sveltejs/adapter-cloudflare _worker.js wraps its own worktop-
+ *    based cache around caches.default at the Worker entry point (see
+ *    .svelte-kit/cloudflare/_worker.js — search for `r2(req)`). That
+ *    "outer" cache:
+ *      - Runs BEFORE this hook (a cache hit there never reaches us)
+ *      - Keys by the raw Request URL — NO version stamp, NO query param
+ *        munging
+ *      - Caches any response whose Cache-Control header is not
+ *        private/no-cache/no-store
+ *      - Does NOT bust on deploy (our CACHE_VERSION only affects the inner
+ *        cache below)
+ *
+ *    Consequence: if a bad response gets written to the outer cache, it
+ *    persists across deploys until its s-maxage expires. A new deploy
+ *    alone will NOT clear it — you have to either wait for TTL, or write
+ *    a fresh response through it (the adapter does a put on every write
+ *    path), or delete the entry via a Worker that calls
+ *    caches.default.delete(new Request(url)).
+ *
+ * 3. Never leak the inner cache's Cache-Control header to the outer cache
+ *    This hook sets Cache-Control: public, s-maxage on the `toCache` copy
+ *    it stores internally, but returns the ORIGINAL response unchanged to
+ *    the adapter. That's deliberate. SvelteKit page responses have no
+ *    Cache-Control by default, so the outer adapter cache sees no
+ *    caching directive and declines to cache. That keeps the outer cache
+ *    empty for regular HTML — and since the outer cache is un-versioned
+ *    (see gotcha #2), we WANT it empty.
+ *
+ *    If you ever add `response.headers.set("Cache-Control", ...)` on the
+ *    returned response, you will poison the outer cache on the next deploy
+ *    that hits a bug. Don't.
  */
 
 import type { Handle } from "@sveltejs/kit";
@@ -94,6 +142,52 @@ export const handle: Handle = async ({ event, resolve }) => {
 		!pathname.endsWith(".png") &&
 		!pathname.startsWith("/api/") &&
 		!isDataRequest;
+
+	// TEMP (remove after use): second-pass purge. Covers the outer-cache
+	// entries at page URLs AND every plausible CSR `/path/__data.json`
+	// variant (bare + `x-sveltekit-invalidated=XXX` for 2/3/4 nodes).
+	// Hit /?__purge=<CACHE_VERSION> once after deploy.
+	if (
+		!dev &&
+		!building &&
+		url.searchParams.get("__purge") === CACHE_VERSION &&
+		typeof caches !== "undefined"
+	) {
+		const pages = [
+			"/",
+			"/2025/durable-ai-initiatives",
+			"/2026/feeding-computer-agents",
+			"/2026/pragmatists-guide-to-ai",
+		];
+		// All plausible invalidation strings for routes with up to 4 data nodes.
+		const invalidated: string[] = [];
+		for (let bits = 2; bits <= 4; bits++) {
+			for (let i = 0; i < 1 << bits; i++) {
+				invalidated.push(i.toString(2).padStart(bits, "0"));
+			}
+		}
+		const results: string[] = [];
+		for (const p of pages) {
+			// Page URL (HTML)
+			const pageReq = new Request(`${url.origin}${p}`);
+			results.push(`${p} → ${(await caches.default.delete(pageReq)) ? "DEL" : "-"}`);
+			// Bare /__data.json
+			const base = p === "/" ? "" : p;
+			const bareData = `${url.origin}${base}/__data.json`;
+			results.push(
+				`${base}/__data.json → ${(await caches.default.delete(new Request(bareData))) ? "DEL" : "-"}`,
+			);
+			// Invalidated variants
+			for (const inv of invalidated) {
+				const u = `${bareData}?x-sveltekit-invalidated=${inv}`;
+				const ok = await caches.default.delete(new Request(u));
+				if (ok) results.push(`${base}/__data.json?x-sveltekit-invalidated=${inv} → DEL`);
+			}
+		}
+		return new Response(results.join("\n"), {
+			headers: { "Cache-Control": "private, no-store", "Content-Type": "text/plain" },
+		});
+	}
 
 	const cacheUrl = new URL(url.toString());
 	cacheUrl.searchParams.set("__v", CACHE_VERSION);
@@ -165,6 +259,20 @@ export const handle: Handle = async ({ event, resolve }) => {
 	});
 
 	// Store SSR response in edge cache (non-blocking).
+	//
+	// The Cache-Control on `toCache` is deliberately `private, max-age=...`,
+	// NOT `public, s-maxage=...`. Reasons:
+	//
+	//   - Workers Cache API stores it fine — `caches.default.put()` only
+	//     rejects responses with `Cache-Control: no-store` (and Vary: *, 206).
+	//     `private` is accepted and retrieved normally.
+	//   - If this cached response is ever served as a cache HIT and leaks
+	//     back up to the adapter's worktop cache wrapper, the adapter's
+	//     cacheability check rejects it (it looks for /private|no-cache|no-store/),
+	//     so the outer un-versioned cache stays clean — critical, because
+	//     outer-cache entries cannot be busted by a redeploy.
+	//   - CACHE_TTL drives behavior here via `max-age`; `s-maxage` is
+	//     irrelevant inside caches.default.
 	if (
 		!dev &&
 		!building &&
@@ -173,7 +281,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 		typeof caches !== "undefined"
 	) {
 		const headers = new Headers(response.headers);
-		headers.set("Cache-Control", `public, s-maxage=${CACHE_TTL}`);
+		headers.set("Cache-Control", `private, max-age=${CACHE_TTL}`);
 		const toCache = new Response(response.clone().body, {
 			headers,
 			status: response.status,
