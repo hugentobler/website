@@ -95,31 +95,6 @@ export const handle: Handle = async ({ event, resolve }) => {
 		!pathname.startsWith("/api/") &&
 		!isDataRequest;
 
-	// TEMP (remove after use): one-shot purge for stale outer-cache entries
-	// poisoned by the pre-7c84b7c data-request cache collision. Hit
-	// /?__purge=<secret> once after deploy to flush.
-	if (
-		!dev &&
-		!building &&
-		url.searchParams.get("__purge") === CACHE_VERSION &&
-		typeof caches !== "undefined"
-	) {
-		const targets = [
-			"/",
-			"/2025/durable-ai-initiatives",
-			"/2026/feeding-computer-agents",
-			"/2026/pragmatists-guide-to-ai",
-		];
-		const results: string[] = [];
-		for (const p of targets) {
-			const deleted = await caches.default.delete(new Request(`${url.origin}${p}`));
-			results.push(`${p} → ${deleted ? "deleted" : "not found"}`);
-		}
-		return new Response(results.join("\n"), {
-			headers: { "Cache-Control": "private, no-store", "Content-Type": "text/plain" },
-		});
-	}
-
 	const cacheUrl = new URL(url.toString());
 	cacheUrl.searchParams.set("__v", CACHE_VERSION);
 	const cacheKey = new Request(cacheUrl.toString(), { method: "GET" });
