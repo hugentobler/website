@@ -1,5 +1,5 @@
 /**
- * Server hook: edge caching, markdown serving + bot detection.
+ * Server hook: edge caching + markdown serving.
  *
  * Runs at build time (prerendering) and at runtime (SSR pages only —
  * prerendered pages are served by the CDN and bypass this hook).
@@ -12,8 +12,6 @@
  *     cache key so each deploy automatically invalidates stale entries.
  *     Cache is guarded by typeof caches check so it's safely skipped in
  *     local preview / non-Workers runtimes.
- *   - 302-redirects bots to /{slug}.md (user-agent detection via
- *     crawler-user-agents: https://github.com/monperrus/crawler-user-agents).
  *
  * Build time + runtime:
  *   - Serves raw markdown for /{slug}.md requests. At build time this
@@ -24,7 +22,14 @@
  * Analytics are handled by the client-side beacon (POST /api/visit),
  * not by this hook, so they work for both SSR and SSG pages.
  *
- * Dev: append ?bot to any URL to simulate bot detection.
+ * Bot redirect (currently DISABLED): the hook used to 302-redirect known
+ * crawlers to /{slug}.md so bots got the raw markdown. It was disabled in
+ * b8e4f6b because the redirect prevented social crawlers from reading OG
+ * meta tags on preview cards. The import, regex compilation, and redirect
+ * block are all still in place, commented out and tagged
+ * `// TODO: Re-enable when bot redirect is turned back on`, so flipping
+ * it back on is a single block-uncomment. When re-enabled: appending ?bot
+ * to any URL in dev simulates a crawler user-agent.
  *
  * ─── CACHE GOTCHAS (learned the hard way — see below before editing) ──────
  *
