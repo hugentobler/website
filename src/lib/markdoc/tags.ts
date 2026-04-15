@@ -10,6 +10,20 @@ const tags: Config["tags"] = {
 		},
 		render: "Cite",
 	},
+	matrix: {
+		attributes: {
+			bottom: { required: true, type: String },
+			bottomLeft: { required: true, type: String },
+			bottomRight: { required: true, type: String },
+			left: { required: true, type: String },
+			right: { required: true, type: String },
+			top: { required: true, type: String },
+			topLeft: { required: true, type: String },
+			topRight: { required: true, type: String },
+		},
+		render: "Matrix",
+		selfClosing: true,
+	},
 	panzoom: {
 		attributes: {
 			alt: { type: String },
