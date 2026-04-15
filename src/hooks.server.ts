@@ -57,6 +57,7 @@ for (const [path, content] of Object.entries(rawModules)) {
 const SLUG_ALIASES: Record<string, string> = {
 	"2025/durable-ai-initiatives": "durable-ai-initiatives",
 	"2026/feeding-computer-agents": "feeding-computer-agents",
+	"2026/pragmatists-guide-to-ai": "pragmatists-guide-to-ai",
 };
 
 // TODO: Re-enable when bot redirect is turned back on
@@ -70,6 +71,7 @@ const ALLOWED_PATHS = new Set([
 	"/",
 	"/2025/durable-ai-initiatives",
 	"/2026/feeding-computer-agents",
+	"/2026/pragmatists-guide-to-ai",
 ]);
 
 export const handle: Handle = async ({ event, resolve }) => {
@@ -79,7 +81,11 @@ export const handle: Handle = async ({ event, resolve }) => {
 	// SvelteKit's client-navigation data payload. Contains the return value of
 	// +layout.server.ts / +page.server.ts load functions — including per-request
 	// visitor geolocation — so it must never enter a shared cache.
-	const isDataRequest = pathname.endsWith("/__data.json");
+	//
+	// IMPORTANT: SvelteKit strips the `/__data.json` suffix from `event.url`
+	// before the handle hook runs, so `pathname.endsWith("/__data.json")` is
+	// always false here — always use `event.isDataRequest` instead.
+	const isDataRequest = event.isDataRequest;
 
 	// Edge cache: serve cached SSR HTML from the nearest Cloudflare datacenter.
 	const isPageRequest =
@@ -157,17 +163,6 @@ export const handle: Handle = async ({ event, resolve }) => {
 				`<link rel="alternate" type="text/markdown" href="/${slug}.md">\n</head>`,
 			),
 	});
-
-	// Belt-and-braces: explicitly mark data-requests as uncacheable by any
-	// shared cache. Prevents CF's CDN, intermediate proxies, or future code
-	// from latching onto a stale visitor pick.
-	if (isDataRequest && response.status === 200) {
-		try {
-			response.headers.set("Cache-Control", "private, no-store");
-		} catch {
-			// Headers immutable in some runtimes — best-effort.
-		}
-	}
 
 	// Store SSR response in edge cache (non-blocking).
 	if (
