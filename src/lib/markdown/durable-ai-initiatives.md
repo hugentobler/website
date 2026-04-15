@@ -170,7 +170,7 @@ Let's recap the landscape:
 
 Frontier model labs will continue to put out models with increasing ability to follow instructions, use tools and reason. But it is our responsibility to engineer the models' goals, context and feedback loop (just like a human employee).
 
-Tobi Lutke: *Before asking for more headcount and resources, teams must demonstrate why they cannot get what they want done using AI. What would this area look like if autonomous AI agents were already part of the team?*
+Tobi Lutke: *Before asking for more headcount and resources, teams must demonstrate why they cannot get what they want done using AI. What would this area look like if autonomous AI agents were already part of the team?*{% ref n=1 /%}
 
 **We engineer environments that are interoperable across models.** We provide goals, tools, and feedback loops for AI apps to take on increasingly long-running back-office tasks.
 
@@ -241,3 +241,7 @@ Probability of positive ROI from post-training AI models increases with variabil
 1. PHD-level math proofs - low probability, just wait for GPT-5
 2. ACME corp GAAP audit report - medium probability, task outcomes standardise to small number of common formats
 3. Manual underwriting insurance approval - high probability, nuanced decision tree, requires tacit knowledge, some human interaction, and verifiable task outcome
+
+{% citations %}
+{% cite n=1 %}@tobi, ["Reflexive AI usage is now a baseline expectation at Shopify"](https://x.com/tobi/status/1909231499448401946), X (2025).{% /cite %}
+{% /citations %}

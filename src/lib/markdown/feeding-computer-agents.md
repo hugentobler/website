@@ -12,9 +12,9 @@ In March, everyone was talking about "harness engineering." A friend Vincent bro
 
 ## Why computer agents?
 
-> *"And the Macintosh was supposed to be the computer for people who just wanted to use a computer without having to learn how to use one."*
+> *"And the Macintosh was supposed to be the computer for people that just wanted to use a computer without having to learn how to use one."*
 >
-> Steve Jobs, 1990
+> — Jobs, 1990{% ref n=1 /%}
 
 For techies, Claude Code is a revolution. Since last November, anybody who used to think writing code was a prerequisite to building software, no longer has to manually write it. The practice of designing and developing software is unrecognizable from before.
 
@@ -32,7 +32,7 @@ I propose looking for problems with the following three characteristics. Problem
 
 ### 1. Elapsed time, not inference time
 
-The latest METR benchmark showed Opus 4.6 reliably completing half of the tasks that take human experts twelve hours to do. This exponential trend shows no sign of slowing. Given enough inference time, it's possible that future frontier models will one-shot any valuable knowledge work done today.
+The latest METR benchmark showed Opus 4.6 reliably completing half of the tasks that take human experts twelve hours to do. This exponential trend shows no sign of slowing.{% ref n=2 /%} Given enough inference time, it's possible that future frontier models will one-shot any valuable knowledge work done today.
 
 I propose to look instead for problems where best practices must be consistently applied over real world, elapsed time. These are problems that more inference and compute alone cannot one-shot.
 
@@ -78,7 +78,7 @@ While the underlying technology continues to evolve, the industry has started to
 
 {% panzoom src="harnesses-help.svg" alt="Use out-of-the-box harness features to get auditable artifacts and predictable performance." /%}
 
-How to design a software interface for agents could be its own essay. One emerging pattern is to create a Unix-style CLI{% ref n=1 /%}, purpose-built for agent use.
+How to design a software interface for agents could be its own essay. One emerging pattern is to create a Unix-style CLI{% ref n=3 /%}, purpose-built for agent use.
 
 {% panzoom src="cli-in-practice.svg" alt="Design interfaces that progressively disclose commands, tools, and follow-up actions, and clearly reports errors, duration, cost, and artifacts." /%}
 
@@ -97,5 +97,7 @@ What does commercialization look like? Frankly, I don't have a concrete answer y
 Are you good at understanding how non-technical people do their job? Then build software for computer agents.
 
 {% citations %}
-{% cite n=1 %}@yan5xu, ["CLI is All Agents Need — A *nix Agent Design Guide"](https://x.com/yan5xu/status/2031969426124521506), X (2026).{% /cite %}
+{% cite n=1 %}Steve Jobs, ["The Machine That Changed the World; The Paperback Computer; 102; Steve Jobs Interview"](https://americanarchive.org/catalog/cpb-aacip-15-qj77s7j327) (1990).{% /cite %}
+{% cite n=2 %}METR, ["Measuring AI Ability to Complete Long Tasks"](https://metr.org/blog/2025-03-19-measuring-ai-ability-to-complete-long-tasks/) (2025).{% /cite %}
+{% cite n=3 %}@yan5xu, ["CLI is All Agents Need — A *nix Agent Design Guide"](https://x.com/yan5xu/status/2031969426124521506), X (2026).{% /cite %}
 {% /citations %}
