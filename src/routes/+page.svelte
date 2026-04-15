@@ -45,6 +45,12 @@
 
 	const writings = [
 		{
+			description: "Everything changes except what didn't",
+			href: "/2026/pragmatists-guide-to-ai",
+			title: "Pragmatist's Guide to AI",
+			year: 2026,
+		},
+		{
 			description: "Bigger than coding agents",
 			href: "/2026/feeding-computer-agents",
 			title: "Feeding Computer Agents",

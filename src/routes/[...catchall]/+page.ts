@@ -10,6 +10,7 @@ const markdownModules = import.meta.glob("$lib/markdown/*.md");
 const SLUG_ALIASES: Record<string, string> = {
 	"2025/durable-ai-initiatives": "durable-ai-initiatives",
 	"2026/feeding-computer-agents": "feeding-computer-agents",
+	"2026/pragmatists-guide-to-ai": "pragmatists-guide-to-ai",
 };
 
 export const load: PageLoad = async ({ params }) => {
