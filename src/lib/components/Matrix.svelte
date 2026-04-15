@@ -89,22 +89,22 @@
 
 	/* Four blank outer corners — fully borderless so the label cells
 	   next to them appear flush against the outer table edge. */
-	.corner {
-		border: none !important;
+	table.matrix td.corner {
+		border: none;
 	}
 
 	/* Horizontal axis labels (top/bottom) should have no left/right
 	   borders so they read as a single label across the column pair. */
-	.axis-h {
-		border-right: none !important;
-		border-left: none !important;
+	table.matrix th.axis-h {
+		border-right: none;
+		border-left: none;
 	}
 
 	/* Vertical axis labels (left/right) should have no top/bottom
 	   borders so they read as a single label across the row pair. */
-	.axis-v {
-		border-top: none !important;
-		border-bottom: none !important;
+	table.matrix th.axis-v {
+		border-top: none;
+		border-bottom: none;
 	}
 
 	table.matrix th.axis {
