@@ -76,12 +76,18 @@ export const handle: Handle = async ({ event, resolve }) => {
 	const { url, request } = event;
 	const pathname = url.pathname;
 
+	// SvelteKit's client-navigation data payload. Contains the return value of
+	// +layout.server.ts / +page.server.ts load functions — including per-request
+	// visitor geolocation — so it must never enter a shared cache.
+	const isDataRequest = pathname.endsWith("/__data.json");
+
 	// Edge cache: serve cached SSR HTML from the nearest Cloudflare datacenter.
 	const isPageRequest =
 		request.method === "GET" &&
 		!pathname.endsWith(".md") &&
 		!pathname.endsWith(".png") &&
-		!pathname.startsWith("/api/");
+		!pathname.startsWith("/api/") &&
+		!isDataRequest;
 
 	const cacheUrl = new URL(url.toString());
 	cacheUrl.searchParams.set("__v", CACHE_VERSION);
@@ -151,6 +157,17 @@ export const handle: Handle = async ({ event, resolve }) => {
 				`<link rel="alternate" type="text/markdown" href="/${slug}.md">\n</head>`,
 			),
 	});
+
+	// Belt-and-braces: explicitly mark data-requests as uncacheable by any
+	// shared cache. Prevents CF's CDN, intermediate proxies, or future code
+	// from latching onto a stale visitor pick.
+	if (isDataRequest && response.status === 200) {
+		try {
+			response.headers.set("Cache-Control", "private, no-store");
+		} catch {
+			// Headers immutable in some runtimes — best-effort.
+		}
+	}
 
 	// Store SSR response in edge cache (non-blocking).
 	if (
