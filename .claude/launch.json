@@ -1,0 +1,17 @@
+{
+	"configurations": [
+		{
+			"name": "vite-dev",
+			"port": 5173,
+			"runtimeArgs": ["run", "dev"],
+			"runtimeExecutable": "bun"
+		},
+		{
+			"name": "wrangler-pages-dev",
+			"port": 8788,
+			"runtimeArgs": ["run", "pages:dev"],
+			"runtimeExecutable": "bun"
+		}
+	],
+	"version": "0.0.1"
+}
