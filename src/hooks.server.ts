@@ -143,52 +143,6 @@ export const handle: Handle = async ({ event, resolve }) => {
 		!pathname.startsWith("/api/") &&
 		!isDataRequest;
 
-	// TEMP (remove after use): second-pass purge. Covers the outer-cache
-	// entries at page URLs AND every plausible CSR `/path/__data.json`
-	// variant (bare + `x-sveltekit-invalidated=XXX` for 2/3/4 nodes).
-	// Hit /?__purge=<CACHE_VERSION> once after deploy.
-	if (
-		!dev &&
-		!building &&
-		url.searchParams.get("__purge") === CACHE_VERSION &&
-		typeof caches !== "undefined"
-	) {
-		const pages = [
-			"/",
-			"/2025/durable-ai-initiatives",
-			"/2026/feeding-computer-agents",
-			"/2026/pragmatists-guide-to-ai",
-		];
-		// All plausible invalidation strings for routes with up to 4 data nodes.
-		const invalidated: string[] = [];
-		for (let bits = 2; bits <= 4; bits++) {
-			for (let i = 0; i < 1 << bits; i++) {
-				invalidated.push(i.toString(2).padStart(bits, "0"));
-			}
-		}
-		const results: string[] = [];
-		for (const p of pages) {
-			// Page URL (HTML)
-			const pageReq = new Request(`${url.origin}${p}`);
-			results.push(`${p} → ${(await caches.default.delete(pageReq)) ? "DEL" : "-"}`);
-			// Bare /__data.json
-			const base = p === "/" ? "" : p;
-			const bareData = `${url.origin}${base}/__data.json`;
-			results.push(
-				`${base}/__data.json → ${(await caches.default.delete(new Request(bareData))) ? "DEL" : "-"}`,
-			);
-			// Invalidated variants
-			for (const inv of invalidated) {
-				const u = `${bareData}?x-sveltekit-invalidated=${inv}`;
-				const ok = await caches.default.delete(new Request(u));
-				if (ok) results.push(`${base}/__data.json?x-sveltekit-invalidated=${inv} → DEL`);
-			}
-		}
-		return new Response(results.join("\n"), {
-			headers: { "Cache-Control": "private, no-store", "Content-Type": "text/plain" },
-		});
-	}
-
 	const cacheUrl = new URL(url.toString());
 	cacheUrl.searchParams.set("__v", CACHE_VERSION);
 	const cacheKey = new Request(cacheUrl.toString(), { method: "GET" });
