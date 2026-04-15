@@ -1,18 +1,18 @@
 import { error } from "@sveltejs/kit";
 import type { MarkdocModule } from "markdoc-svelte";
 import { generateOgImage } from "$lib/og";
-import type { RequestHandler } from "./$types";
-
-const SLUG_ALIASES: Record<string, string> = {
-	"2025/durable-ai-initiatives": "durable-ai-initiatives",
-	"2026/feeding-computer-agents": "feeding-computer-agents",
-	"2026/pragmatists-guide-to-ai": "pragmatists-guide-to-ai",
-};
+import { liveWritings, slugAliases } from "$lib/writing";
+import type { EntryGenerator, RequestHandler } from "./$types";
 
 export const prerender = true;
 
+// Tells the prerenderer which og.png URLs to build. SvelteKit's crawler
+// doesn't follow `<meta og:image>`, so without this it never finds them.
+export const entries: EntryGenerator = () =>
+	liveWritings.map((w) => ({ catchall: `${w.year}/${w.slug}` }));
+
 export const GET: RequestHandler = async ({ params }) => {
-	const slug = SLUG_ALIASES[params.catchall] ?? params.catchall;
+	const slug = slugAliases[params.catchall] ?? params.catchall;
 
 	let markdown: MarkdocModule;
 	try {

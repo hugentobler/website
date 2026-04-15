@@ -2,6 +2,7 @@
 title: Feeding Computer Agents
 description: Bigger than coding agents
 published: 2026-03-23
+draft: false
 ---
 
 Are you good at understanding how non-technical people do their job? Can you easily understand their pains, and design technical requirements to solve their problems? If the answer is yes, then focus on building software for computer agents.

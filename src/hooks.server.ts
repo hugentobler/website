@@ -109,6 +109,7 @@ import type { Handle } from "@sveltejs/kit";
 // TODO: Re-enable when bot redirect is turned back on
 // import crawlers from "crawler-user-agents";
 import { building, dev } from "$app/environment";
+import { liveWritings, slugAliases } from "$lib/writing";
 
 // Edge cache TTL for SSR pages (seconds).
 // Cached per-datacenter via the Cloudflare Workers Cache API.
@@ -131,13 +132,6 @@ for (const [path, content] of Object.entries(rawModules)) {
 	if (slug) markdownBySlug.set(slug, content);
 }
 
-// TODO: derive route→slug mapping automatically instead of hardcoding aliases.
-const SLUG_ALIASES: Record<string, string> = {
-	"2025/durable-ai-initiatives": "durable-ai-initiatives",
-	"2026/feeding-computer-agents": "feeding-computer-agents",
-	"2026/pragmatists-guide-to-ai": "pragmatists-guide-to-ai",
-};
-
 // TODO: Re-enable when bot redirect is turned back on
 // const botPattern = new RegExp(crawlers.map((c) => `(?:${c.pattern})`).join("|"), "i");
 // function isBot(userAgent: string): boolean {
@@ -145,12 +139,8 @@ const SLUG_ALIASES: Record<string, string> = {
 // }
 
 // Production routes — only these paths are live. Everything else 404s.
-const ALLOWED_PATHS = new Set([
-	"/",
-	"/2025/durable-ai-initiatives",
-	"/2026/feeding-computer-agents",
-	"/2026/pragmatists-guide-to-ai",
-]);
+// Derived from $lib/writing (which reads `draft: false` frontmatter).
+const ALLOWED_PATHS = new Set(["/", ...liveWritings.map((w) => w.href)]);
 
 export const handle: Handle = async ({ event, resolve }) => {
 	const { url, request } = event;
@@ -202,7 +192,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 	// reaching this hook.
 	if (pathname.endsWith(".md")) {
 		const rawSlug = pathname.slice(1, -3); // "/bowtie.md" → "bowtie"
-		const slug = SLUG_ALIASES[rawSlug] ?? rawSlug;
+		const slug = slugAliases[rawSlug] ?? rawSlug;
 		const content = markdownBySlug.get(slug);
 		if (content) {
 			return new Response(content, {

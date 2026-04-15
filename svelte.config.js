@@ -27,13 +27,10 @@ const config = {
 			$styles: "src/styles",
 		},
 
-		// Global prerender configuration
+		// Global prerender configuration. Route entries are generated
+		// dynamically by the og.png route's `entries` exporter from
+		// $lib/writing — no hardcoded list here.
 		prerender: {
-			entries: [
-				"/2025/durable-ai-initiatives/og.png",
-				"/2026/feeding-computer-agents/og.png",
-				"/2026/pragmatists-guide-to-ai/og.png",
-			],
 			handleHttpError: "warn",
 			handleMissingId: "warn",
 		},

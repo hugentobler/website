@@ -2,6 +2,7 @@
 	import { ElementSize, useMousePosition } from "runed";
 	import { flushSync } from "svelte";
 	import PageFooter from "$lib/components/PageFooter.svelte";
+	import { liveWritings } from "$lib/writing";
 	import LondonTelephone from "./home/london-telephone-josef-müller-brockmann.jpg?enhanced";
 	import MyPortrait from "./home/noguchi.png?enhanced";
 
@@ -43,26 +44,7 @@
 		return thumbs[`${base}.svg`] ?? thumbs[`${base}.png`];
 	};
 
-	const writings = [
-		{
-			description: "Everything changes except what didn't",
-			href: "/2026/pragmatists-guide-to-ai",
-			title: "Pragmatist's Guide to AI",
-			year: 2026,
-		},
-		{
-			description: "Bigger than coding agents",
-			href: "/2026/feeding-computer-agents",
-			title: "Feeding Computer Agents",
-			year: 2026,
-		},
-		{
-			description: "Build the feedback loop",
-			href: "/2025/durable-ai-initiatives",
-			title: "Durable AI Initiatives",
-			year: 2025,
-		},
-	];
+	const writings = liveWritings;
 
 	const projects = [
 		{

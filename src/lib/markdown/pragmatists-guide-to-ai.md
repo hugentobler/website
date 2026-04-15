@@ -2,6 +2,7 @@
 title: Pragmatist's Guide to AI
 description: Everything changes except what didn't
 published: 2026-04-14
+draft: false
 ---
 
 I'm going to talk about "pragmatism". No matter if AI frees us all from work, or destroys our social fabric, you will still get out of bed tomorrow morning, and fulfil your responsibilities to your loved ones, friends, and colleagues. I want to help you engage with AI pragmatically.
