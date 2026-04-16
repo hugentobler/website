@@ -42,6 +42,7 @@ const config = {
 	preprocess: [
 		// Process Markdown files with Markdoc
 		markdocPreprocess({
+			headingIds: true,
 			linkify: true,
 			schema: "./src/lib/markdoc",
 		}),

@@ -14,6 +14,10 @@
 @plugin '@tailwindcss/typography';
 /* @plugin "@tailwindcss/forms"; */
 
+html {
+	scroll-behavior: smooth;
+}
+
 /* TODO: Enable dark mode variant after testing */
 /* @custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *)); */
 
