@@ -146,7 +146,7 @@ AI promises capabilities, productivity, and autonomy. But like software, those g
 ## Human nature
 
 Everybody needs a friend. And AI is super agreeable and patient. This poses cognitive security risks ranging from entertaining to full blown AI psychosis.{% ref n=16 /%}
-### Surface-level understanding
+### Skin-deep understanding
 
 Watch out for three kinds of behaviours that reliably appear with new tools and techniques - cargo cults, slot machines, and astrology.
 
