@@ -3,6 +3,7 @@ title: Durable AI Initiatives
 description: Build your feedback loop
 published: 2025-08-05
 draft: false
+toc: false
 ---
 
 *Prepared for Bowtie management*
