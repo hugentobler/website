@@ -364,7 +364,7 @@
 			100vw - var(--baseline) * 2
 		);
 		display: grid;
-		grid-template-rows: auto auto auto 1fr auto;
+		grid-template-rows: auto auto auto auto 1fr auto;
 		grid-template-columns: 1fr auto;
 		gap: calc(var(--baseline) * 2);
 		min-height: 100svh;
@@ -606,15 +606,17 @@
 
 	.archives-bottom {
 		grid-row: 4;
+		margin-top: calc(var(--baseline) * -1);
 
 		@media (max-aspect-ratio: 1.65) {
 			grid-row: auto;
 			order: 2;
+			margin-top: 0;
 		}
 	}
 
 	.page > :global(footer) {
-		grid-row: 5;
+		grid-row: 6;
 		grid-column: 1;
 		padding: var(--baseline);
 

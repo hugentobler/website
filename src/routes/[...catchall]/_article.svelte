@@ -179,6 +179,7 @@
 		grid-column: 1;
 		gap: var(--baseline);
 		align-self: start;
+		max-height: 100svh;
 		color: var(--secondary);
 
 		:global(a:hover), :global(a:focus) {
@@ -188,6 +189,7 @@
 		@media (max-width: 60rem) {
 			z-index: 5;
 			gap: calc(var(--baseline) / 2);
+			max-height: none;
 			background-color: white;
 		}
 	}
@@ -300,6 +302,8 @@
 	.header-toc {
 		display: block;
 		max-width: calc(var(--baseline) * 12);
+		min-height: 0;
+		overflow-y: auto;
 	}
 
 	@media (max-width: 60rem) {
@@ -315,16 +319,21 @@
 	.footer {
 		position: sticky;
 		bottom: 0;
+		z-index: 1;
 		grid-column: 1;
 		align-self: end;
+		background-color: var(--color-charcoal-50);
 
 		@media (max-width: 60rem) {
 			position: static;
+			background-color: transparent;
 		}
 	}
 
 	.drawer {
 		--drawer-width: min(22rem, 85vw);
+		--primary: var(--color-charcoal-900);
+		--secondary: var(--color-charcoal-400);
 		position: fixed;
 		top: 0;
 		right: 0;
@@ -335,8 +344,10 @@
 		width: var(--drawer-width);
 		padding: var(--baseline);
 		overflow-y: auto;
+		color: var(--secondary);
 		background-color: white;
 		border-left: 1px solid var(--color-charcoal-100);
+		mask-image: linear-gradient(to bottom, black calc(100% - var(--baseline) * 2), transparent);
 		transform: translateX(100%);
 		transition: transform 250ms ease;
 	}
