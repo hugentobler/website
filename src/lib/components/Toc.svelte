@@ -87,6 +87,8 @@
 	}
 
 	.item a {
+		overflow: hidden;
+		text-overflow: ellipsis;
 		color: inherit;
 		white-space: nowrap;
 		text-decoration: none;
