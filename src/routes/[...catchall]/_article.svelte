@@ -51,9 +51,16 @@
 	.page {
 		--primary: var(--color-charcoal-900);
 		--secondary: var(--color-charcoal-400);
+		/* Fixed sidebar width so the footer's "Last visitor from …" line
+		   cannot reflow the grid when the client heartbeat updates it.
+		   Previously this was `min-content`, which sized the column to the
+		   widest visitor string and caused layout shift on each poll. The
+		   existing `.visitors` CSS (white-space: nowrap; text-overflow:
+		   ellipsis) now actually kicks in for long names. */
+		--sidebar-w: 18rem;
 		display: grid;
 		grid-template-rows: auto 1fr auto;
-		grid-template-columns: min-content 1fr;
+		grid-template-columns: var(--sidebar-w) 1fr;
 		min-height: 100svh;
 		color: var(--primary);
 
@@ -101,6 +108,7 @@
 
 		@media (max-width: 60rem) {
 			position: static;
+			padding-bottom: 50svh;
 		}
 	}
 
