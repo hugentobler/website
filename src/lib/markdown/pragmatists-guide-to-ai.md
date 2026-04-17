@@ -17,7 +17,7 @@ I don't believe that AI is the cause of these anxious questions. But it is a cat
 
 Once we know the landscape, we can start to engage with it more pragmatically.
 
-*Already familiar with the landscape? [Skip ahead to a pragmatic question](#a-pragmatic-question).*
+*Already familiar with the landscape? [Skip ahead](#a-pragmatic-question).*
 
 ## AI is software
 
