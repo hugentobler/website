@@ -182,20 +182,24 @@ export const handle: Handle = async ({ event, resolve }) => {
 		const content = markdownBySlug.get(slug);
 		if (content) {
 			return new Response(content, {
-				headers: { "Content-Type": "text/markdown; charset=utf-8" },
+				headers: { "content-type": "text/markdown; charset=utf-8" },
 			});
 		}
 	}
 
 	// Content negotiation: serve raw markdown when agents request it
-	// via Accept: text/markdown (replaces the old bot-redirect approach
-	// which broke OG meta tags for social crawlers).
+	// via Accept: text/markdown.
 	if (isPageRequest && request.headers.get("accept")?.includes("text/markdown")) {
 		const mdSlug = pathname === "/" ? "home" : pathname.replace(/^\//, "").replace(/\/$/, "");
 		const content = markdownBySlug.get(slugAliases[mdSlug] ?? mdSlug);
 		if (content) {
 			return new Response(content, {
-				headers: { "Content-Type": "text/markdown; charset=utf-8" },
+				headers: {
+					"content-signal": "ai-train=yes, search=yes, ai-input=yes", // https://contentsignals.org
+					"content-type": "text/markdown; charset=utf-8",
+					vary: "accept",
+					"x-markdown-tokens": String(Math.ceil(new TextEncoder().encode(content).length / 4)), // estimate: ~4 bytes/token
+				},
 			});
 		}
 	}
