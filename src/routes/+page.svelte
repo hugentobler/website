@@ -2,6 +2,7 @@
 	import { ElementSize, useMousePosition } from "runed";
 	import { flushSync } from "svelte";
 	import PageFooter from "$lib/components/PageFooter.svelte";
+	import { origin } from "$lib/config";
 	import { liveWritings } from "$lib/writing";
 	import LondonTelephone from "./home/london-telephone-josef-müller-brockmann.jpg?enhanced";
 	import MyPortrait from "./home/noguchi.png?enhanced";
@@ -100,6 +101,23 @@
 	<meta property="og:title" content="Christopher Hugentobler 姚思陶" />
 	<meta property="og:description" content="Economist by training, operator by necessity, creative-engineer by vocation." />
 	<meta property="og:type" content="website" />
+	{@html `<script type="application/ld+json">${JSON.stringify({
+		"@context": "https://schema.org",
+		"@graph": [
+			{
+				"@type": "WebSite",
+				"name": "Christopher Hugentobler",
+				"url": origin
+			},
+			{
+				"@type": "Person",
+				"name": "Christopher Hugentobler",
+				"url": origin,
+				"jobTitle": "Creative Engineer",
+				"knowsAbout": ["Computer agents", "Health insurance"]
+			}
+		]
+	})}</script>`}
 </svelte:head>
 
 <div class="page">

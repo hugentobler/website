@@ -5,6 +5,7 @@
 	import { sentenceHighlights } from "$lib/actions/sentenceHighlights";
 	import PageFooter from "$lib/components/PageFooter.svelte";
 	import Toc from "$lib/components/Toc.svelte";
+	import { origin } from "$lib/config";
 	import type { TocEntry } from "./+page";
 
 	let { data }: { data: { markdown: MarkdocModule; toc: TocEntry[] } } = $props();
@@ -80,6 +81,19 @@
 	<meta property="og:type" content="article" />
 	<meta property="article:author" content="{page.url.origin}" />
 	<meta name="twitter:card" content="summary_large_image" />
+	{@html `<script type="application/ld+json">${JSON.stringify({
+		"@context": "https://schema.org",
+		"@type": "Article",
+		"headline": title,
+		"description": frontmatter?.description,
+		"datePublished": frontmatter?.published,
+		"url": `${origin}${page.url.pathname}`,
+		"author": {
+			"@type": "Person",
+			"name": "Christopher Hugentobler",
+			"url": origin
+		}
+	})}</script>`}
 </svelte:head>
 
 <div class="viewport" data-toc-open={drawerOpen}>

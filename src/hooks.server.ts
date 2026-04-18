@@ -22,14 +22,8 @@
  * Analytics are handled by the client-side beacon (POST /api/visit),
  * not by this hook, so they work for both SSR and SSG pages.
  *
- * Bot redirect (currently DISABLED): the hook used to 302-redirect known
- * crawlers to /{slug}.md so bots got the raw markdown. It was disabled in
- * b8e4f6b because the redirect prevented social crawlers from reading OG
- * meta tags on preview cards. The import, regex compilation, and redirect
- * block are all still in place, commented out and tagged
- * `// TODO: Re-enable when bot redirect is turned back on`, so flipping
- * it back on is a single block-uncomment. When re-enabled: appending ?bot
- * to any URL in dev simulates a crawler user-agent.
+ * Markdown content negotiation: requests with Accept: text/markdown
+ * receive the raw markdown source instead of HTML.
  *
  * ─── CACHE GOTCHAS (learned the hard way — see below before editing) ──────
  *
@@ -106,8 +100,6 @@
  */
 
 import type { Handle } from "@sveltejs/kit";
-// TODO: Re-enable when bot redirect is turned back on
-// import crawlers from "crawler-user-agents";
 import { building, dev } from "$app/environment";
 import { liveWritings, slugAliases } from "$lib/writing";
 
@@ -131,12 +123,6 @@ for (const [path, content] of Object.entries(rawModules)) {
 	const slug = path.match(/\/([^/]+)\.md$/)?.[1];
 	if (slug) markdownBySlug.set(slug, content);
 }
-
-// TODO: Re-enable when bot redirect is turned back on
-// const botPattern = new RegExp(crawlers.map((c) => `(?:${c.pattern})`).join("|"), "i");
-// function isBot(userAgent: string): boolean {
-// 	return botPattern.test(userAgent);
-// }
 
 // Production routes — only these paths are live. Everything else 404s.
 // Derived from $lib/writing (which reads `draft: false` frontmatter).
@@ -201,23 +187,18 @@ export const handle: Handle = async ({ event, resolve }) => {
 		}
 	}
 
-	// Bot redirect disabled for now — it prevents social crawlers from seeing
-	// OG meta tags. Raw markdown is still available via <link rel="alternate">.
-	// if (!building) {
-	// 	const ua = request.headers.get("user-agent") ?? "";
-	// 	if (
-	// 		!pathname.endsWith(".md") &&
-	// 		!pathname.endsWith(".png") &&
-	// 		!pathname.startsWith("/api/") &&
-	// 		(isBot(ua) || (dev && url.searchParams.has("bot")))
-	// 	) {
-	// 		const slug = pathname === "/" ? "home" : pathname.replace(/^\//, "").replace(/\/$/, "");
-	// 		return new Response(null, {
-	// 			headers: { Location: `/${slug}.md` },
-	// 			status: 302,
-	// 		});
-	// 	}
-	// }
+	// Content negotiation: serve raw markdown when agents request it
+	// via Accept: text/markdown (replaces the old bot-redirect approach
+	// which broke OG meta tags for social crawlers).
+	if (isPageRequest && request.headers.get("accept")?.includes("text/markdown")) {
+		const mdSlug = pathname === "/" ? "home" : pathname.replace(/^\//, "").replace(/\/$/, "");
+		const content = markdownBySlug.get(slugAliases[mdSlug] ?? mdSlug);
+		if (content) {
+			return new Response(content, {
+				headers: { "Content-Type": "text/markdown; charset=utf-8" },
+			});
+		}
+	}
 
 	// Inject <link rel="alternate"> into <head> for all HTML pages.
 	// Runs during both prerendering and SSR, so the tag is baked into
@@ -231,6 +212,10 @@ export const handle: Handle = async ({ event, resolve }) => {
 				`<link rel="alternate" type="text/markdown" href="/${slug}.md">\n</head>`,
 			),
 	});
+
+	// Link headers for agent discovery (RFC 8288).
+	response.headers.append("Link", `</${slug}.md>; rel="alternate"; type="text/markdown"`);
+	response.headers.append("Link", `</sitemap.xml>; rel="sitemap"; type="application/xml"`);
 
 	// Store SSR response in edge cache (non-blocking).
 	//
