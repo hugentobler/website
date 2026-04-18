@@ -142,6 +142,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 	const isDataRequest = event.isDataRequest;
 
 	// Edge cache: serve cached SSR HTML from the nearest Cloudflare datacenter.
+	const wantsMarkdown = request.headers.get("accept")?.includes("text/markdown") ?? false;
 	const isPageRequest =
 		request.method === "GET" &&
 		!pathname.endsWith(".md") &&
@@ -153,7 +154,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 	cacheUrl.searchParams.set("__v", CACHE_VERSION);
 	const cacheKey = new Request(cacheUrl.toString(), { method: "GET" });
 
-	if (!dev && !building && isPageRequest && typeof caches !== "undefined") {
+	if (!dev && !building && isPageRequest && !wantsMarkdown && typeof caches !== "undefined") {
 		const cached = await caches.default.match(cacheKey);
 		if (cached) return cached;
 	}
@@ -174,8 +175,6 @@ export const handle: Handle = async ({ event, resolve }) => {
 	// Serve raw markdown for /{slug}.md URLs (available to anyone).
 	// At build time, this produces prerendered .md static files.
 	// At runtime, serves .md for SSR pages (SSG .md files are on the CDN).
-	// Static summaries (e.g. /home.md) are served by the CDN/Vite before
-	// reaching this hook.
 	if (pathname.endsWith(".md")) {
 		const rawSlug = pathname.slice(1, -3); // "/bowtie.md" → "bowtie"
 		const slug = slugAliases[rawSlug] ?? rawSlug;
@@ -189,7 +188,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 
 	// Content negotiation: serve raw markdown when agents request it
 	// via Accept: text/markdown.
-	if (isPageRequest && request.headers.get("accept")?.includes("text/markdown")) {
+	if (isPageRequest && wantsMarkdown) {
 		const mdSlug = pathname === "/" ? "home" : pathname.replace(/^\//, "").replace(/\/$/, "");
 		const content = markdownBySlug.get(slugAliases[mdSlug] ?? mdSlug);
 		if (content) {
