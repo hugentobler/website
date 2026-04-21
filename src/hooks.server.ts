@@ -101,6 +101,7 @@
 
 import type { Handle } from "@sveltejs/kit";
 import { building, dev } from "$app/environment";
+import { entries as nookEntries } from "$lib/nook";
 import { liveWritings, slugAliases } from "$lib/writing";
 
 // Edge cache TTL for SSR pages (seconds).
@@ -125,8 +126,13 @@ for (const [path, content] of Object.entries(rawModules)) {
 }
 
 // Production routes — only these paths are live. Everything else 404s.
-// Derived from $lib/writing (which reads `draft: false` frontmatter).
-const ALLOWED_PATHS = new Set(["/", ...liveWritings.map((w) => w.href)]);
+// Derived from $lib/writing and $lib/reading (which read `draft: false` frontmatter).
+const ALLOWED_PATHS = new Set([
+	"/",
+	...liveWritings.map((w) => w.href),
+	"/nook",
+	...nookEntries.map((e) => `/nook/${e.slug}`),
+]);
 
 export const handle: Handle = async ({ event, resolve }) => {
 	const { url, request } = event;
@@ -150,11 +156,17 @@ export const handle: Handle = async ({ event, resolve }) => {
 		!pathname.startsWith("/api/") &&
 		!isDataRequest;
 
+	// Routes that return non-deterministic responses (redirects to random
+	// content, etc.) must never be edge-cached.
+	// Excluded routes: /nook
+	const excludeCache = pathname === "/nook";
+	const isCacheable = isPageRequest && !excludeCache;
+
 	const cacheUrl = new URL(url.toString());
 	cacheUrl.searchParams.set("__v", CACHE_VERSION);
 	const cacheKey = new Request(cacheUrl.toString(), { method: "GET" });
 
-	if (!dev && !building && isPageRequest && !wantsMarkdown && typeof caches !== "undefined") {
+	if (!dev && !building && isCacheable && !wantsMarkdown && typeof caches !== "undefined") {
 		const cached = await caches.default.match(cacheKey);
 		if (cached) return cached;
 	}
@@ -203,21 +215,27 @@ export const handle: Handle = async ({ event, resolve }) => {
 		}
 	}
 
-	// Inject <link rel="alternate"> into <head> for all HTML pages.
-	// Runs during both prerendering and SSR, so the tag is baked into
-	// all static HTML and present on all SSR pages.
+	// Inject <link rel="alternate"> into <head> for pages that have a
+	// raw markdown counterpart. Routes serving third-party or non-original
+	// content are excluded to avoid exposing it for redistribution.
+	// Excluded routes: /nook
+	const excludeMarkdownAlt = pathname.startsWith("/nook");
 	const slug = pathname === "/" ? "home" : pathname.replace(/^\//, "").replace(/\/$/, "");
 
 	const response = await resolve(event, {
 		transformPageChunk: ({ html }) =>
-			html.replace(
-				"</head>",
-				`<link rel="alternate" type="text/markdown" href="/${slug}.md">\n</head>`,
-			),
+			excludeMarkdownAlt
+				? html
+				: html.replace(
+						"</head>",
+						`<link rel="alternate" type="text/markdown" href="/${slug}.md">\n</head>`,
+					),
 	});
 
 	// Link headers for agent discovery (RFC 8288).
-	response.headers.append("Link", `</${slug}.md>; rel="alternate"; type="text/markdown"`);
+	if (!excludeMarkdownAlt) {
+		response.headers.append("Link", `</${slug}.md>; rel="alternate"; type="text/markdown"`);
+	}
 	response.headers.append("Link", `</sitemap.xml>; rel="sitemap"; type="application/xml"`);
 
 	// Store SSR response in edge cache (non-blocking).
@@ -238,7 +256,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 	if (
 		!dev &&
 		!building &&
-		isPageRequest &&
+		isCacheable &&
 		response.status === 200 &&
 		typeof caches !== "undefined"
 	) {

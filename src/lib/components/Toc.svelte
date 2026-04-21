@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { TocEntry } from "../../routes/[...catchall]/+page";
+	import type { TocEntry } from "$lib/toc";
 
 	type Props = {
 		toc: TocEntry[];
