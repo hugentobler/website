@@ -111,6 +111,26 @@ import { liveWritings, slugAliases } from "$lib/writing";
 const CACHE_TTL = 86400; // 24 hours
 const CACHE_VERSION = __BUILD_TIMESTAMP__;
 
+// https://contentsignals.org — keep in sync with static/robots.txt
+const CONTENT_SIGNAL_ALLOW = "ai-train=yes, search=yes, ai-input=yes";
+const CONTENT_SIGNAL_DENY = "ai-train=no, search=no, ai-input=no";
+
+// Build a markdown response. Per https://acceptmarkdown.com/guides,
+// Vary: Accept is required on content-negotiated paths so CDNs don't
+// serve the wrong representation. The fixed /*.md URLs don't need it
+// but it's harmless there. content-signal + x-markdown-tokens help
+// agents reason about licensing and cost.
+function markdownResponse(content: string): Response {
+	return new Response(content, {
+		headers: {
+			"content-signal": CONTENT_SIGNAL_ALLOW,
+			"content-type": "text/markdown; charset=utf-8",
+			vary: "accept",
+			"x-markdown-tokens": String(Math.ceil(new TextEncoder().encode(content).length / 4)), // estimate: ~4 bytes/token
+		},
+	});
+}
+
 // Raw markdown content, loaded at build time via Vite's ?raw query.
 // markdoc-svelte processes the same files separately for HTML rendering.
 const rawModules = import.meta.glob("/src/lib/markdown/*.md", {
@@ -191,28 +211,16 @@ export const handle: Handle = async ({ event, resolve }) => {
 		const rawSlug = pathname.slice(1, -3); // "/bowtie.md" → "bowtie"
 		const slug = slugAliases[rawSlug] ?? rawSlug;
 		const content = markdownBySlug.get(slug);
-		if (content) {
-			return new Response(content, {
-				headers: { "content-type": "text/markdown; charset=utf-8" },
-			});
-		}
+		if (content) return markdownResponse(content);
 	}
 
 	// Content negotiation: serve raw markdown when agents request it
-	// via Accept: text/markdown.
+	// via Accept: text/markdown. Vary: Accept on the response lets
+	// caches store HTML and markdown under the same URL.
 	if (isPageRequest && wantsMarkdown) {
 		const mdSlug = pathname === "/" ? "home" : pathname.replace(/^\//, "").replace(/\/$/, "");
 		const content = markdownBySlug.get(slugAliases[mdSlug] ?? mdSlug);
-		if (content) {
-			return new Response(content, {
-				headers: {
-					"content-signal": "ai-train=yes, search=yes, ai-input=yes", // https://contentsignals.org
-					"content-type": "text/markdown; charset=utf-8",
-					vary: "accept",
-					"x-markdown-tokens": String(Math.ceil(new TextEncoder().encode(content).length / 4)), // estimate: ~4 bytes/token
-				},
-			});
-		}
+		if (content) return markdownResponse(content);
 	}
 
 	// Inject <link rel="alternate"> into <head> for pages that have a
@@ -237,6 +245,13 @@ export const handle: Handle = async ({ event, resolve }) => {
 		response.headers.append("Link", `</${slug}.md>; rel="alternate"; type="text/markdown"`);
 	}
 	response.headers.append("Link", `</sitemap.xml>; rel="sitemap"; type="application/xml"`);
+
+	// Third-party content under /nook: allow OG preview fetches but
+	// opt out of search indexing and AI training. noindex/nofollow is
+	// also set in the page <head>.
+	if (pathname.startsWith("/nook")) {
+		response.headers.set("content-signal", CONTENT_SIGNAL_DENY);
+	}
 
 	// Store SSR response in edge cache (non-blocking).
 	//

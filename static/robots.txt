@@ -3,6 +3,5 @@ Allow: /
 Content-Signal: ai-train=yes, search=yes, ai-input=yes
 
 Disallow: /api/
-Disallow: /nook
 
 Sitemap: https://hugentobler.world/sitemap.xml

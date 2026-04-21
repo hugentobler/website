@@ -82,6 +82,10 @@ and CreativeWork JSON-LD for third-party content attribution.
 <svelte:head>
 	<title>{entry.title} — {entry.author}</title>
 	<meta name="robots" content="noindex, nofollow" />
+	<meta property="og:title" content="{entry.title} — {entry.author}" />
+	<meta property="og:description" content={entry.publication ? `${entry.publication}, ${entry.year}` : String(entry.year)} />
+	<meta property="og:url" content="{page.url.origin}{page.url.pathname}" />
+	<meta property="og:type" content="article" />
 	<!-- TODO: Add og:image generation for nook pages -->
 	{@html `<script type="application/ld+json">${JSON.stringify({
 		"@context": "https://schema.org",
