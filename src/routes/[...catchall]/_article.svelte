@@ -13,14 +13,24 @@
 	const frontmatter = $derived(data.markdown.frontmatter);
 	const Content = $derived(data.markdown.default);
 	const title = $derived(frontmatter?.title ?? "Untitled");
-	const metatitle = $derived(frontmatter?.description
-		? `${frontmatter.title} - ${frontmatter.description}`
+	const subheader = $derived(frontmatter?.subheader);
+	const tldr = $derived(frontmatter?.tldr);
+	const banner = $derived(frontmatter?.banner);
+	// `<title>` keeps the subheader for browser tabs / search results;
+	// og:title stays bare so social previews don't duplicate the tldr below.
+	const metatitle = $derived(subheader
+		? `${frontmatter?.title} - ${subheader}`
 		: frontmatter?.title);
+	const ogTitle = $derived(frontmatter?.title);
 	const pubDate = $derived(frontmatter?.published
 		? new Date(`${frontmatter.published}T00:00:00`)
 		: null);
 	const formattedDate = $derived(pubDate?.toLocaleDateString("en-US", { month: "short", year: "numeric" }));
-	const ogDescription = $derived(`Christopher Hugentobler 姚思陶 – ${formattedDate}`);
+	// og:description stays terse for social previews — just the date — since
+	// the image carries the tldr. The longer meta description (tldr) is what
+	// search engines and JSON-LD consumers see.
+	const ogDescription = $derived(formattedDate ?? "");
+	const metaDescription = $derived(tldr ?? `Christopher Hugentobler 姚思陶 – ${formattedDate}`);
 
 	// TOC is opt-out: every post shows one unless the frontmatter
 	// explicitly disables it via `toc: false`. Posts without any h2/h3
@@ -73,8 +83,8 @@
 
 <svelte:head>
 	<title>{metatitle}</title>
-	<meta name="description" content={ogDescription} />
-	<meta property="og:title" content={metatitle} />
+	<meta name="description" content={metaDescription} />
+	<meta property="og:title" content={ogTitle} />
 	<meta property="og:description" content={ogDescription} />
 	<meta property="og:image" content="{page.url.origin}{page.url.pathname}/og.png" />
 	<meta property="og:url" content="{page.url.origin}{page.url.pathname}" />
@@ -85,7 +95,7 @@
 		"@context": "https://schema.org",
 		"@type": "Article",
 		"headline": title,
-		"description": frontmatter?.description,
+		"description": tldr ?? subheader,
 		"datePublished": frontmatter?.published,
 		"url": `${origin}${page.url.pathname}`,
 		"author": {
@@ -126,8 +136,20 @@
 				{/if}
 			</header>
 			<main class="content sans" use:sentenceHighlights={{ slug: page.url.pathname }}>
-				<time class="date mono">{frontmatter?.published}</time>
+				<p class="meta mono">
+					<time class="date">{frontmatter?.published}</time>
+					{#if banner}
+						<span class="meta-sep" aria-hidden="true">·</span>
+						<span class="banner">{banner}</span>
+					{/if}
+				</p>
 				<h1>{title}</h1>
+				{#if tldr}
+					<div class="tldr">
+						<span class="tldr-label">tl;dr</span>
+						<p>{tldr}</p>
+					</div>
+				{/if}
 				<Content />
 			</main>
 			<footer class="footer sans type-sm">
@@ -483,20 +505,6 @@
 			text-indent: 3ch;
 		}
 
-		/* Subtitle convention: a fully-italicized paragraph sitting
-		   directly after the article title reads as a dedication or
-		   note to the reader, so it sits flush and in the secondary
-		   color. The next paragraph then acts as the real first
-		   paragraph and keeps its indent. */
-		:global(h1 + p:has(em:only-child)) {
-			color: var(--secondary);
-			text-indent: 0;
-		}
-
-		:global(h1 + p:has(em:only-child) + p) {
-			text-indent: 3ch;
-		}
-
 		:global(ol), :global(ul) {
 			padding-left: 3ch;
 			margin-top: var(--baseline);
@@ -587,14 +595,50 @@
 			line-height: var(--leading-md);
 		}
 
-		.date {
-			display: block;
+		.meta {
+			display: flex;
+			flex-wrap: wrap;
+			row-gap: 0;
+			column-gap: 0.75ch;
+			align-items: baseline;
 			padding-bottom: var(--baseline);
 			font-size: var(--type-sm);
 			font-weight: 450;
 			font-stretch: 66%;
 			line-height: var(--leading-sm);
 			color: var(--secondary);
+			text-indent: 0;
+		}
+
+		.meta-sep {
+			color: var(--color-charcoal-200);
+		}
+
+		.tldr {
+			display: flex;
+			flex-direction: column;
+			gap: calc(var(--baseline) / 4);
+			padding-bottom: var(--baseline);
+			margin-bottom: var(--baseline);
+		}
+
+		.tldr-label {
+			font-size: var(--type-base);
+			font-weight: 500;
+			font-stretch: condensed;
+			line-height: var(--leading-base);
+			text-transform: lowercase;
+		}
+
+		.tldr :global(p) {
+			margin: 0;
+			font-size: var(--type-md);
+			font-weight: 400;
+			line-height: var(--leading-md);
+			color: var(--primary);
+			text-indent: 0;
+			letter-spacing: -0.03em;
+			text-wrap: pretty;
 		}
 
 		:global(h1):not(:first-child), :global(h2):not(:first-child),

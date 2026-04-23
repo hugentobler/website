@@ -10,7 +10,7 @@
  * Frontmatter contract:
  *   - `draft` defaults to true — entries are drafts unless a file sets
  *     `draft: false` explicitly.
- *   - Live entries must set `title`, `description`, and `published`.
+ *   - Live entries must set `title`, `subheader`, and `published`.
  *     `published` is parsed for its year to build the `/YYYY/slug` URL.
  */
 
@@ -18,7 +18,7 @@ import type { MarkdocModule } from "markdoc-svelte";
 
 type Frontmatter = {
 	title?: string;
-	description?: string;
+	subheader?: string;
 	published?: string;
 	draft?: boolean;
 };
@@ -30,7 +30,7 @@ const modules = import.meta.glob<MarkdocModule>("$lib/markdown/*.md", {
 export type Writing = {
 	slug: string;
 	title: string;
-	description: string;
+	subheader: string;
 	published: string;
 	year: number;
 	href: string;
@@ -55,10 +55,10 @@ export const liveWritings: Writing[] = all
 		}
 		const year = new Date(fm.published).getUTCFullYear();
 		return {
-			description: fm.description ?? "",
 			href: `/${year}/${slug}`,
 			published: fm.published,
 			slug,
+			subheader: fm.subheader ?? "",
 			title: fm.title ?? slug,
 			year,
 		};

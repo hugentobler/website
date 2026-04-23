@@ -1,6 +1,7 @@
 ---
 title: Feeding Computer Agents
-description: Bigger than coding agents
+subheader: Bigger than coding agents
+tldr: Agents shall have a far-larger market and impact in non-technical work than coding. In practice, pick a long-duration problem, build solutions to be used by computer agents.
 published: 2026-03-23
 draft: false
 ---

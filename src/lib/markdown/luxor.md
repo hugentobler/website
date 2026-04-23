@@ -1,6 +1,6 @@
 ---
 title: See the temples of Luxor
-description:
+subheader:
 published: 2025-12-08
 ---
 

@@ -1,12 +1,12 @@
 ---
 title: Durable AI Initiatives
-description: Build your feedback loop
+subheader: Build your feedback loop
+tldr: Company survival map for when intelligence is bought from AI model providers.
+banner: Prepared for Bowtie management
 published: 2025-08-05
 draft: false
 toc: false
 ---
-
-*Prepared for Bowtie management*
 
 Two questions:
 

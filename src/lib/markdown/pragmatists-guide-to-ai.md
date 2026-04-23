@@ -1,6 +1,7 @@
 ---
 title: Pragmatist's Guide to AI
-description: Everything changes except what didn't
+subheader: Everything changes except what didn't
+tldr: Reject claims of catastrophe or panacea, instead ask what's unchanging. AI is a godlike software tool, learning it will cost you. Find your spot on the barbell, embrace new workplace contracts.
 published: 2026-04-14
 draft: false
 ---

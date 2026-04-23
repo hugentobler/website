@@ -33,11 +33,11 @@ async function loadWoff2(url: string): Promise<ArrayBuffer> {
 
 async function loadFonts() {
 	if (fontsCache) return fontsCache;
-	const [ultraCondensed] = await Promise.all([loadWoff2(`${CDN}/uni-ultra-condensed-light.woff2`)]);
+	const [condensed] = await Promise.all([loadWoff2(`${CDN}/uni-condensed-light.woff2`)]);
 	fontsCache = [
 		{
-			data: ultraCondensed,
-			name: "Univers Ultra Condensed",
+			data: condensed,
+			name: "Univers Condensed",
 			style: "normal" as const,
 			weight: 300 as const,
 		},
@@ -60,38 +60,52 @@ function el(
 	};
 }
 
-function formatDate(published: string): string {
-	const date = new Date(`${published}T00:00:00`);
-	const month = date.toLocaleDateString("en-US", { month: "short" }).toUpperCase();
-	return `${month} ${date.getFullYear()}`;
+// Title-cased fallback: socially-shared URL tells you the article, so when
+// no tldr is provided we surface the bare title rather than ship an empty
+// card. Title-case keeps it readable at the large display size.
+function fallbackText(title: string): string {
+	return title.toUpperCase();
 }
 
 export async function generateOgImage(opts: {
 	title: string;
-	published?: string;
+	tldr?: string;
 }): Promise<ArrayBuffer> {
 	const fonts = await loadFonts();
 
-	const titleText = opts.title.toUpperCase();
-	const dateText = opts.published ? formatDate(opts.published) : "";
+	const text = opts.tldr?.trim() || fallbackText(opts.title);
 
 	const element = el(
 		"div",
 		{
-			alignItems: "center",
+			alignItems: "flex-start",
 			background: COLORS.bg,
 			display: "flex",
 			flexDirection: "column",
-			fontFamily: "Univers Ultra Condensed",
+			fontFamily: "Univers Condensed",
 			fontWeight: 300,
 			height: "100%",
 			justifyContent: "center",
-			lineHeight: 1,
-			textTransform: "uppercase" as const,
+			lineHeight: 1.05,
+			padding: "88px 160px",
 			width: "100%",
 		},
-		el("span", { color: COLORS.primary, fontSize: 88 }, titleText),
-		dateText && el("span", { color: COLORS.secondary, fontSize: 88, marginTop: 44 }, dateText),
+		el(
+			"div",
+			{
+				color: COLORS.primary,
+				display: "block",
+				fontSize: 72,
+				fontWeight: 300,
+				letterSpacing: -2,
+				// String form lets us override the default `…` (U+2026) which
+				// Univers Condensed lacks, falling back to a system font.
+				// Three periods are guaranteed to exist in the loaded face.
+				lineClamp: '3 "..."',
+				textWrap: "pretty",
+			},
+			text,
+		),
 	);
 
 	const svg = await satori(element, { fonts, height: HEIGHT, width: WIDTH });

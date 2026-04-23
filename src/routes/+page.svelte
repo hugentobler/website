@@ -159,7 +159,7 @@
 				>
 					<div class="text">
 						<p class="title">{article.title}</p>
-						<p class="description">{article.description}</p>
+						<p class="description">{article.subheader}</p>
 					</div>
 					<time class="year mono">{article.year}</time>
 				</a>

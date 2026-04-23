@@ -1,6 +1,7 @@
 ---
 title: Ecommerce Winners Are AI Losers
-description: The web 2.0 playbook is your liability
+subheader: The web 2.0 playbook is your liability
+tldr: Advantages of companies that won web 2.0 leave them at greatest risk of dis-intermediation by AI super-apps.
 published: 2026-01-05
 draft: false
 ---

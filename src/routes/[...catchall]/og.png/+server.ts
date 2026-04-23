@@ -23,8 +23,8 @@ export const GET: RequestHandler = async ({ params }) => {
 
 	const { frontmatter } = markdown;
 	const png = await generateOgImage({
-		published: frontmatter?.published,
 		title: frontmatter?.title ?? slug,
+		tldr: frontmatter?.tldr,
 	});
 
 	return new Response(png, {
