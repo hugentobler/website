@@ -1,6 +1,7 @@
 node_modules
 .ralph
 RALPH.md
+.claude/worktrees/
 
 # Output
 .output
