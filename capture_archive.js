@@ -1,6 +1,7 @@
 import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
+import { parseArgs } from "node:util";
 import dotenv from "dotenv";
 import { JSDOM } from "jsdom";
 import {
@@ -19,50 +20,30 @@ const DEFAULT_URL = "https://owickstrom.github.io/the-proportional-web/";
 const SLUG = /^[a-zA-Z0-9][a-zA-Z0-9_-]*$/;
 const CAPTURED = /^\d{4}-\d{2}-\d{2}$/;
 
-function parseArgs(argv) {
-	const flags = {
-		captured: "",
-		out: "",
-		slug: "",
-		upload: false,
-		url: DEFAULT_URL,
-	};
-	for (let i = 0; i < argv.length; i += 1) {
-		const arg = argv[i];
-		const readValue = (name) => {
-			if (arg.startsWith(`${name}=`)) return arg.slice(name.length + 1);
-			const value = argv[i + 1];
-			if (!value || value.startsWith("--")) {
-				console.error(`missing value for ${name}`);
-				process.exit(1);
-			}
-			i += 1;
-			return value;
+function readFlags(argv) {
+	try {
+		const { values } = parseArgs({
+			args: argv,
+			options: {
+				captured: { type: "string" },
+				out: { type: "string" },
+				slug: { type: "string" },
+				upload: { default: false, type: "boolean" },
+				url: { default: DEFAULT_URL, type: "string" },
+			},
+			strict: true,
+		});
+		return {
+			captured: values.captured ?? "",
+			out: values.out ?? "",
+			slug: values.slug ?? "",
+			upload: Boolean(values.upload),
+			url: values.url ?? DEFAULT_URL,
 		};
-		if (arg === "--upload") {
-			flags.upload = true;
-			continue;
-		}
-		if (arg === "--url" || arg.startsWith("--url=")) {
-			flags.url = readValue("--url");
-			continue;
-		}
-		if (arg === "--slug" || arg.startsWith("--slug=")) {
-			flags.slug = readValue("--slug");
-			continue;
-		}
-		if (arg === "--captured" || arg.startsWith("--captured=")) {
-			flags.captured = readValue("--captured");
-			continue;
-		}
-		if (arg === "--out" || arg.startsWith("--out=")) {
-			flags.out = readValue("--out");
-			continue;
-		}
-		console.error(`unknown argument: ${arg}`);
+	} catch (error) {
+		console.error(error instanceof Error ? error.message : error);
 		process.exit(1);
 	}
-	return flags;
 }
 
 function requireFlags(flags) {
@@ -108,7 +89,13 @@ function writeTree(outDir, files) {
 	for (const file of files) {
 		const dest = path.resolve(root, file.path);
 		const relative = path.relative(root, dest);
-		if (relative === "" || relative.startsWith("..") || path.isAbsolute(relative)) {
+		if (
+			relative === "" ||
+			relative === ".." ||
+			relative.startsWith("../") ||
+			relative.startsWith("..\\") ||
+			path.isAbsolute(relative)
+		) {
 			throw new Error(`refusing to write outside output: ${file.path}`);
 		}
 		fs.mkdirSync(path.dirname(dest), { recursive: true });
@@ -116,7 +103,7 @@ function writeTree(outDir, files) {
 	}
 }
 
-// Wrangler 4.152.0 stays local unless --remote is set. upload_fonts.js omits it.
+// Wrangler stays local unless --remote is present.
 function runWrangler(args) {
 	if (!args.includes("--remote")) {
 		throw new Error("refusing to run wrangler without --remote");
@@ -146,7 +133,7 @@ function uploadFile(slug, captured, rel, filePath, contentType) {
 }
 
 async function main() {
-	const flags = parseArgs(process.argv.slice(2));
+	const flags = readFlags(process.argv.slice(2));
 	requireFlags(flags);
 	const fetched = await fetchArchive(flags.url);
 	const html = decodeHtml(fetched.body, fetched.contentType);

@@ -161,7 +161,7 @@ describe("rewriteArchive", () => {
 
 		const out = ".archives/the-proportional-web/2026-10-28";
 		expect(wranglerProbeCommand("the-proportional-web", "2026-10-28", "index.css")).toBe(
-			"npx wrangler r2 object get hugentobler/nook/the-proportional-web/2026-10-28/index.css --file=/tmp/nook-archive-probe --remote",
+			"npx wrangler r2 object get 'hugentobler/nook/the-proportional-web/2026-10-28/index.css' --file='/tmp/nook-archive-probe' --remote",
 		);
 		expect(
 			wranglerPutCommand(
@@ -172,7 +172,10 @@ describe("rewriteArchive", () => {
 				"font/woff2",
 			),
 		).toBe(
-			`npx wrangler r2 object put hugentobler/nook/the-proportional-web/2026-10-28/fonts/AbCd.woff2 --file=${out}/fonts/AbCd.woff2 --content-type="font/woff2" --cache-control="public, max-age=31536000, immutable" --remote`,
+			`npx wrangler r2 object put 'hugentobler/nook/the-proportional-web/2026-10-28/fonts/AbCd.woff2' --file='${out}/fonts/AbCd.woff2' --content-type="font/woff2" --cache-control="public, max-age=31536000, immutable" --remote`,
+		);
+		expect(wranglerProbeCommand("slug", "2026-10-28", "weird name$;'.jpg")).toBe(
+			"npx wrangler r2 object get 'hugentobler/nook/slug/2026-10-28/weird name$;'\\''.jpg' --file='/tmp/nook-archive-probe' --remote",
 		);
 	});
 
@@ -263,6 +266,45 @@ describe("rewriteArchive", () => {
 		await expect(
 			rewriteArchive({ document, documentUrl: "https://example.com/", fetch }),
 		).rejects.toThrow("stylesheet is not css: https://example.com/index.css");
+	});
+
+	it("rejects a stylesheet that redirects to HTML or has no css suffix", async () => {
+		const html = encode("<!DOCTYPE html><html><head><title>Login</title></head></html>");
+		const redirectFetch: ArchiveFetcher = async (url) => {
+			if (url !== "https://example.com/index.css") throw new Error(`unexpected fetch ${url}`);
+			return {
+				body: html,
+				contentType: "text/html; charset=utf-8",
+				status: 200,
+				url: "https://example.com/login",
+			};
+		};
+		const redirected = documentFrom(
+			'<link rel="stylesheet" href="index.css">',
+			"https://example.com/",
+		);
+		await expect(
+			rewriteArchive({
+				document: redirected,
+				documentUrl: "https://example.com/",
+				fetch: redirectFetch,
+			}),
+		).rejects.toThrow("stylesheet is not css: https://example.com/login");
+
+		const { fetch } = fixtureFetch({
+			"https://example.com/styles": { body: html, contentType: "text/html" },
+		});
+		const extensionless = documentFrom(
+			'<link rel="stylesheet" href="https://example.com/styles">',
+			"https://example.com/",
+		);
+		await expect(
+			rewriteArchive({
+				document: extensionless,
+				documentUrl: "https://example.com/",
+				fetch,
+			}),
+		).rejects.toThrow("stylesheet is not css: https://example.com/styles");
 	});
 
 	it("fails when saved text still names a remote font host", async () => {

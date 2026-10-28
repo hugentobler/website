@@ -1,4 +1,5 @@
 import { createHash } from "node:crypto";
+import path from "node:path";
 
 export const BROWSER_USER_AGENT =
 	"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36";
@@ -57,11 +58,14 @@ export type ProbeVerdict = "exists" | "missing" | "abort";
 const encoder = new TextEncoder();
 const decoder = new TextDecoder("utf-8");
 
-export function contentTypeFor(filePath: string): string {
+function extensionOf(filePath: string): string {
 	const base = filePath.split("/").pop() ?? "";
 	const dot = base.lastIndexOf(".");
-	const ext = dot === -1 ? "" : base.slice(dot + 1).toLowerCase();
-	return CONTENT_TYPES[ext] ?? "application/octet-stream";
+	return dot === -1 ? "" : base.slice(dot + 1).toLowerCase();
+}
+
+export function contentTypeFor(filePath: string): string {
+	return CONTENT_TYPES[extensionOf(filePath)] ?? "application/octet-stream";
 }
 
 export function archiveObjectName(slug: string, captured: string, rel: string): string {
@@ -69,11 +73,16 @@ export function archiveObjectName(slug: string, captured: string, rel: string): 
 }
 
 export function archiveFilePath(outDir: string, rel: string): string {
-	return `${outDir.replace(/[\\/]+$/, "")}/${rel}`;
+	return path.posix.join(outDir, rel);
+}
+
+function shellQuote(value: string): string {
+	return `'${value.replaceAll("'", "'\\''")}'`;
 }
 
 export function wranglerProbeCommand(slug: string, captured: string, rel: string): string {
-	return `npx wrangler r2 object get ${archiveObjectName(slug, captured, rel)} --file=${PROBE_FILE} --remote`;
+	const key = shellQuote(archiveObjectName(slug, captured, rel));
+	return `npx wrangler r2 object get ${key} --file=${shellQuote(PROBE_FILE)} --remote`;
 }
 
 export function wranglerPutCommand(
@@ -83,7 +92,8 @@ export function wranglerPutCommand(
 	filePath: string,
 	contentType: string,
 ): string {
-	return `npx wrangler r2 object put ${archiveObjectName(slug, captured, rel)} --file=${filePath} --content-type="${contentType}" --cache-control="${CACHE_CONTROL}" --remote`;
+	const key = shellQuote(archiveObjectName(slug, captured, rel));
+	return `npx wrangler r2 object put ${key} --file=${shellQuote(filePath)} --content-type="${contentType}" --cache-control="${CACHE_CONTROL}" --remote`;
 }
 
 /** A local wrangler probe exits 0 even when the production key is absent. */
@@ -239,50 +249,27 @@ function skipWsAndComments(css: string, index: number): number {
 	return i;
 }
 
-function readEscape(css: string, index: number): { value: string; end: number } | null {
-	if (css[index] !== "\\") return null;
-	const next = css[index + 1];
-	if (next === undefined) return { end: index + 1, value: "" };
-	if (next === "\n") return { end: index + 2, value: "" };
-	if (next === "\r") return { end: css[index + 2] === "\n" ? index + 3 : index + 2, value: "" };
-	if (/[0-9a-fA-F]/.test(next)) {
-		let j = index + 1;
-		let hex = "";
-		while (j < css.length && hex.length < 6 && /[0-9a-fA-F]/.test(css[j] ?? "")) {
-			hex += css[j];
-			j += 1;
-		}
-		if (j < css.length && /[ \t\n\r\f]/.test(css[j] ?? "")) {
-			j += css[j] === "\r" && css[j + 1] === "\n" ? 2 : 1;
-		}
-		const code = Number.parseInt(hex, 16);
-		const value = code === 0 || code > 0x10ffff ? "\uFFFD" : String.fromCodePoint(code);
-		return { end: j, value };
-	}
-	return { end: index + 2, value: next };
+function skipEscaped(css: string, index: number): number {
+	if (css[index] !== "\\") return index + 1;
+	return index + (css[index + 1] === undefined ? 1 : 2);
 }
 
 function readCssString(
 	css: string,
 	index: number,
-): { value: string; contentStart: number; contentEnd: number; end: number } | null {
+): { contentStart: number; contentEnd: number; end: number } | null {
 	const quote = css[index];
 	if (quote !== '"' && quote !== "'") return null;
-	let value = "";
 	let j = index + 1;
 	const contentStart = j;
 	while (j < css.length) {
 		const ch = css[j];
 		if (ch === "\\") {
-			const esc = readEscape(css, j);
-			if (!esc) return null;
-			value += esc.value;
-			j = esc.end;
+			j = skipEscaped(css, j);
 			continue;
 		}
-		if (ch === quote) return { contentEnd: j, contentStart, end: j + 1, value };
+		if (ch === quote) return { contentEnd: j, contentStart, end: j + 1 };
 		if (ch === "\n" || ch === "\r") return null;
-		value += ch ?? "";
 		j += 1;
 	}
 	return null;
@@ -291,28 +278,22 @@ function readCssString(
 function readUnquotedUrl(
 	css: string,
 	index: number,
-): { value: string; start: number; end: number; after: number } | null {
-	let value = "";
+): { start: number; end: number; after: number } | null {
 	let j = index;
 	while (j < css.length) {
 		const ch = css[j];
 		if (ch === "\\") {
-			const esc = readEscape(css, j);
-			if (!esc) return null;
-			value += esc.value;
-			j = esc.end;
+			j = skipEscaped(css, j);
 			continue;
 		}
 		if (ch === ")" || ch === undefined) break;
 		if (ch === " " || ch === "\t" || ch === "\n" || ch === "\r" || ch === "\f") break;
 		if (ch === '"' || ch === "'" || ch === "(") break;
-		value += ch;
 		j += 1;
 	}
-	const tokenEnd = j;
 	const afterWs = skipWsAndComments(css, j);
 	if (css[afterWs] !== ")") return null;
-	return { after: afterWs + 1, end: tokenEnd, start: index, value };
+	return { after: afterWs + 1, end: j, start: index };
 }
 
 function parseUrlFunction(css: string, index: number): CssRef | null {
@@ -325,7 +306,7 @@ function parseUrlFunction(css: string, index: number): CssRef | null {
 		return {
 			after: afterWs + 1,
 			kind: "url",
-			url: str.value,
+			url: css.slice(str.contentStart, str.contentEnd),
 			urlEnd: str.contentEnd,
 			urlStart: str.contentStart,
 		};
@@ -335,7 +316,7 @@ function parseUrlFunction(css: string, index: number): CssRef | null {
 	return {
 		after: raw.after,
 		kind: "url",
-		url: raw.value,
+		url: css.slice(raw.start, raw.end),
 		urlEnd: raw.end,
 		urlStart: raw.start,
 	};
@@ -354,7 +335,7 @@ function parseImport(css: string, index: number): CssRef | null {
 		return {
 			after: str.end,
 			kind: "import",
-			url: str.value,
+			url: css.slice(str.contentStart, str.contentEnd),
 			urlEnd: str.contentEnd,
 			urlStart: str.contentStart,
 		};
@@ -479,14 +460,7 @@ function assertSafeSegments(parts: string[]): void {
 }
 
 function directoryUrl(url: URL): URL {
-	const copy = new URL(url.href);
-	if (!copy.pathname.endsWith("/")) {
-		const slash = copy.pathname.lastIndexOf("/");
-		copy.pathname = copy.pathname.slice(0, slash + 1);
-	}
-	copy.search = "";
-	copy.hash = "";
-	return copy;
+	return new URL(".", url);
 }
 
 function sameSite(resource: URL, documentUrl: URL): boolean {
@@ -540,12 +514,7 @@ function parentDir(filePath: string): string {
 }
 
 function relativePosix(fromDir: string, toPath: string): string {
-	const from = fromDir.split("/").filter(Boolean);
-	const to = toPath.split("/").filter(Boolean);
-	let index = 0;
-	while (index < from.length && index < to.length && from[index] === to[index]) index += 1;
-	const parts = [...Array(from.length - index).fill(".."), ...to.slice(index)];
-	return parts.join("/") || ".";
+	return path.posix.relative(fromDir || ".", toPath) || ".";
 }
 
 function normalizeRelative(fromDir: string, rel: string): string | null {
@@ -608,12 +577,6 @@ function isGoogleFontCss(url: URL, stylesheet: boolean): boolean {
 	return stylesheet || url.pathname.toLowerCase().startsWith("/css");
 }
 
-function extensionOf(filePath: string): string {
-	const base = filePath.split("/").pop() ?? "";
-	const dot = base.lastIndexOf(".");
-	return dot === -1 ? "" : base.slice(dot + 1).toLowerCase();
-}
-
 function isTextFile(file: ArchiveFile): boolean {
 	if (TEXT_EXTENSIONS.has(extensionOf(file.path))) return true;
 	const ct = file.contentType.toLowerCase();
@@ -660,12 +623,7 @@ function relTokens(el: Element): string[] {
 function isSubresourceLink(el: Element): boolean {
 	return relTokens(el).some(
 		(token) =>
-			token === "stylesheet" ||
-			token === "preload" ||
-			token === "icon" ||
-			token === "apple-touch-icon" ||
-			token === "mask-icon" ||
-			token.endsWith("-icon"),
+			token === "stylesheet" || token === "preload" || token === "icon" || token.endsWith("-icon"),
 	);
 }
 
@@ -733,13 +691,17 @@ export async function rewriteArchive(
 		finalUrl.hash = "";
 		const contentType = response.contentType;
 		const contentTypeName = contentType?.split(";")[0]?.trim().toLowerCase() ?? "";
-		const hintedStylesheet =
+		const mustBeCss =
 			stylesheet ||
 			finalUrl.pathname.toLowerCase().endsWith(".css") ||
 			contentTypeName === "text/css";
+		const cssText = mustBeCss ? decoder.decode(response.body) : null;
+		if (cssText !== null && !looksLikeCss(cssText, contentType)) {
+			throw new Error(`stylesheet is not css: ${finalUrl.href}`);
+		}
 
 		let savedPath: string;
-		if (isGoogleFontCss(finalUrl, hintedStylesheet)) {
+		if (isGoogleFontCss(finalUrl, mustBeCss)) {
 			savedPath = claimPath("fonts/google-fonts.css", abs);
 		} else if (finalUrl.hostname.toLowerCase() === "fonts.gstatic.com") {
 			savedPath = claimPath(`fonts/${fileName(finalUrl)}`, abs);
@@ -751,20 +713,9 @@ export async function rewriteArchive(
 		reserved.set(abs, savedPath);
 		if (finalUrl.href !== abs) reserved.set(finalUrl.href, savedPath);
 
-		const treatAsCss =
-			savedPath.endsWith(".css") ||
-			contentTypeName === "text/css" ||
-			(stylesheet &&
-				(contentTypeName === "" ||
-					contentTypeName === "text/plain" ||
-					contentTypeName === "application/octet-stream"));
-
 		let body = response.body;
-		if (treatAsCss) {
-			const text = decoder.decode(body);
-			if (!looksLikeCss(text, contentType)) throw new Error(`stylesheet is not css: ${abs}`);
-			const rewritten = await rewriteCssText(text, finalUrl.href, savedPath);
-			body = encoder.encode(rewritten);
+		if (cssText !== null) {
+			body = encoder.encode(await rewriteCssText(cssText, finalUrl.href, savedPath));
 		}
 
 		addBytes(body.byteLength, abs);
