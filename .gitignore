@@ -8,6 +8,7 @@ RALPH.md
 .vercel
 /.svelte-kit
 /build
+.archives/
 
 # OS
 .DS_Store

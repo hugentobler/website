@@ -90,4 +90,5 @@ Run `bun run build` and confirm no errors.
 
 - Do not modify any files outside `src/lib/nook/`. The registry (`src/lib/nook.ts`) auto-discovers entries.
 - These pages are excluded from search engines (noindex, robots.txt Disallow). Do not add them to the sitemap.
+- This skill creates `kind: markdown` readings only and must not create `kind: archive` cards; archives are captured with `capture_archive.js`, not extracted as markdown.
 - The nook uses the same Markdoc pipeline as the rest of the site — all standard Markdoc tags and nodes work.
