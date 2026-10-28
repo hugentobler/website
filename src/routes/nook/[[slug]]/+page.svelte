@@ -50,9 +50,25 @@ and CreativeWork JSON-LD for third-party content attribution.
 		return () => tracker.stop();
 	});
 
+	// about:blank is complete before the archive response replaces it.
+	function archiveDocument(target: HTMLIFrameElement): Document | null {
+		const doc = target.contentDocument;
+		if (!doc) return null;
+		try {
+			const src = new URL(target.src, window.location.href);
+			const url = new URL(doc.URL);
+			src.hash = "";
+			url.hash = "";
+			if (url.href !== src.href) return null;
+		} catch {
+			return null;
+		}
+		return doc;
+	}
+
 	// First height is synchronous. The observer only tracks later layout.
 	function measure(target: HTMLIFrameElement): boolean {
-		const doc = target.contentDocument;
+		const doc = archiveDocument(target);
 		if (!doc) return false;
 		const px = Math.max(doc.documentElement.scrollHeight, doc.body?.scrollHeight ?? 0);
 		target.style.height = `${px}px`;
@@ -69,14 +85,20 @@ and CreativeWork JSON-LD for third-party content attribution.
 		const target: HTMLIFrameElement = el;
 
 		let observer: ResizeObserver | undefined;
+		let observed: Element | undefined;
 
 		function observe() {
-			const doc = target.contentDocument;
-			if (!doc || observer) return;
-			observer = new ResizeObserver(() => {
-				measure(target);
-			});
-			observer.observe(doc.documentElement);
+			const root = archiveDocument(target)?.documentElement;
+			if (!root || root === observed) return;
+			if (!observer) {
+				observer = new ResizeObserver(() => {
+					measure(target);
+				});
+			} else {
+				observer.disconnect();
+			}
+			observer.observe(root);
+			observed = root;
 		}
 
 		function onLoad() {
@@ -752,7 +774,7 @@ and CreativeWork JSON-LD for third-party content attribution.
 		}
 	}
 
-	/* Top level so .page-archive matches. Do not edit the 60rem markdown rules. */
+	/* Un-nested so .page-archive matches the ancestor. */
 	.content-archive {
 		max-width: none;
 		padding: 0;
