@@ -1,24 +1,4 @@
-/**
- * Frontmatter contract for `$lib/nook/*.md`.
- *
- * Required: `title`, `author`, `source`, `date`.
- * `kind` defaults to "markdown". `kind: "archive"` also requires
- * `captured` (`YYYY-MM-DD`) and `archive` equal to `${slug}/${captured}`.
- */
-
 export type NookKind = "markdown" | "archive";
-
-export type NookFrontmatter = {
-	title: string;
-	author: string;
-	source: string;
-	date: string;
-	publication?: string;
-	language?: string;
-	kind?: NookKind;
-	captured?: string;
-	archive?: string;
-};
 
 export type Entry = {
 	slug: string;
@@ -39,14 +19,6 @@ const CAPTURED_DATE = /^\d{4}-\d{2}-\d{2}$/;
 function requiredString(slug: string, value: unknown, key: string): string {
 	if (typeof value !== "string" || value.length === 0) {
 		throw new Error(`Nook entry "${slug}" is missing required frontmatter (${key})`);
-	}
-	return value;
-}
-
-function optionalString(slug: string, value: unknown, key: string): string | undefined {
-	if (value === undefined) return undefined;
-	if (typeof value !== "string") {
-		throw new Error(`Nook entry "${slug}" ${key} must be a string`);
 	}
 	return value;
 }
@@ -78,7 +50,7 @@ export function parseNookFrontmatter(
 	captured?: string;
 	archive?: string;
 } {
-	if (fm == null || typeof fm !== "object" || Array.isArray(fm)) {
+	if (fm == null) {
 		throw new Error(
 			`Nook entry "${slug}" is missing required frontmatter (title, author, source, date)`,
 		);
@@ -88,8 +60,8 @@ export function parseNookFrontmatter(
 	const author = requiredString(slug, fm.author, "author");
 	const source = requiredString(slug, fm.source, "source");
 	const date = requiredString(slug, fm.date, "date");
-	const publication = optionalString(slug, fm.publication, "publication");
-	const language = optionalString(slug, fm.language, "language");
+	const publication = typeof fm.publication === "string" ? fm.publication : undefined;
+	const language = typeof fm.language === "string" ? fm.language : undefined;
 
 	const kindValue = fm.kind;
 	if (kindValue !== undefined && kindValue !== "markdown" && kindValue !== "archive") {

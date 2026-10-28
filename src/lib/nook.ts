@@ -4,9 +4,6 @@
  * Eagerly loads every `$lib/nook/*.md` module at build time and pulls
  * metadata from frontmatter. Every file in the directory is included —
  * remove the file to remove the entry.
- *
- * Frontmatter is checked by `parseNookFrontmatter`. `language` defaults
- * to "en". `year` is derived from `date`.
  */
 
 import type { MarkdocModule } from "markdoc-svelte";
@@ -36,6 +33,7 @@ export const entries: Entry[] = Object.entries(modules).map(([path, mod]) => {
 		slug,
 		source: fm.source,
 		title: fm.title,
+		// Essays use YYYY, YYYY-MM, or YYYY-MM-DD, so date is not format-checked.
 		year: new Date(fm.date).getUTCFullYear(),
 	};
 });
