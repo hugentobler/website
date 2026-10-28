@@ -9,3 +9,7 @@ pages_build_output_dir = '.svelte-kit/cloudflare'
 binding = "DB"
 database_name = "hugentobler-website-visits"
 database_id = "c3bc36a4-72ad-4430-b2df-094a078e8a83"
+
+[[r2_buckets]]
+binding = "ARCHIVE"
+bucket_name = "hugentobler"

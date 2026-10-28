@@ -21,6 +21,7 @@ declare global {
 		interface Platform {
 			env: {
 				DB: D1Database;
+				ARCHIVE: R2Bucket;
 			};
 			cf: CfProperties;
 			ctx: ExecutionContext;

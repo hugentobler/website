@@ -177,9 +177,10 @@ export const handle: Handle = async ({ event, resolve }) => {
 		!isDataRequest;
 
 	// Routes that return non-deterministic responses (redirects to random
-	// content, etc.) must never be edge-cached.
-	// Excluded routes: /nook
-	const excludeCache = pathname === "/nook";
+	// content, etc.) must never be edge-cached. /a/ is public immutable
+	// bytes and must not be stored in this private cache either.
+	// Excluded routes: /nook, /a/
+	const excludeCache = pathname === "/nook" || pathname.startsWith("/a/");
 	const isCacheable = isPageRequest && !excludeCache;
 
 	const cacheUrl = new URL(url.toString());
@@ -199,7 +200,8 @@ export const handle: Handle = async ({ event, resolve }) => {
 		!ALLOWED_PATHS.has(pathname) &&
 		!pathname.endsWith(".md") &&
 		!pathname.endsWith(".png") &&
-		!pathname.startsWith("/api/")
+		!pathname.startsWith("/api/") &&
+		!pathname.startsWith("/a/")
 	) {
 		return new Response("Not found", { status: 404 });
 	}
@@ -226,8 +228,8 @@ export const handle: Handle = async ({ event, resolve }) => {
 	// Inject <link rel="alternate"> into <head> for pages that have a
 	// raw markdown counterpart. Routes serving third-party or non-original
 	// content are excluded to avoid exposing it for redistribution.
-	// Excluded routes: /nook
-	const excludeMarkdownAlt = pathname.startsWith("/nook");
+	// Excluded routes: /nook, /a/
+	const excludeMarkdownAlt = pathname.startsWith("/nook") || pathname.startsWith("/a/");
 	const slug = pathname === "/" ? "home" : pathname.replace(/^\//, "").replace(/\/$/, "");
 
 	const response = await resolve(event, {
@@ -246,10 +248,10 @@ export const handle: Handle = async ({ event, resolve }) => {
 	}
 	response.headers.append("Link", `</sitemap.xml>; rel="sitemap"; type="application/xml"`);
 
-	// Third-party content under /nook: allow OG preview fetches but
+	// Third-party content under /nook and raw captures under /a/:
 	// opt out of search indexing and AI training. noindex/nofollow is
-	// also set in the page <head>.
-	if (pathname.startsWith("/nook")) {
+	// also set in the Nook page <head> and on /a/ responses.
+	if (pathname.startsWith("/nook") || pathname.startsWith("/a/")) {
 		response.headers.set("content-signal", CONTENT_SIGNAL_DENY);
 	}
 
