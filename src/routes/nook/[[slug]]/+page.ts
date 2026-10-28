@@ -30,6 +30,10 @@ function chapterTocFromRaw(raw: string): TocEntry[] {
 
 export const load: PageLoad = async ({ data }) => {
 	const { entry } = data;
+	if (entry.kind === "archive") {
+		return { entry, markdown: null, nextSlug: data.nextSlug, toc: [] };
+	}
+
 	const match = Object.entries(modules).find(([path]) => path.endsWith(`/${entry.slug}.md`));
 	if (!match) throw error(404, `No content for "${entry.slug}"`);
 

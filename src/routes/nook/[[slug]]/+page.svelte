@@ -16,14 +16,15 @@ and CreativeWork JSON-LD for third-party content attribution.
 	import type { Entry } from "$lib/nook";
 	import type { TocEntry } from "$lib/toc";
 
-	let { data }: { data: { markdown: MarkdocModule; entry: Entry; toc: TocEntry[]; nextSlug: string } } = $props();
+	let { data }: { data: { markdown: MarkdocModule | null; entry: Entry; toc: TocEntry[]; nextSlug: string } } = $props();
 
-	const Content = $derived(data.markdown.default);
+	const Content = $derived(data.markdown?.default ?? null);
 	const entry = $derived(data.entry);
 	const tocEnabled = $derived(data.toc.length > 0);
 	const tracker = new HeadingTracker();
 	let drawerOpen = $state(false);
 	let contentEl: HTMLElement | undefined = $state();
+	let frame: HTMLIFrameElement | undefined = $state();
 
 	// Chapter-based TOC: stamp IDs onto <hr> elements only when there
 	// are no headings. If headings exist, <hr> is purely decorative.
@@ -47,6 +48,50 @@ and CreativeWork JSON-LD for third-party content attribution.
 		const ids = data.toc.map((e) => e.id);
 		tracker.start(ids);
 		return () => tracker.stop();
+	});
+
+	// First height is synchronous. The observer only tracks later layout.
+	function measure(target: HTMLIFrameElement): boolean {
+		const doc = target.contentDocument;
+		if (!doc) return false;
+		const px = Math.max(doc.documentElement.scrollHeight, doc.body?.scrollHeight ?? 0);
+		target.style.height = `${px}px`;
+		target.setAttribute("scrolling", "no");
+		target.style.overflow = "hidden";
+		return true;
+	}
+
+	$effect(() => {
+		if (entry.kind !== "archive") return;
+		const el = frame;
+		if (!el) return;
+		// Closures keep this binding. A narrowed `el` is optional again inside them.
+		const target: HTMLIFrameElement = el;
+
+		let observer: ResizeObserver | undefined;
+
+		function observe() {
+			const doc = target.contentDocument;
+			if (!doc || observer) return;
+			observer = new ResizeObserver(() => {
+				measure(target);
+			});
+			observer.observe(doc.documentElement);
+		}
+
+		function onLoad() {
+			if (measure(target)) observe();
+		}
+
+		if (target.contentDocument?.readyState === "complete") {
+			if (measure(target)) observe();
+		}
+
+		target.addEventListener("load", onLoad);
+		return () => {
+			target.removeEventListener("load", onLoad);
+			observer?.disconnect();
+		};
 	});
 
 	const atEnd = $derived(tocEnabled && tracker.next === null && tracker.active !== null);
@@ -101,7 +146,7 @@ and CreativeWork JSON-LD for third-party content attribution.
 
 <div class="viewport" data-toc-open={drawerOpen}>
 	<div class="shell">
-		<div class="page">
+		<div class="page" class:page-archive={entry.kind === "archive"}>
 			<header class="header sans type-sm">
 				<div class="header-row">
 					<a class="header-pill header-shuffle" href="/nook/{data.nextSlug}">
@@ -128,12 +173,23 @@ and CreativeWork JSON-LD for third-party content attribution.
 					</div>
 				{/if}
 			</header>
-			<main class="content sans" bind:this={contentEl}>
+			<main class="content sans" class:content-archive={entry.kind === "archive"} bind:this={contentEl}>
 				<p class="attribution mono">
 					{entry.author} · {entry.year}
 				</p>
-				<h1>{entry.title}</h1>
-				<Content />
+				{#if entry.kind === "archive"}
+					<iframe
+						bind:this={frame}
+						class="archive-frame"
+						src="/a/{entry.slug}/{entry.captured}/index.html"
+						title={entry.title}
+					></iframe>
+				{:else}
+					<h1>{entry.title}</h1>
+					{#if Content}
+						<Content />
+					{/if}
+				{/if}
 				<section id="source" class="source-section">
 					<h2>Source</h2>
 					<p>
@@ -142,6 +198,9 @@ and CreativeWork JSON-LD for third-party content attribution.
 							"{entry.title}." <DecoratedLink href={entry.source} target="_blank" rel="noopener noreferrer"><em>{entry.publication}</em></DecoratedLink>, {entry.year}.
 						{:else}
 							"<DecoratedLink href={entry.source} target="_blank" rel="noopener noreferrer">{entry.title}</DecoratedLink>." {entry.year}.
+						{/if}
+						{#if entry.kind === "archive"}
+							Archived {entry.captured}.
 						{/if}
 					</p>
 				</section>
@@ -690,6 +749,55 @@ and CreativeWork JSON-LD for third-party content attribution.
 
 		:global(td) :global(.sentence:has(+ br)) {
 			margin-bottom: calc(var(--baseline) / 2);
+		}
+	}
+
+	/* Top level so .page-archive matches. Do not edit the 60rem markdown rules. */
+	.content-archive {
+		max-width: none;
+		padding: 0;
+	}
+
+	.page-archive .attribution,
+	.page-archive .source-section {
+		padding-right: calc(var(--baseline) * 3);
+		padding-left: calc(var(--baseline) * 3);
+	}
+
+	.archive-frame {
+		display: block;
+		width: 100%;
+		min-height: 100svh;
+		background: white;
+		border: 0;
+	}
+
+	@media (max-width: 72rem) {
+		.page-archive {
+			grid-template-columns: 1fr;
+		}
+
+		.page-archive .header {
+			z-index: 5;
+			max-height: none;
+			background-color: white;
+		}
+
+		.page-archive .footer {
+			position: static;
+			padding-bottom: 0;
+		}
+
+		.page-archive .content {
+			grid-row: auto;
+			grid-column: auto;
+			padding: 0;
+		}
+
+		.page-archive .attribution,
+		.page-archive .source-section {
+			padding-right: var(--baseline);
+			padding-left: var(--baseline);
 		}
 	}
 </style>
